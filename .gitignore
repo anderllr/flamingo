@@ -1,0 +1,5 @@
+node_modules/
+*.log
+_Original_Template
+Commands_Personal-Info.txt
+.env
