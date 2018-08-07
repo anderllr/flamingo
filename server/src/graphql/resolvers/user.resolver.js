@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'C:/Users/Anderson/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/bcryptjs';
+import jwt from 'C:/Users/Anderson/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/jsonwebtoken';
 
 import { JWT_SECRET } from '../../utils/utils';
 import { authenticated } from './auth.resolver';
@@ -18,9 +18,8 @@ export default {
 			return user;
 		},
 		authUser: async (parent, args, { authUser, db }) => {
+			//TODO: Verify Token
 			return authUser;
-			//const user = await db.User.findById("5b4e470dd8bc6e302cb1f6cf");
-			//return user;
 		},
 		login: async (parent, { email, password }, { db: { User } }) => {
 			const user = await User.findOne({ email });

@@ -3,6 +3,8 @@ const userTypes = `
     # User definition type
     type User {
         id: ID!
+        name: String!
+        userName: String!
         email: String!
     }
 
@@ -11,11 +13,14 @@ const userTypes = `
     }
 
     input UserCreateInput {
+        name: String!
+        userName: String!
         email: String!
         password: String!
     }
 
     input UserUpdatePasswordInput {
+        name: String!
         password: String!
     }
 

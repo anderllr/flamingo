@@ -7,6 +7,13 @@ import { GEN_SALT_NUMBER } from '../utils/utils';
 */
 
 const UserSchema = mongoose.Schema({
+	name: { type: String, required: true, trim: true },
+	userName: {
+		type: String,
+		unique: true,
+		required: true,
+		trim: true
+	},
 	email: {
 		type: String,
 		unique: true,
@@ -42,6 +49,12 @@ UserSchema.pre('save', function save(next) {
 			next();
 		});
 	});
+});
+
+UserSchema.post('save', function (error, doc, next) {
+	if (err.name === 'BulkWriteError' && error.code === 11000)
+		next(new Error('This item already exists, please try again'));
+	else next(error);
 });
 
 export const User = mongoose.model('User', UserSchema);

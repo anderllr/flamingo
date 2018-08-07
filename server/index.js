@@ -9,14 +9,16 @@ import { db } from './src/models';
 import { tokenMiddleware } from './src/utils/tokenMiddleware';
 //import { tokenMiddleware } from './src/utils/tokenMiddleware';
 
-const MONGO_URI = 'mongodb://localhost:27017/personal-info';
+const APP_NAME = 'flamingoapp';
+
+const MONGO_URI = `mongodb://localhost:27017/${APP_NAME}`;
 
 mongoose.connect(
 	MONGO_URI,
 	{ useNewUrlParser: true }
 );
 
-const PORT = 4000;
+const PORT = 3002;
 
 const app = express();
 
@@ -36,29 +38,8 @@ app.use(
 	})
 );
 
-/*
-app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(
-	'/graphql',
-	tokenMiddleware,
-	dbRequest,
-	graphqlExpress(req => ({
-		schema,
-		context: req['context'],
-	}))
-);
-
-app.get(
-	'/graphiql',
-	graphiqlExpress({
-		endpointURL: '/graphql',
-	})
-);
-*/
-
-app.use(
-	'/graphql',
+	'/flamingoql',
 	tokenMiddleware,
 	dbRequest,
 	bodyParser.json(),
