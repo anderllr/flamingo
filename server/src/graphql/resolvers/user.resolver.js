@@ -1,5 +1,5 @@
-import bcrypt from 'C:/Users/Anderson/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/bcryptjs';
-import jwt from 'C:/Users/Anderson/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../utils/utils';
 import { authenticated } from './auth.resolver';
@@ -21,10 +21,10 @@ export default {
 			//TODO: Verify Token
 			return authUser;
 		},
-		login: async (parent, { email, password }, { db: { User } }) => {
-			const user = await User.findOne({ email });
+		login: async (parent, { userName, password }, { db: { User } }) => {
+			const user = await User.findOne({ userName });
 
-			let errorMsg = 'Unauthorized, wrong email or password!';
+			let errorMsg = 'Não autorizado, usuário ou senha inválido(s)!';
 			if (!user || !bcrypt.compareSync(password, user.password)) {
 				throw new Error(errorMsg);
 			}
@@ -35,15 +35,22 @@ export default {
 				token: jwt.sign(payload, JWT_SECRET),
 			};
 		}
-
 	},
 	Mutation: {
-		createUser: async (parent, { input }, { db }) => {
-			const { User } = db;
+		createUser: async (parent, { input }, { db: { User } }) => {
 			const user = await new User(input).save();
 			return user;
 		},
-		updateUserPassword: async (parent, { id, input }, { db: { User } }) => {
+		updateUser: authenticated(async (parent, { id, input }, { db: { User } }) => {
+			const user = await User.findById(id);
+			user.set(input);
+			await user.save();
+			if (!user) {
+				return false;
+			}
+			return user;
+		}),
+		updateUserPassword: authenticated(async (parent, { id, input }, { db: { User } }) => {
 			const user = await User.findById(id);
 			user.set(input);
 			await user.save();
@@ -51,8 +58,8 @@ export default {
 				return false;
 			}
 			return true;
-		},
-		deleteUser: async (parent, { id }, { db: { User } }) => {
+		}),
+		deleteUser: authenticated(async (parent, { id }, { db: { User } }) => {
 			const userRemoved = await User.findByIdAndRemove(id);
 
 			if (!userRemoved) {
@@ -60,6 +67,6 @@ export default {
 			}
 
 			return userRemoved;
-		},
+		}),
 	},
 };

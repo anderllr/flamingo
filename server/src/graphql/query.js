@@ -1,12 +1,16 @@
 import { userQueries } from './types/user.schema';
-import { personQueries } from './types/person.schema';
-import { qualificationsQueries } from './types/qualifications.schema';
+import { frotaQueries } from './types/frota.schema';
+import { clienteQueries } from './types/cliente.schema';
+import { grupoItemQueries } from './types/grupoitem.schema';
+import { itensQueries } from './types/itens.schema';
 
 const Query = `
     type Query {
         ${userQueries},
-        ${personQueries},
-        ${qualificationsQueries}                
+        ${frotaQueries},
+        ${clienteQueries},
+        ${grupoItemQueries},
+        ${itensQueries}
     }
 `;
 

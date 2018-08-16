@@ -1,36 +1,53 @@
-const personTypes = `
+const frotaTypes = `
 
-    type Person {
+    type Frota {
         id: ID!
-        name: String!
-        title: String!
-        address: String
-        city: String!
-        phone_number: String!
-        email: String!        
-        description: String!                
-        qualifications: [ Qualification! ]!
+        nrFrota: Int!
+        name: String
+        ano: Int!
+        chassi: String
+        modeloId: String!
+        marcaId: String!        
     }
 
-    input PersonInput {
-        name: String!
-        title: String!
-        address: String
-        city: String!
-        phone_number: String!
-        email: String!        
-        description: String!  
+    type Marca {
+        id: ID!
+        marca: String
+    }    
+
+    type Modelo {
+        id: ID!
+        modelo: String
+    }    
+
+    input FrotaInput {
+        nrFrota: Int!
+        name: String
+        ano: Int!
+        chassi: String
+        modeloId: String!
+        marcaId: String!        
     }
+
 `;
 
-const personQueries = `
-    person(id: ID!): Person
+const frotaQueries = `
+    frota(id: ID!): Frota
+    frotaByNumber(nrFrota: Int!): Frota
+    marca(id: ID!): Marca
+    modelo(id: ID!): Modelo
 `;
 
-const personMutations = `
-    createPerson(input: PersonInput!): Person
-    updatePerson(id: ID!, input: PersonInput!): Person
-    deletePerson(id: ID!): Boolean
+const frotaMutations = `
+    createFrota(input: FrotaInput!): Frota
+    createMarca(marca: String!): Marca
+    createModelo(modelo: String!): Modelo      
+    updateFrota(id: ID!, input: FrotaInput!): Frota
+    updateMarca(id: ID!, marca: String!): Marca
+    updateModelo(id: ID!, modelo: String!): Modelo
+    deleteFrota(id: ID!): Boolean
+    deleteMarca(id: ID!): Boolean
+    deleteModelo(id: ID!): Boolean                
 `;
 
-export { personTypes, personQueries, personMutations };
+export { frotaTypes, frotaQueries, frotaMutations };

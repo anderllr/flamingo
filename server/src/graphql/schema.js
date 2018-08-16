@@ -5,16 +5,26 @@ import { Query } from './query';
 import { Mutation } from './mutation';
 
 import { userTypes } from './types/user.schema';
-import { personTypes } from './types/person.schema';
-import { qualificationsTypes } from './types/qualifications.schema';
+import { frotaTypes } from './types/frota.schema';
+import { clienteTypes } from './types/cliente.schema';
+import { grupoItemTypes } from './types/grupoitem.schema';
+import { itensTypes } from './types/itens.schema';
 
 import userResolvers from './resolvers/user.resolver';
-import personResolvers from './resolvers/person.resolver';
-import qualificationsResolvers from './resolvers/qualifications.resolver';
+import frotaResolvers from './resolvers/frota.resolver';
+import clienteResolvers from './resolvers/cliente.resolver';
+import grupoItemResolvers from './resolvers/grupoitem.resolver';
+import itensResolvers from './resolvers/itens.resolver';
 
 //using lodash to merge my resolvers
 //const resolvers = merge(commentResolvers, postResolvers, tokenResolvers, userResolvers);
-const resolvers = merge(userResolvers, personResolvers, qualificationsResolvers);
+const resolvers = merge(
+    userResolvers,
+    frotaResolvers,
+    clienteResolvers,
+    grupoItemResolvers,
+    itensResolvers
+);
 
 const SchemaDefinition = `
     type Schema {
@@ -24,6 +34,6 @@ const SchemaDefinition = `
 `;
 
 export default makeExecutableSchema({
-    typeDefs: [SchemaDefinition, Query, Mutation, userTypes, personTypes, qualificationsTypes],
+    typeDefs: [SchemaDefinition, Query, Mutation, userTypes, frotaTypes, clienteTypes, grupoItemTypes, itensTypes],
     resolvers,
 });

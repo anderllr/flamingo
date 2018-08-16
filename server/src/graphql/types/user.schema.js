@@ -5,6 +5,8 @@ const userTypes = `
         id: ID!
         name: String!
         userName: String!
+        app: Boolean!
+        web: Boolean!
         email: String!
     }
 
@@ -16,25 +18,34 @@ const userTypes = `
         name: String!
         userName: String!
         email: String!
+        app: Boolean!
+        web: Boolean!        
         password: String!
+    }
+
+    input UserUpdateInput {
+        name: String!
+        userName: String!
+        email: String!
+        app: Boolean!
+        web: Boolean!             
     }
 
     input UserUpdatePasswordInput {
-        name: String!
         password: String!
     }
-
 `;
 
 const userQueries = `
     users: [ User ]
     user(id: ID!): User!
     authUser: User
-    login(email: String!, password: String!): Token
+    login(userName: String!, password: String!): Token
 `;
 
 const userMutations = `
     createUser(input: UserCreateInput!): User
+    updateUser(id: ID!, input: UserUpdateInput!): User    
     updateUserPassword(id: ID!, input: UserUpdatePasswordInput!): Boolean
     deleteUser(id: ID!): Boolean
 `;

@@ -14,6 +14,8 @@ const UserSchema = mongoose.Schema({
 		required: true,
 		trim: true
 	},
+	app: { type: Boolean, required: true },
+	web: { type: Boolean, required: true },
 	email: {
 		type: String,
 		unique: true,
@@ -25,10 +27,6 @@ const UserSchema = mongoose.Schema({
 		type: String,
 		required: true,
 		trim: true,
-		match: [
-			/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-			'Your password must have at least 8 characters, one uppercase letter and one number',
-		],
 	},
 });
 
@@ -52,7 +50,7 @@ UserSchema.pre('save', function save(next) {
 });
 
 UserSchema.post('save', function (error, doc, next) {
-	if (err.name === 'BulkWriteError' && error.code === 11000)
+	if (error.name === 'BulkWriteError' && error.code === 11000)
 		next(new Error('This item already exists, please try again'));
 	else next(error);
 });

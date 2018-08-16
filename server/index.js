@@ -7,7 +7,6 @@ import cors from 'cors';
 import schema from './src/graphql/schema';
 import { db } from './src/models';
 import { tokenMiddleware } from './src/utils/tokenMiddleware';
-//import { tokenMiddleware } from './src/utils/tokenMiddleware';
 
 const APP_NAME = 'flamingoapp';
 
