@@ -5,7 +5,6 @@ export default {
 		clientes: authenticated(async (parent, args, { db: { Cliente } }) => {
 			const clientes = await Cliente.find(args);
 			return clientes.map(cliente => {
-				cliente._id = cliente._id.toString();
 				return cliente;
 			});
 		}),

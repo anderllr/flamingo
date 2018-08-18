@@ -13,6 +13,7 @@ const frotaTypes = `
     type Marca {
         id: ID!
         marca: String
+        modelos: [ Modelo! ]!
     }    
 
     type Modelo {
@@ -28,26 +29,27 @@ const frotaTypes = `
         modeloId: String!
         marcaId: String!        
     }
-
 `;
 
 const frotaQueries = `
-    frota(id: ID!): Frota
+    frota: [Frota]
+    frotaById(id: ID!): Frota
     frotaByNumber(nrFrota: Int!): Frota
-    marca(id: ID!): Marca
-    modelo(id: ID!): Modelo
+    marca: [Marca]
+    marcaById(id: ID!): Marca
+    modelosByMarca(marcaId: ID!): [Modelo]    
 `;
 
 const frotaMutations = `
     createFrota(input: FrotaInput!): Frota
-    createMarca(marca: String!): Marca
-    createModelo(modelo: String!): Modelo      
+    createMarca(marca: String!): Marca    
     updateFrota(id: ID!, input: FrotaInput!): Frota
     updateMarca(id: ID!, marca: String!): Marca
-    updateModelo(id: ID!, modelo: String!): Modelo
     deleteFrota(id: ID!): Boolean
     deleteMarca(id: ID!): Boolean
-    deleteModelo(id: ID!): Boolean                
+    createModelo(marcaId: ID!, modelo: String!): Modelo     
+    updateModelo(marcaId: ID!, id: ID!, modelo: String!): Modelo    
+    deleteModelo(marcaId: ID!, id: ID!): Boolean                
 `;
 
 export { frotaTypes, frotaQueries, frotaMutations };

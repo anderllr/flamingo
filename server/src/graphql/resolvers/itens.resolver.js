@@ -3,11 +3,11 @@ import { authenticated } from './auth.resolver';
 export default {
     Query: {
         //Remember that for this case we will have only one person ever
-        itensByGrupo: async (parent, { grupoItemId }, { db: { GrupoItem } }) => {
+        itensByGrupo: authenticated(async (parent, { grupoItemId }, { db: { GrupoItem } }) => {
             const grupoItem = await GrupoItem.findById(grupoItemId);
 
             return grupoItem.itens;
-        },
+        }),
     },
     Mutation: {
         createItem: authenticated(async (parent, { grupoItemId, input }, { db: { GrupoItem } }) => {
@@ -33,7 +33,7 @@ export default {
             await grupoItem.save();
 
             if (!itemRemoved) {
-                throw new Error('Error removing qualification');
+                throw new Error('Error removing item');
             }
 
             return itemRemoved;

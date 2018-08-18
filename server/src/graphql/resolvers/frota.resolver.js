@@ -1,24 +1,40 @@
 import { authenticated } from './auth.resolver';
 
 export default {
-
+	Marca: {
+		modelos: authenticated(async (marca, args, { db }) => {
+			return marca.modelos;
+		})
+	},
 	Query: {
-		frota: async (parent, args, { db: { Frota } }) => {
+		frota: authenticated(async (parent, args, { db: { Frota } }) => {
+			const frota = await Frota.find(args);
+			return frota.map(f => {
+				return f;
+			});
+		}),
+		frotaById: authenticated(async (parent, args, { db: { Frota } }) => {
 			const frota = await Frota.findById(args.id);
 			return frota;
-		},
-		frotaByNumber: async (parent, { nrFrota }, { db: { Frota } }) => {
+		}),
+		frotaByNumber: authenticated(async (parent, { nrFrota }, { db: { Frota } }) => {
 			const frota = await Frota.find({ nrFrota });
-			return frota;
-		},
-		marca: async (parent, args, { db: { Marca } }) => {
+			return frota[0];
+		}),
+		marca: authenticated(async (parent, args, { db: { Marca } }) => {
+			const marca = await Marca.find(args);
+			return marca.map(m => {
+				return m;
+			});
+		}),
+		marcaById: authenticated(async (parent, args, { db: { Marca } }) => {
 			const marca = await Marca.findById(args.id);
 			return marca;
-		},
-		modelo: async (parent, args, { db: { Modelo } }) => {
-			const modelo = await Modelo.findById(args.id);
-			return modelo;
-		}
+		}),
+		modelosByMarca: authenticated(async (parent, { marcaId }, { db: { Marca } }) => {
+			const marca = await Marca.findById(marcaId);
+			return marca.modelos;
+		})
 	},
 	Mutation: {
 		createFrota: authenticated(async (parent, { input }, { db: { Frota } }) => {
@@ -31,11 +47,6 @@ export default {
 			await tmarca.save();
 			return tmarca;
 		}),
-		createModelo: authenticated(async (parent, { modelo }, { db: { Modelo } }) => {
-			const tmodelo = new Modelo({ modelo });
-			await tmodelo.save();
-			return tmodelo;
-		}),
 		updateFrota: authenticated(async (parent, { id, input }, { db: { Frota } }) => {
 			const frota = await Frota.findById(id);
 			await frota.set(input).save();
@@ -45,11 +56,6 @@ export default {
 			const tmarca = await Marca.findById(id);
 			await tmarca.set({ marca }).save();
 			return tmarca;
-		}),
-		updateModelo: authenticated(async (parent, { id, modelo }, { db: { Modelo } }) => {
-			const tmodelo = await Modelo.findById(id);
-			await tmodelo.set({ modelo }).save();
-			return tmodelo;
 		}),
 		deleteFrota: authenticated(async (parent, { id }, { db: { Frota } }) => {
 			const frotaRemoved = await Frota.findByIdAndRemove(id);
@@ -69,11 +75,30 @@ export default {
 
 			return marcaRemoved;
 		}),
-		deleteModelo: authenticated(async (parent, { id }, { db: { Modelo } }) => {
-			const modeloRemoved = await Modelo.findByIdAndRemove(id);
+		createModelo: authenticated(async (parent, { marcaId, modelo }, { db: { Marca } }) => {
+			const marca = await Marca.findById(marcaId);
+
+			//Push returns number of array members
+			const res = marca.modelos.push({ modelo });
+
+			await marca.save();
+
+			return marca.modelos[res - 1];
+		}),
+		updateModelo: authenticated(async (parent, { marcaId, id, modelo }, { db: { Marca } }) => {
+			const marca = await Marca.findById(marcaId);
+			const modeloT = marca.modelos.id(id);
+			modeloT.set({ modelo });
+			await marca.save();
+			return marca.modelos.id(id);
+		}),
+		deleteModelo: authenticated(async (parent, { marcaId, id }, { db: { Marca } }) => {
+			const marca = await Marca.findById(marcaId);
+			const modeloRemoved = await marca.modelos.id(id).remove();
+			await marca.save();
 
 			if (!modeloRemoved) {
-				throw new Error('Error removing person');
+				throw new Error('Error removing modelo');
 			}
 
 			return modeloRemoved;

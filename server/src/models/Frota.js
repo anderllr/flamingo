@@ -1,20 +1,18 @@
 import mongoose from 'mongoose';
 
-const MarcaSchema = new mongoose.Schema(
-	{
-		marca: { type: String, required: true }
-	},
-	{
-		collection: 'marca'
-	}
-)
-
 const ModeloSchema = new mongoose.Schema(
 	{
 		modelo: { type: String, required: true }
+	}
+)
+
+const MarcaSchema = new mongoose.Schema(
+	{
+		marca: { type: String, required: true },
+		modelos: [ModeloSchema]
 	},
 	{
-		collection: 'modelo'
+		collection: 'marca'
 	}
 )
 
@@ -45,5 +43,4 @@ const FrotaSchema = new mongoose.Schema(
 );
 
 export const Marca = mongoose.model('Marca', MarcaSchema);
-export const Modelo = mongoose.model('Modelo', ModeloSchema);
 export const Frota = mongoose.model('Frota', FrotaSchema);

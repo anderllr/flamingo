@@ -2,16 +2,22 @@ import { authenticated } from './auth.resolver';
 
 export default {
     GrupoItem: {
-        itens: async (grupoItem, args, { db }) => {
+        itens: authenticated(async (grupoItem, args, { db }) => {
             return grupoItem.itens;
-        },
+        }),
     },
     Query: {
-        //Remember that for this case we will have only one person ever
-        grupoItem: async (parent, args, { db: { GrupoItem } }) => {
+        grupos: authenticated(async (parent, args, { db: { GrupoItem } }) => {
+            const grupos = await GrupoItem.find(args);
+            return grupos.map(grupo => {
+                grupo._id = grupo._id.toString();
+                return grupo;
+            });
+        }),
+        grupoItem: authenticated(async (parent, args, { db: { GrupoItem } }) => {
             const grupoItem = await GrupoItem.findById(args.id);
             return grupoItem;
-        },
+        }),
     },
     Mutation: {
         createGrupoItem: authenticated(async (parent, { input }, { db: { GrupoItem } }) => {

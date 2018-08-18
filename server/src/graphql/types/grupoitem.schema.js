@@ -2,18 +2,19 @@ const grupoItemTypes = `
 
     type GrupoItem {
         id: ID!
-        grupoitem: String!
+        grupoItem: String!
         imagem: String!
         itens: [ Item! ]!
     }
 
     input GrupoItemInput {
-        grupoitem: String!
+        grupoItem: String!
         imagem: String!
     }
 `;
 
 const grupoItemQueries = `
+    grupos: [GrupoItem]
     grupoItem(id: ID!): GrupoItem
 `;
 
