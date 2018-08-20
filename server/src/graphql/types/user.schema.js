@@ -40,7 +40,8 @@ const userQueries = `
     users: [ User ]
     user(id: ID!): User!
     authUser: User
-    login(userName: String!, password: String!): Token
+    loginweb(userName: String!, password: String!): Token
+    loginapp(userName: String!, password: String!): Token    
 `;
 
 const userMutations = `

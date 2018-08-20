@@ -13,12 +13,11 @@ import FormErrors from '../utils/FormErrors';
 */
 class Login extends Component {
     state = {
-        email: '',
+        userName: '',
         password: '',
         remember: false,
-        formErrors: { email: '', password: '' },
+        formErrors: { password: '' },
         serverErrors: '',
-        emailValid: false,
         passwordValid: false,
         formValid: false
     }
@@ -30,17 +29,12 @@ class Login extends Component {
 
     validateField(fieldName, value) {
         let fieldValidationErrors = this.state.formErrors;
-        let emailValid = this.state.emailValid;
         let passwordValid = this.state.passwordValid;
 
         switch (fieldName) {
-            case 'email':
-                emailValid = value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
-                fieldValidationErrors.email = emailValid ? '' : ' is invalid';
-                break;
             case 'password':
-                passwordValid = value.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);
-                fieldValidationErrors.password = passwordValid ? '' : ' must have at least 8 characters, one uppercase letter and one number';
+                passwordValid = value != '';
+                fieldValidationErrors.password = passwordValid ? '' : ' deve ser informada';
                 break;
             default:
                 break;
@@ -48,13 +42,12 @@ class Login extends Component {
 
         this.setState({
             formErrors: fieldValidationErrors,
-            emailValid: emailValid,
             passwordValid: passwordValid
         }, this.validateForm);
     }
 
     validateForm() {
-        this.setState({ formValid: this.state.emailValid && this.state.passwordValid });
+        this.setState({ formValid: this.state.userName != ''  && this.state.passwordValid });
     }
 
     errorClass(error) {
@@ -98,14 +91,14 @@ class Login extends Component {
                                             </div>
                                             <div className="card-body">
                                                 <div className="form">
-                                                    <div className={`form-group ${this.errorClass(this.state.formErrors.email)}`}>
-                                                        <label>Email</label>
-                                                        <input type="text" className="form-control form-control-lg rounded-0" name="email" required=""
+                                                    <div className={"form-group"}>
+                                                        <label>Nome do Usuário</label>
+                                                        <input type="text" className="form-control form-control-lg rounded-0" name="userName" required=""
                                                             onChange={e => this.onChange(e)}
                                                         />
                                                     </div>
                                                     <div className="form-group">
-                                                        <label>Password</label>
+                                                        <label>Senha</label>
                                                         <input type="password" className="form-control form-control-lg rounded-0" name="password" required="" autoComplete="new-password"
                                                             onChange={e => this.onChange(e)}
                                                         />
@@ -113,7 +106,7 @@ class Login extends Component {
                                                     </div>
                                                     <div>
                                                         <label>
-                                                            <input type="checkbox" value="remember-me" /> Remember me on this computer
+                                                            <input type="checkbox" value="remember-me" /> Lembre-se de mim nesse computador
                                                         </label>
                                                     </div>
                                                     <button className="btn btn-success btn-lg float-right"
@@ -122,7 +115,7 @@ class Login extends Component {
                                                         onClick={() => client.query({
                                                             query: AUTH_LOGIN,
                                                             variables: {
-                                                                email: this.state.email,
+                                                                userName: this.state.userName,
                                                                 password: this.state.password
                                                             }
                                                         })
@@ -135,7 +128,7 @@ class Login extends Component {
                                                             })
 
                                                         }
-                                                    >Login</button>
+                                                    >Acessar</button>
                                                 </div>
 
                                             </div>

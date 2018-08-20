@@ -7,6 +7,7 @@ import cors from 'cors';
 import schema from './src/graphql/schema';
 import { db } from './src/models';
 import { tokenMiddleware } from './src/utils/tokenMiddleware';
+import { verifyAdmin } from './src/utils/firstUser';
 
 const APP_NAME = 'flamingoapp';
 
@@ -26,6 +27,8 @@ const dbRequest = (req, res, next) => {
 	req['context']['db'] = db;
 	next();
 };
+
+verifyAdmin();
 
 app.use(
 	cors({

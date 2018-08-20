@@ -5,6 +5,10 @@ export const GET_USERS = gql`
     users {
       id
       email
+      userName
+      app
+      web
+      name
     }
   }
 `;
@@ -19,8 +23,8 @@ export const AUTH_USER = gql`
 `;
 
 export const AUTH_LOGIN = gql`
-  query login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  query loginweb($userName: String!, $password: String!) {
+    loginweb(userName: $userName, password: $password) {
       token
     }
   }

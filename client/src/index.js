@@ -11,7 +11,7 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import App from './main/App';
 
-const BASE_URL = 'http://192.168.1.106:4000/graphql';
+const BASE_URL = '/flamingoql';
 
 const httpLink = new HttpLink({
     uri: BASE_URL
@@ -43,4 +43,3 @@ ReactDOM.render(
     <ApolloProvider client={client}>
         <App />
     </ApolloProvider>, document.getElementById('root'));
-registerServiceWorker();
