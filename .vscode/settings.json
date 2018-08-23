@@ -1,2 +1,7 @@
 {
+	"editor.formatOnSave": true,
+	"editor.wrappingIndent": "deepIndent",
+	"html.format.indentHandlebars": true,
+	"html.format.indentInnerHtml": true,
+	"prettier.useTabs": true
 }

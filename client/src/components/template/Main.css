@@ -1,4 +1,8 @@
 main > div {
-    background-color: #fff;
-    box-shadow: 0px 0px 15px #000400;
+	background-color: #fff;
+	box-shadow: 0px 0px 15px #000400;
+}
+
+.listgrid {
+	padding-top: 20px;
 }

@@ -66,7 +66,6 @@ class Login extends Component {
             //TODO: Put the name of token in a security place
             await sessionStorage.setItem('access_token', token);
             //On successfull we redirect to admin page
-            console.log('Vai redirecionar: ', token);
             this.props.history.push('/admin');
         }
     }
@@ -120,11 +119,15 @@ class Login extends Component {
                                                             }
                                                         })
                                                             .then(({ data }) => {
-                                                                let { login: { token } } = data;
+                                                                let { loginweb: { token } } = data;
                                                                 this.onLogin(token);
                                                             })
-                                                            .catch(({ graphQLErrors }) => {
-                                                                this.setState({ serverErrors: graphQLErrors[0].message });
+                                                            .catch((error) => {
+                                                                const { graphQLErrors } = error;
+                                                                console.log('Error: ', error);
+                                                                if (graphQLErrors) {
+                                                                    this.setState({ serverErrors: graphQLErrors[0].message });
+                                                                }
                                                             })
 
                                                         }

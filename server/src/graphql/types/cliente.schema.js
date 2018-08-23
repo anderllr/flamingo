@@ -5,9 +5,9 @@ const clienteTypes = `
         name: String!
         email: String!
         cidadeId: String!        
-        fazenda: String
-        endereco: String
-        telefone: String
+        fazenda: String!
+        endereco: String!
+        telefone: String!
         celular: String  
         obs: String
     }
@@ -16,9 +16,9 @@ const clienteTypes = `
         name: String!
         email: String!
         cidadeId: String!        
-        fazenda: String
-        endereco: String
-        telefone: String
+        fazenda: String!
+        endereco: String!
+        telefone: String!
         celular: String  
         obs: String
     }

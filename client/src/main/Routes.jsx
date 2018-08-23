@@ -1,15 +1,18 @@
-import React from 'react';
-import { Switch, Route, Redirect } from 'react-router';
+import React from "react";
+import { Switch, Route, Redirect } from "react-router";
 
-import AdminRoutes from './AdminRoutes';
+import AdminRoutes from "./AdminRoutes";
 
-import { Home, Login, Admin, UserCrud } from '../components/screens';
+import { Login, Admin, User, Clientes } from "../components/screens";
 
-export default props =>
-    <Switch>
-        <Route exact path='/' component={Home} />
-        <Route exact path='/login' component={Login} />
-        <AdminRoutes exact path='/admin' component={Admin} />
-        <AdminRoutes path='/admin/users' component={UserCrud} />
-        <Redirect from='*' to='/' />
-    </Switch>
+//<Route exact path='/' component={Home} /> --retirei por não ter página inicial no caso
+
+export default props => (
+	<Switch>
+		<Route exact path="/login" component={Login} />
+		<AdminRoutes exact path="/admin" component={Admin} />
+		<AdminRoutes path="/admin/users" component={User} />
+		<AdminRoutes path="/admin/clientes" component={Clientes} />
+		<Redirect from="*" to="/admin" />
+	</Switch>
+);
