@@ -317,7 +317,6 @@ class User extends Component {
 						<div className="form-group">
 							<label>Senha</label>
 							<input
-								type="text"
 								className="form-control"
 								name="password"
 								type="password"
@@ -332,7 +331,6 @@ class User extends Component {
 						<div className="form-group">
 							<label>Confirme a Senha</label>
 							<input
-								type="text"
 								className="form-control"
 								name="confirmPassword"
 								type="password"

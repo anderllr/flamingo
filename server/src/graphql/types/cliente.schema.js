@@ -4,6 +4,7 @@ const clienteTypes = `
         id: ID!
         name: String!
         email: String!
+        estadoId: String!
         cidadeId: String!        
         fazenda: String!
         endereco: String!
@@ -15,6 +16,7 @@ const clienteTypes = `
     input ClienteInput {
         name: String!
         email: String!
+        estadoId: String!
         cidadeId: String!        
         fazenda: String!
         endereco: String!

@@ -6,9 +6,8 @@ import { ApolloLink } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import registerServiceWorker from "./registerServiceWorker";
-
 import "./index.css";
+import "react-bootstrap-typeahead/css/Typeahead.css";
 import App from "./main/App";
 
 const BASE_URL = "http://localhost:3002/flamingoql";

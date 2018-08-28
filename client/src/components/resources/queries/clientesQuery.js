@@ -10,6 +10,7 @@ export const GET_CLIENTES = gql`
 			endereco
 			telefone
 			celular
+			estadoId
 			cidadeId
 			obs
 		}
@@ -28,6 +29,7 @@ export const GET_CLIENTE_BY_ID = gql`
 				telefone
 				celular
 				cidadeId
+				estadoId
 				obs
 			}
 		}

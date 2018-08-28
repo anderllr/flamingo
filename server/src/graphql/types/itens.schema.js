@@ -14,6 +14,7 @@ const itensTypes = `
 `;
 
 const itensQueries = `
+    item(grupoItemId: ID!, id: ID!): Item
     itensByGrupo(grupoItemId: ID!): [ Item! ]!
 `;
 

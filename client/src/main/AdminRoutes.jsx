@@ -31,7 +31,6 @@ export default ({ component: Component, ...rest }) => (
 					}
 				/>
 			);
-			return false;
 		}}
 	</Query>
 );

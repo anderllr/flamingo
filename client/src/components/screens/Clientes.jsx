@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
+import axios from "axios";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 import Main from "../template/Main";
 import { GET_CLIENTES } from "../resources/queries/clientesQuery";
@@ -9,7 +11,8 @@ import {
 	DELETE_CLIENTE
 } from "../resources/mutations/clienteMutation";
 
-import { validateFields, renderAlert } from "../utils/funcs";
+import { validateFields, renderAlert, removeAcento } from "../utils/funcs";
+import StateSelect from "../utils/StateSelect";
 
 const headerProps = {
 	icon: "address-book",
@@ -20,13 +23,14 @@ const headerProps = {
 const initialState = {
 	cliente: {
 		id: "",
-		email: "",
 		name: "",
+		email: "",
+		estadoId: "50", //Inicia com o MS por causa da característica da Flamingo
+		cidadeId: "5003702",
 		fazenda: "",
 		endereco: "",
 		telefone: "",
 		celular: "",
-		cidadeId: "",
 		obs: ""
 	},
 	alert: {
@@ -34,11 +38,17 @@ const initialState = {
 		title: "",
 		msg: []
 	},
-	gridColumns: ["30%", "25%", "15%", "15%", "15%"]
+	gridColumns: ["30%", "25%", "15%", "15%", "15%"],
+	municipios: []
 };
 
 class Clientes extends Component {
 	state = { ...initialState };
+
+	componentWillMount = async () => {
+		//Busca as UFs baseadas no estadoId Inicial
+		await this.searchUF(this.state.cliente.estadoId);
+	};
 
 	handleErrors(e, title) {
 		if (e.graphQLErrors) {
@@ -54,18 +64,41 @@ class Clientes extends Component {
 
 	clear = e => {
 		e.preventDefault();
+		if (this.state.cliente.estadoId !== "50")
+			//Padrão MS
+			this.searchUF("50");
 		this.setState({ ...initialState });
 	};
 
 	save = e => {
 		e.preventDefault();
-		const { id } = this.state.cliente;
 
-		let clienteInput = this.state.cliente;
-		delete clienteInput.id;
-		console.log("ClienteInput: ", clienteInput);
+		const {
+			id,
+			name,
+			email,
+			estadoId,
+			cidadeId,
+			fazenda,
+			endereco,
+			telefone,
+			celular,
+			obs
+		} = this.state.cliente;
 
-		//in this case required fields are the same of userInput object
+		let clienteInput = {
+			name,
+			email,
+			estadoId,
+			cidadeId,
+			fazenda,
+			endereco,
+			telefone,
+			celular,
+			obs
+		};
+
+		//in this case required fields are the same of clienteInput object
 		const errors = validateFields(
 			[
 				{ field: "name", name: "Nome" },
@@ -77,6 +110,7 @@ class Clientes extends Component {
 			],
 			clienteInput
 		);
+		//		console.log("Cliente Input: ", clienteInput);
 		if (errors.length > 0) {
 			this.setState({
 				alert: {
@@ -100,10 +134,10 @@ class Clientes extends Component {
 				});
 		} else {
 			this.props
-				.createUser({ variables: { clienteInput } })
+				.createCliente({ variables: { clienteInput } })
 				.then(() => {
 					this.props.data.refetch();
-					this.setState({ user: initialState.cliente });
+					this.setState({ cliente: initialState.cliente });
 				})
 				.catch(e => {
 					this.handleErrors(e, "Adicionar novo cliente!");
@@ -112,7 +146,11 @@ class Clientes extends Component {
 	};
 
 	select(cliente) {
+		if (this.state.cliente.estadoId !== cliente.estadoId) {
+			this.searchUF(cliente.estadoId);
+		}
 		this.setState({ cliente });
+		//		console.log("Cliente: ", this.state.cliente);
 	}
 
 	delete(cliente) {
@@ -121,7 +159,7 @@ class Clientes extends Component {
 			.deleteCliente({ variables: { id } })
 			.then(() => {
 				this.props.data.refetch();
-				this.setState({ user: initialState.cliente });
+				this.setState({ cliente: initialState.cliente });
 			})
 			.catch(e => {
 				this.handleErrors(e, "Excluir cliente!");
@@ -130,14 +168,73 @@ class Clientes extends Component {
 
 	changeField(e) {
 		const cliente = { ...this.state.cliente };
+
 		if (e.target.type === "checkbox") {
 			cliente[e.target.name] = e.target.checked;
 		} else {
-			cliente[e.target.name] = e.target.value;
+			let value =
+				e.target.name === "email"
+					? e.target.value.toLowerCase()
+					: e.target.value.toUpperCase();
+			cliente[e.target.name] = value;
 		}
 
 		this.setState({ cliente, alert: initialState.alert });
 	}
+
+	changeUF(e) {
+		//Quando muda o estado para executar o axios que vai buscar a api com as cidades para o autocomplete
+		const cliente = { ...this.state.cliente };
+		cliente.estadoId = e.target.value;
+
+		if (cliente.estadoId !== "") {
+			this.searchUF(cliente.estadoId);
+		}
+
+		this.setState({ cliente, alert: initialState.alert });
+	}
+
+	searchUF = async uf => {
+		await axios
+			.get(
+				`http://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`
+			)
+			.then(async res => {
+				if (res.data) {
+					const municipios = res.data.map(({ id, nome }) => {
+						return {
+							id: id.toString(),
+							name: removeAcento(nome).toUpperCase()
+						};
+					});
+					await this.setState({ municipios });
+				}
+			});
+	};
+
+	onChangeComplete = e => {
+		if (e) {
+			if (e[0]) {
+				if (e[0].id) {
+					const cliente = { ...this.state.cliente };
+					cliente.cidadeId = e[0].id;
+
+					this.setState({ cliente, alert: initialState.alert });
+				}
+			}
+		}
+	};
+
+	findCity = () => {
+		let city = "";
+		const cityObj = this.state.municipios.find(obj => {
+			return obj.id === this.state.cliente.cidadeId;
+		});
+		if (cityObj) {
+			city = cityObj.name;
+		}
+		return city;
+	};
 
 	renderClientes() {
 		if (this.props.data.loading) {
@@ -207,7 +304,7 @@ class Clientes extends Component {
 							<input
 								type="text"
 								className="form-control"
-								name="userName"
+								name="email"
 								value={this.state.cliente.email}
 								onChange={e => this.changeField(e)}
 								placeholder="E-mail do cliente"
@@ -216,29 +313,29 @@ class Clientes extends Component {
 					</div>
 				</div>
 				<div className="row">
-					<div className="col-12 col-md-1">
+					<div className="col-12 col-md-2">
 						<div className="form-group">
-							<label>Estado</label>
-							<input
-								type="select"
-								className="form-control"
+							<StateSelect
 								name="estadoId"
+								className="form-control"
 								value={this.state.cliente.estadoId}
-								onChange={e => this.changeField(e)}
-								placeholder="UF"
+								onChange={e => this.changeUF(e)}
 							/>
 						</div>
 					</div>
-					<div className="col-12 col-md-5">
+					<div className="col-12 col-md-4">
 						<div className="form-group">
 							<label>Cidade</label>
-							<input
-								type="select"
-								className="form-control"
-								name="cidadeId"
-								value={this.state.cliente.cidadeId}
-								onChange={e => this.changeField(e)}
-								placeholder="Escolha a cidade do cliente"
+							<Typeahead
+								labelKey="name"
+								multiple={false}
+								options={this.state.municipios}
+								key="id"
+								onChange={e => this.onChangeComplete(e)}
+								selected={[
+									{ id: this.state.cliente.cidadeId, name: this.findCity() }
+								]}
+								placeholder="Escolha uma cidade..."
 							/>
 						</div>
 					</div>
@@ -290,7 +387,7 @@ class Clientes extends Component {
 								type="text"
 								className="form-control"
 								name="celular"
-								value={this.state.cliente.telefone}
+								value={this.state.cliente.celular}
 								onChange={e => this.changeField(e)}
 								placeholder="Telefone"
 							/>

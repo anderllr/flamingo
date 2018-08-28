@@ -14,6 +14,9 @@ export default props => (
 			<Link to="/admin/clientes">
 				<i className="fa fa-address-book icon" /> Clientes
 			</Link>
+			<Link to="/admin/itens">
+				<i className="fa fa-compass icon" /> Itens
+			</Link>
 		</nav>
 		<div className="text-center logout">
 			<button
