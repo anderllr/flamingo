@@ -11,6 +11,8 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"apollo-server": "^2.0.5",
+		"apollo-upload-server": "^7.0.0",
 		"bcryptjs": "2.4.3",
 		"body-parser": "^1.18.3",
 		"cors": "2.8.4",
