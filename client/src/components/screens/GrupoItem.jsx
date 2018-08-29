@@ -9,6 +9,8 @@ import {
 	DELETE_GRUPOITEM
 } from "../resources/mutations/grupoItensMutation";
 
+import { UPLOAD_FILE } from "../resources/mutations/uploadMutation";
+
 import { validateFields, renderAlert } from "../utils/funcs";
 
 const headerProps = {
@@ -28,7 +30,8 @@ const initialState = {
 		title: "",
 		msg: []
 	},
-	gridColumns: ["80%", "20%"]
+	gridColumns: ["80%", "20%"],
+	file: null
 };
 
 //TODO
@@ -56,7 +59,7 @@ class GrupoItem extends Component {
 
 	save = e => {
 		e.preventDefault();
-		const { id, grupoItem, imagem } = this.state.grupoItem;
+		let { id, grupoItem, imagem } = this.state.grupoItem;
 
 		let grupoItemInput = {
 			grupoItem,
@@ -86,6 +89,7 @@ class GrupoItem extends Component {
 				.updateGrupoItem({ variables: { id, grupoItemInput } })
 				.then(() => {
 					this.props.data.refetch();
+					this.uploadFile(id);
 				})
 				.catch(e => {
 					this.handleErrors(e, "Atualização de Grupo!");
@@ -93,9 +97,10 @@ class GrupoItem extends Component {
 		} else {
 			this.props
 				.createGrupoItem({ variables: { grupoItemInput } })
-				.then(() => {
+				.then(res => {
+					id = res.data.createGrupoItem.id;
 					this.props.data.refetch();
-					this.setState({ grupoItem: initialState.grupoItem });
+					this.uploadFile(id);
 				})
 				.catch(e => {
 					this.handleErrors(e, "Adicionar novo Grupo!");
@@ -103,6 +108,30 @@ class GrupoItem extends Component {
 		}
 	};
 
+	uploadFile = id => {
+		const file = this.state.file;
+
+		if (file && id !== "") {
+			//verifica que foi carregado um arquivo então salva
+			this.props
+				.uploadFile({ variables: { file, screen: "grupoItem", id } })
+				.then(res => {
+					this.props.data.refetch();
+
+					let grupoItem = { ...this.state.grupoItem };
+
+					grupoItem.imagem = res.data.uploadFile.filename;
+
+					this.setState({ file: null, grupoItem });
+
+					console.log("Imagem: ", res);
+				})
+				.catch(e => {
+					console.log("Error: ", e);
+					this.handleErrors(e, "Upload de arquivo!");
+				});
+		}
+	};
 	select(grupo) {
 		const grupoItem = { ...grupo };
 		this.setState({
@@ -140,6 +169,16 @@ class GrupoItem extends Component {
 
 		this.setState({ grupoItem, alert: initialState.alert });
 	}
+
+	//Files
+	changeFile = e => {
+		const { validity, files } = e.target;
+
+		if (validity.valid) {
+			const file = files[0];
+			this.setState({ file });
+		}
+	};
 
 	renderGrupos() {
 		if (this.props.data.loading) {
@@ -201,10 +240,19 @@ class GrupoItem extends Component {
 								type="text"
 								className="form-control"
 								name="imagem"
+								disabled
 								value={this.state.grupoItem.imagem}
 								onChange={e => this.changeField(e)}
 								placeholder="Selecione uma imagem para o grupo"
 							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-6">
+						<div className="form-group has-danger">
+							<label>Carregar arquivo</label>
+							<input type="file" onChange={e => this.changeFile(e)} />;
 						</div>
 					</div>
 				</div>
@@ -228,7 +276,7 @@ class GrupoItem extends Component {
 							className="btn btn-secondary ml-2"
 							onClick={e => this.clear(e)}
 						>
-							Cancelar
+							Limpar
 						</button>
 					</div>
 				</div>
@@ -269,5 +317,6 @@ export default compose(
 	graphql(GET_GRUPOS),
 	graphql(CREATE_GRUPOITEM, { name: "createGrupoItem" }),
 	graphql(UPDATE_GRUPOITEM, { name: "updateGrupoItem" }),
-	graphql(DELETE_GRUPOITEM, { name: "deleteGrupoItem" })
+	graphql(DELETE_GRUPOITEM, { name: "deleteGrupoItem" }),
+	graphql(UPLOAD_FILE, { name: "uploadFile" })
 )(GrupoItem);

@@ -11,7 +11,6 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"apollo-server": "^2.0.5",
 		"apollo-upload-server": "^7.0.0",
 		"bcryptjs": "2.4.3",
 		"body-parser": "^1.18.3",
@@ -19,11 +18,16 @@
 		"dotenv": "6.0.0",
 		"express": "^4.16.3",
 		"express-graphql": "0.6.12",
+		"fs": "0.0.1-security",
 		"graphql": "^0.13.2",
 		"graphql-tools": "^3.0.5",
 		"jsonwebtoken": "8.3.0",
+		"lowdb": "^1.0.0",
+		"mkdirp": "^0.5.1",
 		"mongoose": "^5.2.1",
-		"prettier": "^1.13.7"
+		"prettier": "^1.13.7",
+		"promises-all": "^1.0.0",
+		"shortid": "^2.2.13"
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",

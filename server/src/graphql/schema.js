@@ -16,20 +16,16 @@ import frotaResolvers from "./resolvers/frota.resolver";
 import clienteResolvers from "./resolvers/cliente.resolver";
 import grupoItemResolvers from "./resolvers/grupoitem.resolver";
 import itensResolvers from "./resolvers/itens.resolver";
-import { GraphQLUpload } from "apollo-upload-server";
+import uploadResolvers from "./resolvers/upload.resolver";
 
-const resolverUp = {
-	Upload: GraphQLUpload
-};
 //using lodash to merge my resolvers
-//const resolvers = merge(commentResolvers, postResolvers, tokenResolvers, userResolvers);
 const resolvers = merge(
 	userResolvers,
 	frotaResolvers,
 	clienteResolvers,
 	grupoItemResolvers,
 	itensResolvers,
-	resolverUp
+	uploadResolvers
 );
 
 const SchemaDefinition = `

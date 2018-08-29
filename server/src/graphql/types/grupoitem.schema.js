@@ -3,13 +3,13 @@ const grupoItemTypes = `
     type GrupoItem {
         id: ID!
         grupoItem: String!
-        imagem: String!
+        imagem: String
         itens: [ Item! ]!
     }
 
     input GrupoItemInput {
         grupoItem: String!
-        imagem: String!
+        imagem: String
     }
 `;
 

@@ -8,6 +8,7 @@
     "apollo-client": "^2.3.5",
     "apollo-link": "1.2.2",
     "apollo-link-http": "^1.5.4",
+    "apollo-upload-client": "^8.1.0",
     "axios": "^0.18.0",
     "bootstrap": "4.1.2",
     "font-awesome": "4.7.0",
