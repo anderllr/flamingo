@@ -54,4 +54,6 @@ app.use(
 	}))
 );
 
+app.use(express.static("./imgs"));
+
 app.listen(PORT, () => console.log(`Server connected at port: ${PORT}`));

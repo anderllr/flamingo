@@ -12,6 +12,7 @@ import {
 import { UPLOAD_FILE } from "../resources/mutations/uploadMutation";
 
 import { validateFields, renderAlert } from "../utils/funcs";
+import ImageUploader from "../utils/ImageUploader";
 
 const headerProps = {
 	icon: "object-group",
@@ -31,14 +32,18 @@ const initialState = {
 		msg: []
 	},
 	gridColumns: ["80%", "20%"],
-	file: null
+	file: null,
+	imageUrl: ""
 };
 
 //TODO
 // Upload da imagem
 
 class GrupoItem extends Component {
-	state = { ...initialState };
+	constructor(props) {
+		super(props);
+		this.state = { ...initialState };
+	}
 
 	handleErrors(e, title) {
 		if (e.graphQLErrors) {
@@ -52,9 +57,9 @@ class GrupoItem extends Component {
 		}
 	}
 
-	clear = e => {
+	clear = async e => {
 		e.preventDefault();
-		this.setState({ ...initialState });
+		await this.setState({ ...initialState });
 	};
 
 	save = e => {
@@ -123,19 +128,21 @@ class GrupoItem extends Component {
 					grupoItem.imagem = res.data.uploadFile.filename;
 
 					this.setState({ file: null, grupoItem });
-
-					console.log("Imagem: ", res);
 				})
 				.catch(e => {
-					console.log("Error: ", e);
 					this.handleErrors(e, "Upload de arquivo!");
 				});
 		}
 	};
 	select(grupo) {
 		const grupoItem = { ...grupo };
+		const imageUrl =
+			grupoItem.imagem !== ""
+				? `http://localhost:3002/${grupoItem.imagem}`
+				: "";
 		this.setState({
-			grupoItem
+			grupoItem,
+			imageUrl
 		});
 	}
 
@@ -170,14 +177,8 @@ class GrupoItem extends Component {
 		this.setState({ grupoItem, alert: initialState.alert });
 	}
 
-	//Files
-	changeFile = e => {
-		const { validity, files } = e.target;
-
-		if (validity.valid) {
-			const file = files[0];
-			this.setState({ file });
-		}
+	onFileChoose = (file, imageUrl) => {
+		this.setState({ file, imageUrl });
 	};
 
 	renderGrupos() {
@@ -220,42 +221,45 @@ class GrupoItem extends Component {
 		return (
 			<div className="form">
 				<div className="row">
-					<div className="col-12 col-md-6">
-						<div className="form-group has-danger">
-							<label>Nome do Grupo</label>
-							<input
-								type="text"
-								className="form-control form-control-danger"
-								name="grupoItem"
-								value={this.state.grupoItem.grupoItem}
-								onChange={e => this.changeField(e)}
-								placeholder="Informe o nome do Grupo"
-							/>
+					<div className="col-9 col-md-8">
+						<div className="col">
+							<div className="col-12 col-md-12">
+								<div className="form-group">
+									<label>Nome do Grupo</label>
+									<input
+										type="text"
+										className="form-control form-control-danger"
+										name="grupoItem"
+										value={this.state.grupoItem.grupoItem}
+										onChange={e => this.changeField(e)}
+										placeholder="Informe o nome do Grupo"
+									/>
+								</div>
+							</div>
+							<div className="col-12 col-md-12">
+								<div className="form-group">
+									<label>Imagem</label>
+									<input
+										type="text"
+										className="form-control"
+										name="imagem"
+										disabled
+										value={this.state.grupoItem.imagem}
+										onChange={e => this.changeField(e)}
+										placeholder="Selecione uma imagem para o grupo"
+									/>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div className="col-12 col-md-6">
-						<div className="form-group">
-							<label>Imagem</label>
-							<input
-								type="text"
-								className="form-control"
-								name="imagem"
-								disabled
-								value={this.state.grupoItem.imagem}
-								onChange={e => this.changeField(e)}
-								placeholder="Selecione uma imagem para o grupo"
-							/>
-						</div>
+					<div className="col-4 col-md-4">
+						<ImageUploader
+							onFileChoose={this.onFileChoose}
+							imageUrl={this.state.imageUrl}
+						/>
 					</div>
 				</div>
-				<div className="row">
-					<div className="col-12 col-md-6">
-						<div className="form-group has-danger">
-							<label>Carregar arquivo</label>
-							<input type="file" onChange={e => this.changeFile(e)} />;
-						</div>
-					</div>
-				</div>
+				<div className="row" />
 				{renderAlert(this.state.alert)}
 				<hr />
 				<div className="row">

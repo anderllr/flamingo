@@ -11,7 +11,7 @@ import "./index.css";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import App from "./main/App";
 
-const BASE_URL = "http://localhost:3002/flamingoql";
+const BASE_URL = "/flamingoql";
 
 /*
 const httpLink = new HttpLink({
