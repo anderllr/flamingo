@@ -1,13 +1,6 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import {
-	View,
-	Text,
-	Keyboard,
-	Animated,
-	Platform,
-	StyleSheet
-} from "react-native";
+import { View, Keyboard, Animated, Platform } from "react-native";
 
 import styles from "./styles";
 

@@ -63,7 +63,11 @@ const LoginStack = createStackNavigator(
 		Login: {
 			screen: Login,
 			navigationOptions: {
-				headerTitle: "Login"
+				headerTitle: "Login",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
 			}
 		}
 	},

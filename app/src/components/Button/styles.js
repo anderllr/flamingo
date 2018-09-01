@@ -5,14 +5,17 @@ const buttonWidth = Dimensions.get("window").width / 2;
 const squareButtonDimension = Dimensions.get("window").width / 4;
 const iconDimension = squareButtonDimension * 0.6;
 const fontIcon = squareButtonDimension * 0.13;
-const BORDER_RADIUS = 20;
+const BORDER_RADIUS = 4;
 
 const styles = EStyleSheet.create({
 	container: {
 		alignItems: "center",
-		backgroundColor: "$primaryGreen",
+		backgroundColor: "$primaryButton",
 		width: "100%",
-		borderRadius: BORDER_RADIUS
+		borderRadius: BORDER_RADIUS,
+		marginTop: 15,
+		height: 50,
+		width: buttonWidth
 	},
 	containerSquare: {
 		alignItems: "center",
@@ -28,8 +31,8 @@ const styles = EStyleSheet.create({
 	},
 	text: {
 		color: "$white",
-		fontSize: fontIcon,
-		fontWeight: "300",
+		fontSize: 10,
+		fontWeight: "100",
 		paddingVertical: 5
 	},
 	icon: {
