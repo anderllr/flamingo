@@ -5,21 +5,17 @@ const imageWidth = Dimensions.get("window").width;
 const imageHeight = Dimensions.get("window").height;
 
 const styles = EStyleSheet.create({
-	imageBackground: {
-		flex: 1,
-		width: imageWidth,
-		height: imageHeight
-	},
 	container: {
 		alignItems: "center",
-		justifyContent: "center"
+		justifyContent: "center",
+		flex: 1
 	},
 	fields: {
 		width: "90%",
 		marginTop: 20
 	},
 	loginButton: {
-		width: "60%"
+		width: "90%"
 	},
 	buttonStyle: {
 		flexDirection: "row",

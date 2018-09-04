@@ -1,30 +1,45 @@
-import { Dimensions } from "react-native";
+import { Platform } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-
-const imageWidth = Dimensions.get("window").width / 2;
+import { scale, verticalScale } from "react-native-size-matters";
 
 export default EStyleSheet.create({
-	$smallContainerSize: imageWidth / 2,
-	$smallImageSize: imageWidth / 4,
-	$largeContainerSize: imageWidth,
-	$largeImageSize: imageWidth / 2,
-	container: {
+	$smallContainerSize: scale(60),
+	$smallImageSize: scale(60),
+	$largeContainerSize: scale(90),
+	$largeImageSize: scale(90),
+	$largeFontSizeT: scale(12),
+	$largeFontSizeA: scale(9),
+	$smallFontSizeT: scale(8),
+	$smallFontSizeA: scale(5),
+	containerText: {
 		alignItems: "center"
 	},
 	containerImage: {
 		alignItems: "center",
 		justifyContent: "center",
 		width: "$largeContainerSize",
-		height: "$largeContainerSize"
+		height: "$largeContainerSize",
+		marginTop: 0,
+		marginBottom: scale(10)
 	},
 	logo: {
-		width: "$largeImageSize"
+		width: "$largeImageSize",
+		marginBottom: 0
 	},
 	text: {
-		color: "$white",
-		fontSize: 28,
+		marginTop: 0,
+		color: "$darkGreen",
 		letterSpacing: -0.5,
-		marginTop: 15,
+		fontFamily: Platform.OS === "ios" ? "Bangla Sangam MN" : "Roboto"
+	},
+	textTitle: {
+		fontSize: "$largeFontSizeT",
+		marginTop: verticalScale(1),
 		fontWeight: "600"
+	},
+	textApp: {
+		top: 0,
+		fontSize: "$largeFontSizeT",
+		fontWeight: "300"
 	}
 });

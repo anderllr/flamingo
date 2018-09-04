@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { scale } from "react-native-size-matters";
 
 import { View, TextInput, Text } from "react-native";
 
@@ -13,8 +14,9 @@ const InputWithTitle = props => {
 
 	if (size) {
 		//Calc a width proportional
-		const calcWidth = containerStyle[0] * (props.size / 100);
-		containerStyle.push({ width: calcWidth });
+		//		const calcWidth = containerStyle[0] * (props.size / 100);
+		//		containerStyle.push({ width: calcWidth });
+		containerStyle.push({ width: scale(props.size) });
 	}
 
 	if (!editable) {

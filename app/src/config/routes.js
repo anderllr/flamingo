@@ -2,6 +2,7 @@ import { createStackNavigator } from "react-navigation";
 import { StatusBar } from "react-native";
 
 import Login from "../screens/Login";
+import Vistoria from "../screens/Vistoria";
 //import Home from '../screens/Home';
 //import CurrencyList from '../screens/CurrencyList';
 //import Options from '../screens/Options';
@@ -76,15 +77,38 @@ const LoginStack = createStackNavigator(
 	}
 );
 
-export default createStackNavigator(
+const HomeStack = createStackNavigator(
 	{
-		Home: {
-			screen: LoginStack
+		Vistoria: {
+			screen: Vistoria,
+			navigationOptions: {
+				headerTitle: "Vistoria"
+			}
 		}
 	},
 	{
-		mode: "modal",
-		cardStyle: { paddingTop: StatusBar.currentHeight },
-		headerMode: "none"
+		headerMode: "screen"
 	}
 );
+
+export const createRootNavigator = (signedIn = false) => {
+	return createStackNavigator(
+		{
+			Login: { screen: LoginStack },
+			Home: { screen: HomeStack }
+		},
+		{
+			mode: "modal",
+			initialRouteName: signedIn ? "Home" : "Login",
+			cardStyle: { paddingTop: StatusBar.currentHeight },
+			headerMode: "none",
+			navigationOptions: {
+				gesturesEnabled: false,
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
+			}
+		}
+	);
+};

@@ -9,7 +9,7 @@ export default (state = initialState, action) => {
 		case CHANGE_TOKEN:
 			return {
 				...state,
-				token: action.token
+				token: action.token ? action.token : initialState.token
 			};
 		default:
 			return state;

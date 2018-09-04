@@ -849,6 +849,12 @@ apollo-client@^2.4.1:
   optionalDependencies:
     "@types/async" "2.0.49"
 
+apollo-link-context@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/apollo-link-context/-/apollo-link-context-1.0.8.tgz#c967a56ac6ed32add748937735bcb57c5cc64c95"
+  dependencies:
+    apollo-link "^1.2.2"
+
 apollo-link-dedup@^1.0.0:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/apollo-link-dedup/-/apollo-link-dedup-1.0.9.tgz#3c4e4af88ef027cbddfdb857c043fd0574051dad"
@@ -5844,6 +5850,10 @@ react-native-scripts@1.14.0:
     qrcode-terminal "^0.11.0"
     rimraf "^2.6.1"
     xdl "48.1.4"
+
+react-native-size-matters@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-size-matters/-/react-native-size-matters-0.1.3.tgz#1fe69603d04befe036b4fb9c4f57b9dafcbe59a6"
 
 react-native-svg-web@^1.0.1:
   version "1.0.1"
