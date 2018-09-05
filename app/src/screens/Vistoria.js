@@ -1,32 +1,65 @@
-import React from "react";
+import React, { Component } from "react";
 import { View, Text, Button } from "react-native";
 import { connect } from "react-redux";
 import { changeToken } from "../config/actions/login";
-import { graphql } from "react-apollo";
-import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
-import { compose } from "react-apollo";
+import { graphql, renderToStringWithData } from "react-apollo";
+//import { compose } from "react-apollo";
 
-const Vistoria = props => (
-	<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-		<Text>Logado página principal</Text>
-		<Button
-			onPress={async () => {
-				console.log("Props: ", props);
-			}}
-			title="Props"
-			style={{ marginBottom: "15" }}
-			color="#364846"
-		/>
-		<Button
-			onPress={async () => {
-				await props.changeToken(null);
-				await props.screenProps.changeLogin(false);
-			}}
-			title="Logout"
-			color="#00665a"
-		/>
-	</View>
-);
+import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+import { Container } from "../components/Container";
+import { RoundButton } from "../components/Button";
+import styles from "./styles";
+
+import { ListFrotaSaida } from "./queries";
+
+class Vistoria extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			active: "saida"
+		};
+	}
+
+	render() {
+		return (
+			<Container backgroundColor={"#fff"}>
+				<View style={styles.asideMain}>
+					<RoundButton
+						text="SAÍDA"
+						width={100}
+						height={35}
+						fontSize={8}
+						icon="exit"
+						onPress={() => this.setState({ active: "saida" })}
+						active={this.state.active === "saida"}
+					/>
+					<RoundButton
+						text="DEVOLUÇÃO"
+						width={100}
+						height={35}
+						fontSize={8}
+						icon="return-left"
+						onPress={() => this.setState({ active: "devolucao" })}
+						active={this.state.active === "devolucao"}
+					/>
+					<RoundButton
+						text="CONSULTAS"
+						width={100}
+						height={35}
+						fontSize={8}
+						icon="search"
+						onPress={() => this.setState({ active: "consultas" })}
+						active={this.state.active === "consultas"}
+					/>
+				</View>
+				<View style={styles.backgroundMain}>
+					<Text>Lista de itens</Text>
+					<ListFrotaSaida />
+				</View>
+			</Container>
+		);
+	}
+}
 
 const mapStateToProps = state => ({
 	token: state.reducerLogin.token

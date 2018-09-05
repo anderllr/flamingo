@@ -37,8 +37,8 @@ export default class ImageUploader extends Component {
 		this.onFileChange(e, e.dataTransfer.files[0]);
 	};
 
-	onFileChange = (e, file) => {
-		var file = file || e.target.files[0],
+	onFileChange = (e, filep) => {
+		var file = filep || e.target.files[0],
 			pattern = /image-*/,
 			reader = new FileReader();
 

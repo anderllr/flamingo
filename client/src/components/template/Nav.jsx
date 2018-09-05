@@ -17,6 +17,9 @@ export default props => (
 			<Link to="/admin/itens">
 				<i className="fa fa-compass icon" /> Itens
 			</Link>
+			<Link to="/admin/frota">
+				<i className="fa fa-truck icon" /> Frota
+			</Link>
 		</nav>
 		<div className="text-center logout">
 			<button

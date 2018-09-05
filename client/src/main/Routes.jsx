@@ -3,7 +3,14 @@ import { Switch, Route, Redirect } from "react-router";
 
 import AdminRoutes from "./AdminRoutes";
 
-import { Login, Admin, User, Clientes, Itens } from "../components/screens";
+import {
+	Login,
+	Admin,
+	User,
+	Clientes,
+	Itens,
+	Frota
+} from "../components/screens";
 
 //<Route exact path='/' component={Home} /> --retirei por não ter página inicial no caso
 
@@ -14,6 +21,7 @@ export default props => (
 		<AdminRoutes path="/admin/users" component={User} />
 		<AdminRoutes path="/admin/clientes" component={Clientes} />
 		<AdminRoutes path="/admin/itens" component={Itens} />
+		<AdminRoutes path="/admin/frota" component={Frota} />
 		<Redirect from="*" to="/admin" />
 	</Switch>
 );

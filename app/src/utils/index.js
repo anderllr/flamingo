@@ -1,12 +1,12 @@
 import store from "../config/store";
 
-export const getToken = async () => {
-	const {
-		reducerLogin: { token }
-	} = store.getState();
-	//	console.log("Token: ", token);
-	return token;
-};
+export const getToken = () =>
+	new Promise((resolve, reject) => {
+		const {
+			reducerLogin: { token }
+		} = store.getState();
+		resolve(token);
+	});
 
 /*
 import { AsyncStorage } from "react-native";

@@ -13,7 +13,7 @@ import { setContext } from "apollo-link-context";
 import { createRootNavigator } from "./config/routes";
 import { AlertProvider } from "./components/Alert";
 import store from "./config/store";
-import { getToken, signIn, signOut } from "./utils";
+import { getToken } from "./utils";
 
 EStyleSheet.build({
 	$primaryGreen: "#00665a",
@@ -28,7 +28,9 @@ EStyleSheet.build({
 	$inputText: "#4b5661",
 	$darkText: "#364846",
 	$listText: "#60614b",
-	$lightGray: "#ddd"
+	$lightGray: "#ddd",
+	$asideColor: "#f4f6f6",
+	$inactiveButton: "#5b6969"
 });
 
 const BASE_URL = "http://192.168.1.109:3002/flamingoql";
@@ -38,7 +40,6 @@ const cache = new InMemoryCache();
 
 const middlewareAuth = setContext(async (req, { headers }) => {
 	const token = await getToken();
-	console.log("Token auth: ", token);
 	return {
 		...headers,
 		headers: {
@@ -57,13 +58,12 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			authenticated: false
+			authenticated: false //TODO change here to false to avoid problems
 		};
 	}
 
 	handleChange = (authenticated, token) => {
 		this.setState({ authenticated });
-		signIn(token);
 	};
 
 	render() {

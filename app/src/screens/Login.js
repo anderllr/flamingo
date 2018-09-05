@@ -63,6 +63,7 @@ class Login extends Component {
 							<RoundButton
 								text="ACESSAR"
 								size={200}
+								color="#c39f6b"
 								onPress={() =>
 									client
 										.query({

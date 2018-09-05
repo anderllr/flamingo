@@ -82,7 +82,11 @@ const HomeStack = createStackNavigator(
 		Vistoria: {
 			screen: Vistoria,
 			navigationOptions: {
-				headerTitle: "Vistoria"
+				headerTitle: "Vistoria",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
 			}
 		}
 	},
@@ -100,14 +104,9 @@ export const createRootNavigator = (signedIn = false) => {
 		{
 			mode: "modal",
 			initialRouteName: signedIn ? "Home" : "Login",
-			cardStyle: { paddingTop: StatusBar.currentHeight },
 			headerMode: "none",
 			navigationOptions: {
-				gesturesEnabled: false,
-				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				gesturesEnabled: false
 			}
 		}
 	);

@@ -1,5 +1,6 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { Dimensions } from "react-native";
+import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 const imageWidth = Dimensions.get("window").width;
 const imageHeight = Dimensions.get("window").height;
@@ -12,7 +13,7 @@ const styles = EStyleSheet.create({
 	},
 	fields: {
 		width: "90%",
-		marginTop: 20
+		marginTop: verticalScale(20)
 	},
 	loginButton: {
 		width: "90%"
@@ -20,11 +21,21 @@ const styles = EStyleSheet.create({
 	buttonStyle: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		paddingHorizontal: 10
+		paddingHorizontal: moderateScale(10)
 	},
 	lineForm: {
 		flex: 1,
 		flexDirection: "row"
+	},
+	asideMain: {
+		flex: 2,
+		alignItems: "center",
+		justifyContent: "flex-start",
+		backgroundColor: "#dbdddd", //TODO -> $asideColor
+		paddingTop: moderateScale(40)
+	},
+	backgroundMain: {
+		flex: 6
 	}
 });
 
