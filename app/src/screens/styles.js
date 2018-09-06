@@ -31,11 +31,13 @@ const styles = EStyleSheet.create({
 		flex: 2,
 		alignItems: "center",
 		justifyContent: "flex-start",
-		backgroundColor: "#dbdddd", //TODO -> $asideColor
+		backgroundColor: "$asideColor", //TODO -> $asideColor
 		paddingTop: moderateScale(40)
 	},
 	backgroundMain: {
-		flex: 6
+		flex: 6,
+		backgroundColor: "$white",
+		padding: moderateScale(15)
 	}
 });
 

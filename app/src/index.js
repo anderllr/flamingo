@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { View, Text } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { Provider } from "react-redux";
 import { ApolloClient } from "apollo-client";
@@ -8,6 +9,7 @@ import { createUploadLink } from "apollo-upload-client";
 import { ApolloLink } from "apollo-link";
 import { ApolloProvider } from "react-apollo";
 import { setContext } from "apollo-link-context";
+import { Font } from "expo";
 //import { withClientState } from "apollo-link-state";
 
 import { createRootNavigator } from "./config/routes";
@@ -30,7 +32,8 @@ EStyleSheet.build({
 	$listText: "#60614b",
 	$lightGray: "#ddd",
 	$asideColor: "#f4f6f6",
-	$inactiveButton: "#5b6969"
+	$inactiveButton: "#5b6969",
+	$shadow: "#d2d2d2"
 });
 
 const BASE_URL = "http://192.168.1.109:3002/flamingoql";
@@ -39,7 +42,10 @@ const uploadLink = createUploadLink({ uri: BASE_URL });
 const cache = new InMemoryCache();
 
 const middlewareAuth = setContext(async (req, { headers }) => {
-	const token = await getToken();
+	//TODO Change temporaly token that puted to
+	//	const token = await getToken();
+	const token =
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1MzYxNTEyOTZ9.OIEK7pB92rsl0l0YpQ1vn_pD9ZZ0zghWv2-C3v2nkas";
 	return {
 		...headers,
 		headers: {
@@ -58,22 +64,42 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			authenticated: false //TODO change here to false to avoid problems
+			authenticated: true, //TODO change here to false to avoid problems
+			fontLoaded: false
 		};
+	}
+
+	async componentDidMount() {
+		await Font.loadAsync({
+			"lato-bold": require("./assets/fonts/Lato-Bold.ttf")
+		});
+		this.setState({ fontLoaded: true });
 	}
 
 	handleChange = (authenticated, token) => {
 		this.setState({ authenticated });
 	};
 
-	render() {
+	renderLoading() {
+		return (
+			<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+				<Text>Loading...</Text>
+			</View>
+		);
+	}
+
+	renderScreen() {
 		const Screen = createRootNavigator(this.state.authenticated);
 
+		return <Screen screenProps={{ changeLogin: this.handleChange }} />;
+	}
+
+	render() {
 		return (
 			<Provider store={store}>
 				<ApolloProvider client={client}>
 					<AlertProvider>
-						<Screen screenProps={{ changeLogin: this.handleChange }} />
+						{this.state.fontLoaded ? this.renderScreen() : this.renderLoading()}
 					</AlertProvider>
 				</ApolloProvider>
 			</Provider>

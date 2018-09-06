@@ -7,7 +7,7 @@ import { View, TextInput, Text } from "react-native";
 import styles from "./styles";
 
 const InputWithTitle = props => {
-	const { title, editable = true, size, keyboardType } = props;
+	const { title, editable = true, size, keyboardType, style = null } = props;
 
 	const containerStyle = [styles.sizeContainer];
 	const inputContainer = [styles.inputContainer];
@@ -17,6 +17,10 @@ const InputWithTitle = props => {
 		//		const calcWidth = containerStyle[0] * (props.size / 100);
 		//		containerStyle.push({ width: calcWidth });
 		containerStyle.push({ width: scale(props.size) });
+	}
+
+	if (style) {
+		containerStyle.push(style);
 	}
 
 	if (!editable) {
@@ -43,7 +47,8 @@ InputWithTitle.propTypes = {
 	title: PropTypes.string,
 	editable: PropTypes.bool,
 	size: PropTypes.number,
-	keyboardType: PropTypes.string
+	keyboardType: PropTypes.string,
+	style: PropTypes.object
 };
 
 export default InputWithTitle;

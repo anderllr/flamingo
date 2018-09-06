@@ -1,3 +1,3 @@
-import ListFrotaSaida from "./ListFrotaSaida";
+import ListFrota from "./ListFrota";
 
-export { ListFrotaSaida };
+export { ListFrota };

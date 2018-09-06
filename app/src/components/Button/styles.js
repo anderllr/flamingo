@@ -12,7 +12,7 @@ const styles = EStyleSheet.create({
 	container: {
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: "$primaryGreen",
+		backgroundColor: "$intenalButton",
 		width: "100%",
 		borderRadius: BORDER_RADIUS,
 		margin: verticalScale(9),
@@ -39,7 +39,9 @@ const styles = EStyleSheet.create({
 	text: {
 		color: "$white",
 		fontSize: scale(10),
-		fontWeight: "100"
+		fontWeight: "500",
+		fontFamily: "lato-bold",
+		letterSpacing: 0.35
 	},
 	icon: {
 		backgroundColor: "transparent",
@@ -54,7 +56,8 @@ const styles = EStyleSheet.create({
 		borderWidth: moderateScale(1)
 	},
 	inactiveText: {
-		color: "$inactiveButton"
+		color: "$inactiveButton",
+		fontWeight: "400"
 	}
 });
 
