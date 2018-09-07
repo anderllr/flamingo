@@ -65,6 +65,21 @@ const styles = EStyleSheet.create({
 		fontFamily: "lato-bold",
 		marginBottom: verticalScale(10),
 		color: "$primaryFont"
+	},
+	labelText: {
+		color: "$titleText",
+		fontSize: scale(6),
+		fontWeight: "300",
+		fontFamily: "lato-bold",
+		letterSpacing: 0.35
+	},
+	slider: {
+		marginTop: 0,
+		width: scale(110)
+	},
+	fuelMarker: {
+		flexDirection: "column",
+		alignItems: "center"
 	}
 });
 

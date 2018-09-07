@@ -101,6 +101,7 @@ const HomeStack = createStackNavigator(
 		}
 	},
 	{
+		initialRouteName: "Saida",
 		headerMode: "screen"
 	}
 );

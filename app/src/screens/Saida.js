@@ -1,10 +1,14 @@
 import React, { Component } from "react";
-import { View, Text, Slider } from "react-native";
+import { View, Text, Slider, SliderIOS, Platform } from "react-native";
 import { graphql } from "react-apollo";
 import EStyleSheet from "react-native-extended-stylesheet";
 
+import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
+import { Dropdown } from "../components/Dropdown";
+import { FuelMarker } from "../components/FuelMarker";
 import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 
@@ -42,6 +46,12 @@ class Saida extends Component {
 		return (
 			<View>
 				<Text style={styles.titleText}>Dados da Locação</Text>
+				<Dropdown
+					data={companies}
+					title="Cliente"
+					value={this.state.cliente}
+					onChange={this.props.onChangeEmpresa}
+				/>
 				<InputWithTitle
 					title="Cliente"
 					size={116}
@@ -122,6 +132,35 @@ class Saida extends Component {
 						value={this.state.hrMunck}
 					/>
 				</View>
+				<Text style={styles.labelText}>Combustível</Text>
+				<View style={styles.fuelMarker}>
+					<FuelMarker fuel={this.state.fuel} />
+					{Platform === "ios" ? (
+						<SliderIOS
+							style={styles.slider}
+							step={10}
+							minimumTrackTintColor={EStyleSheet.value("$primaryButton")}
+							maximumTrackTintColor={EStyleSheet.value("$lyghtGray")}
+							minimumValue={0}
+							maximumValue={180}
+							thumbTintColor={EStyleSheet.value("$primaryButton")}
+							value={this.state.fuel}
+							onValueChange={val => this.setState({ fuel: val })}
+						/>
+					) : (
+						<Slider
+							style={styles.slider}
+							minimumTrackTintColor={EStyleSheet.value("$primaryButton")}
+							maximumTrackTintColor={EStyleSheet.value("$lightGray")}
+							step={10}
+							minimumValue={0}
+							thumbTintColor={EStyleSheet.value("$primaryButton")}
+							maximumValue={180}
+							value={this.state.fuel}
+							onValueChange={val => this.setState({ fuel: val })}
+						/>
+					)}
+				</View>
 			</View>
 		);
 	}
@@ -129,55 +168,10 @@ class Saida extends Component {
 		return (
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.asideInner}>{this.renderDados()}</View>
-				<View style={styles.backgroundInner}>
-					<Text style={styles.titleText}>{this.state.fuel}</Text>
-					<Slider
-						style={{ width: 300 }}
-						step={10}
-						minimumValue={0}
-						maximumValue={100}
-						value={this.state.fuel}
-						onValueChange={val => this.setState({ fuel: val })}
-						onSlidingComplete={val => console.log("Val: ", val)}
-					/>
-					<View
-						style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-					>
-						<View
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								transform: [{ rotate: `${this.state.fuel * 1.8}deg` }]
-							}}
-						>
-							<View
-								style={{
-									height: 3,
-									width: 100,
-									backgroundColor: "red"
-								}}
-							/>
-							<View
-								style={{
-									height: 20,
-									width: 20,
-									borderRadius: 20 / 2,
-									backgroundColor: "black"
-								}}
-							/>
-							<View
-								style={{
-									height: 3,
-									width: 100,
-									backgroundColor: "transparent"
-								}}
-							/>
-						</View>
-					</View>
-				</View>
+				<View style={styles.backgroundInner} />
 			</Container>
 		);
 	}
 }
 
-export default Saida;
+export default graphql(GET_CLIENTES)(Saida);
