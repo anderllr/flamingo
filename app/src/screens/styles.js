@@ -1,9 +1,8 @@
 import EStyleSheet from "react-native-extended-stylesheet";
-import { Dimensions } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import { Platform } from "react-native";
 
-const imageWidth = Dimensions.get("window").width;
-const imageHeight = Dimensions.get("window").height;
+const BORDER_RADIUS = scale(5);
 
 const styles = EStyleSheet.create({
 	container: {
@@ -38,6 +37,34 @@ const styles = EStyleSheet.create({
 		flex: 6,
 		backgroundColor: "$white",
 		padding: moderateScale(15)
+	},
+	asideInner: {
+		flex: 2,
+		alignItems: "flex-start",
+		justifyContent: "flex-start",
+		backgroundColor: "$white",
+		padding: moderateScale(10),
+		marginTop: verticalScale(10),
+		marginLeft: scale(10),
+		marginBottom: scale(3),
+		borderRadius: BORDER_RADIUS
+	},
+	backgroundInner: {
+		flex: 5,
+		backgroundColor: "$white",
+		padding: moderateScale(10),
+		marginTop: verticalScale(10),
+		marginLeft: scale(10),
+		marginBottom: scale(3),
+		marginRight: scale(10),
+		borderRadius: BORDER_RADIUS
+	},
+	titleText: {
+		fontSize: scale(9),
+		fontWeight: "500",
+		fontFamily: "lato-bold",
+		marginBottom: verticalScale(10),
+		color: "$primaryFont"
 	}
 });
 

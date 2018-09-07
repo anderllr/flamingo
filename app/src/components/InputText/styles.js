@@ -2,13 +2,14 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import { StyleSheet, Dimensions } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
-const INPUT_HEIGHT = verticalScale(30);
+const INPUT_HEIGHT = verticalScale(32);
 const BORDER_RADIUS = scale(10);
 
 const styles = EStyleSheet.create({
 	sizeContainer: {
 		width: "100%",
-		marginRight: scale(5)
+		marginRight: scale(4),
+		marginBottom: verticalScale(4)
 	},
 	container: {
 		backgroundColor: "$white",
@@ -39,7 +40,7 @@ const styles = EStyleSheet.create({
 		height: INPUT_HEIGHT,
 		flex: 1,
 		fontSize: scale(9),
-		paddingHorizontal: moderateScale(4),
+		paddingHorizontal: moderateScale(2),
 		color: "$inputText"
 	},
 	border: {
@@ -53,7 +54,7 @@ const styles = EStyleSheet.create({
 		borderRadius: scale(4),
 		justifyContent: "center",
 		alignItems: "flex-start",
-		marginTop: verticalScale(5),
+		marginTop: verticalScale(4),
 		borderColor: "$border",
 		borderWidth: scale(1),
 		width: "100%",
@@ -61,18 +62,19 @@ const styles = EStyleSheet.create({
 	},
 	inputText: {
 		fontSize: scale(8),
-		paddingLeft: moderateScale(10),
+		paddingHorizontal: moderateScale(2),
 		justifyContent: "center",
 		fontWeight: "400",
 		color: "$darkText",
-		backgroundColor: "$white",
+		backgroundColor: "transparent",
 		width: "100%",
 		fontFamily: "lato-bold",
-		letterSpacing: 0.35
+		letterSpacing: 0.35,
+		fontSize: scale(6)
 	},
 	titleText: {
 		color: "$titleText",
-		fontSize: scale(8),
+		fontSize: scale(6),
 		fontWeight: "300",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35

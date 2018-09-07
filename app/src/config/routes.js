@@ -1,8 +1,8 @@
 import { createStackNavigator } from "react-navigation";
 import { StatusBar } from "react-native";
 
-import Login from "../screens/Login";
-import Vistoria from "../screens/Vistoria";
+import { Login, Saida, Vistoria } from "../screens";
+
 //import Home from '../screens/Home';
 //import CurrencyList from '../screens/CurrencyList';
 //import Options from '../screens/Options';
@@ -83,6 +83,16 @@ const HomeStack = createStackNavigator(
 			screen: Vistoria,
 			navigationOptions: {
 				headerTitle: "Vistoria",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
+			}
+		},
+		Saida: {
+			screen: Saida,
+			navigationOptions: {
+				headerTitle: "Saida",
 				headerTintColor: "white",
 				headerStyle: {
 					backgroundColor: "#00665a"

@@ -1,11 +1,6 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
-import { connect } from "react-redux";
-import { changeToken } from "../config/actions/login";
-import { graphql, renderToStringWithData } from "react-apollo";
-//import { compose } from "react-apollo";
+import { View } from "react-native";
 
-import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
 import { InputWithTitle } from "../components/InputText";
@@ -37,6 +32,9 @@ class Vistoria extends Component {
 	onHandlePress = item => {
 		//TODO Finish handle to other pages
 		console.log(`Clicou props ${this.state.active}`);
+		this.props.navigation.navigate("Saida", {
+			frota: item
+		});
 	};
 
 	renderSaida() {
@@ -51,15 +49,16 @@ class Vistoria extends Component {
 			>
 				<InputWithTitle
 					title="Número"
-					editable={true}
 					size={40}
+					height={30}
+					keyboardType="numeric"
 					onChangeText={value => this.handleInputChange("nrFrota", value)}
 					value={this.state.nrFrota}
 				/>
 				<InputWithTitle
 					title="Nome da Frota"
-					editable={true}
 					size={90}
+					height={30}
 					onChangeText={value => this.handleInputChange("name", value)}
 					value={this.state.name}
 				/>
@@ -79,21 +78,18 @@ class Vistoria extends Component {
 			>
 				<InputWithTitle
 					title="Número da Frota"
-					editable={true}
 					size={70}
 					onChangeText={value => this.handleInputChange("nrFrota", value)}
 					value={this.state.nrFrota}
 				/>
 				<InputWithTitle
 					title="Nome da Frota"
-					editable={true}
 					size={120}
 					onChangeText={value => this.handleInputChange("name", value)}
 					value={this.state.name}
 				/>
 				<InputWithTitle
 					title="Cliente"
-					editable={true}
 					size={120}
 					onChangeText={value => this.handleInputChange("cliente", value)}
 					value={this.state.cliente}
@@ -115,21 +111,18 @@ class Vistoria extends Component {
 				>
 					<InputWithTitle
 						title="Número da Frota"
-						editable={true}
 						size={70}
 						onChangeText={value => this.handleInputChange("nrFrota", value)}
 						value={this.state.nrFrota}
 					/>
 					<InputWithTitle
 						title="Nome da Frota"
-						editable={true}
 						size={120}
 						onChangeText={value => this.handleInputChange("name", value)}
 						value={this.state.name}
 					/>
 					<InputWithTitle
 						title="Cliente"
-						editable={true}
 						size={120}
 						onChangeText={value => this.handleInputChange("cliente", value)}
 						value={this.state.cliente}
@@ -146,21 +139,18 @@ class Vistoria extends Component {
 				>
 					<InputWithTitle
 						title="Data de"
-						editable={true}
 						size={80}
 						onChangeText={value => this.handleInputChange("dtInicio", value)}
 						value={this.state.dtInicio}
 					/>
 					<InputWithTitle
 						title="Até"
-						editable={true}
 						size={80}
 						onChangeText={value => this.handleInputChange("dtFim", value)}
 						value={this.state.dtFim}
 					/>
 					<InputWithTitle
 						title="Status"
-						editable={true}
 						size={80}
 						onChangeText={value => this.handleInputChange("status", value)}
 						value={this.state.status}
@@ -225,7 +215,7 @@ class Vistoria extends Component {
 		);
 	}
 }
-
+/*
 const mapStateToProps = state => ({
 	token: state.reducerLogin.token
 });
@@ -237,8 +227,11 @@ export default connect(
 	{ changeToken }
 )(WithGraphql);
 
-/*
+
 export default compose(
 	connect(mapStateToProps, {changeToken}),
 	graphql(GET_CLIENTES),
-  )(RepositoryList);  */
+  )(RepositoryList); 
+*/
+
+export default Vistoria;
