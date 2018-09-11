@@ -8,7 +8,11 @@ import { apolloUploadExpress } from "apollo-upload-server";
 import schema from "./src/graphql/schema";
 import { db } from "./src/models";
 import { tokenMiddleware } from "./src/utils/tokenMiddleware";
-import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
+import {
+	verifyAdmin,
+	verifyFrota,
+	verifyFrotaItens
+} from "./src/utils/firstData";
 
 const APP_NAME = "flamingoapp";
 

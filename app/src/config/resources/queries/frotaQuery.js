@@ -8,6 +8,7 @@ export const GET_FROTA = gql`
 			name
 			ano
 			chassi
+			caminhao
 		}
 	}
 `;
@@ -21,6 +22,7 @@ export const GET_FROTA_BY_ID = gql`
 				name
 				ano
 				chassi
+				caminhao
 			}
 		}
 	}
@@ -36,6 +38,19 @@ export const GET_FROTA_BY_NUMBER = gql`
 				ano
 				chassi
 			}
+		}
+	}
+`;
+
+export const GET_CAMINHAO = gql`
+	query {
+		frotaCaminhao {
+			id
+			nrFrota
+			name
+			ano
+			chassi
+			caminhao
 		}
 	}
 `;

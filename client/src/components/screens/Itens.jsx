@@ -176,10 +176,6 @@ class Itens extends Component {
 
 	openModalGroup = e => {
 		e.preventDefault();
-		this.showModal();
-	};
-
-	showModal = () => {
 		this.setState({ show: true });
 	};
 

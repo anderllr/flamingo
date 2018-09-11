@@ -17,7 +17,13 @@ export default {
 				const frota = await Frota.find({ nrFrota });
 				return frota[0];
 			}
-		)
+		),
+		frotaCaminhao: authenticated(async (parent, args, { db: { Frota } }) => {
+			const frota = await Frota.find({ caminhao: true });
+			return frota.map(f => {
+				return f;
+			});
+		})
 	},
 	Mutation: {
 		createFrota: authenticated(async (parent, { input }, { db: { Frota } }) => {

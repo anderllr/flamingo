@@ -36,6 +36,10 @@ export const GET_GRUPOS = gql`
 			id
 			grupoItem
 			imagem
+			itens {
+				id
+				item
+			}
 		}
 	}
 `;

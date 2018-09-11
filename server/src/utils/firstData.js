@@ -1,7 +1,7 @@
 import { db } from "../models";
 import { ADMIN_PASSWORD, ADMIN_EMAIL } from "./utils";
 
-const { User, Frota } = db;
+const { User, Frota, GrupoItem } = db;
 import dbFrota from "./dbFrota";
 
 const adminUser = {
@@ -38,3 +38,12 @@ export const verifyFrota = async () => {
 		});
 	}
 };
+/*
+const existFrotaItens = async () => {
+	const result = await Frota.aggregate([
+		{ $project: { totalGrupos: { $size: "$grupos" } } },
+		{ $group: { _id: null, count: { $sum: "$totalGrupos" } } }
+	]);
+	return result[0].count > 0;
+};
+*/

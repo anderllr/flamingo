@@ -1,9 +1,12 @@
 import React, { Component } from "react";
-import { View, Text, Slider, SliderIOS, Platform } from "react-native";
-import { graphql } from "react-apollo";
+import { View, Text, Slider, TouchableOpacity, Platform } from "react-native";
+import { graphql, compose } from "react-apollo";
 import EStyleSheet from "react-native-extended-stylesheet";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import moment from "moment";
 
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+import { GET_CAMINHAO } from "../config/resources/queries/frotaQuery";
 
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
@@ -23,7 +26,13 @@ class Saida extends Component {
 			hrSaida: "",
 			horimetro: "",
 			prCombustivel: "",
-			fuel: 0
+			fuel: 0,
+			descCliente: "",
+			descCaminhao: "",
+			idCaminhao: "",
+			isDateTimePickerVisible: false,
+			fieldDateTime: "",
+			pickerMode: "date"
 		};
 	}
 
@@ -41,22 +50,70 @@ class Saida extends Component {
 		this.setState(newState);
 	};
 
+	onChangeDropdown = (option, type) => {
+		if (type === "cliente") {
+			this.setState({ idCliente: option.key, descCliente: option.label });
+		} else {
+			this.setState({ idCaminhao: option.key, descCaminhao: option.label });
+		}
+	};
+
+	//******************************************************************/
+	//                  DATE PICKER FUNCTIONS                         //
+
+	showDateTimePicker = fieldDateTime => {
+		this.setState({
+			pickerMode: fieldDateTime === "hrSaida" ? "time" : "date",
+			isDateTimePickerVisible: true,
+			fieldDateTime
+		});
+	};
+
+	hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+	handleDatePicked = date => {
+		const field = this.state.fieldDateTime;
+		const newState = {
+			...this.state,
+			[field]: moment(date).format(field === "hrSaida" ? "HH:mm" : "DD/MM/YYYY")
+		};
+		this.setState(newState);
+
+		this.hideDateTimePicker();
+	};
+
+	//******************************************************************/
+
 	//TODO -> Auto complete Cliente
 	renderDados() {
+		const clientes = [];
+		const caminhoes = [];
+
+		if (!this.props.getClientes.loading && this.props.getClientes.clientes) {
+			this.props.getClientes.clientes.map(({ id, name }) => {
+				clientes.push({ key: id, label: name });
+			});
+		}
+
+		if (
+			!this.props.getCaminhoes.loading &&
+			this.props.getCaminhoes.frotaCaminhao
+		) {
+			this.props.getCaminhoes.frotaCaminhao.map(({ id, name }) => {
+				caminhoes.push({ key: id, label: name });
+			});
+		}
+
 		return (
 			<View>
 				<Text style={styles.titleText}>Dados da Locação</Text>
 				<Dropdown
-					data={companies}
+					data={clientes}
 					title="Cliente"
-					value={this.state.cliente}
-					onChange={this.props.onChangeEmpresa}
-				/>
-				<InputWithTitle
-					title="Cliente"
+					placeholder="Selecione o cliente"
 					size={116}
-					onChangeText={value => this.handleInputChange("idCliente", value)}
-					value={this.state.idCliente}
+					value={this.state.descCliente}
+					onChange={option => this.onChangeDropdown(option, "cliente")}
 				/>
 				<InputWithTitle
 					title="Frota"
@@ -71,17 +128,33 @@ class Saida extends Component {
 						alignItems: "flex-end"
 					}}
 				>
-					<InputWithTitle
-						title="Data saída"
-						size={56}
-						onChangeText={value => this.handleInputChange("dtSaida", value)}
-						value={this.state.dtSaida}
-					/>
-					<InputWithTitle
-						title="Prev.Entrega"
-						size={56}
-						onChangeText={value => this.handleInputChange("horimetro", value)}
-						value={this.state.dtFim}
+					<TouchableOpacity onPress={() => this.showDateTimePicker("dtSaida")}>
+						<InputWithTitle
+							title="Data saída"
+							size={56}
+							editable={false}
+							changeColor={false}
+							value={this.state.dtSaida}
+						/>
+					</TouchableOpacity>
+
+					<TouchableOpacity
+						onPress={() => this.showDateTimePicker("dtPrevisao")}
+					>
+						<InputWithTitle
+							title="Prev.Entrega"
+							size={56}
+							editable={false}
+							changeColor={false}
+							value={this.state.dtPrevisao}
+						/>
+					</TouchableOpacity>
+
+					<DateTimePicker
+						isVisible={this.state.isDateTimePickerVisible}
+						onConfirm={this.handleDatePicked}
+						onCancel={this.hideDateTimePicker}
+						mode={this.state.pickerMode}
 					/>
 				</View>
 				<View
@@ -91,24 +164,30 @@ class Saida extends Component {
 						alignItems: "flex-end"
 					}}
 				>
-					<InputWithTitle
-						title="Hora saída"
-						size={56}
-						onChangeText={value => this.handleInputChange("hrSaida", value)}
-						value={this.state.hrSaida}
-					/>
+					<TouchableOpacity onPress={() => this.showDateTimePicker("hrSaida")}>
+						<InputWithTitle
+							title="Hora saída"
+							size={56}
+							editable={false}
+							changeColor={false}
+							value={this.state.hrSaida}
+						/>
+					</TouchableOpacity>
 					<InputWithTitle
 						title="Horímetro"
 						size={56}
+						keyboardType="numeric"
 						onChangeText={value => this.handleInputChange("horimetro", value)}
 						value={this.state.horimetro}
 					/>
 				</View>
-				<InputWithTitle
+				<Dropdown
+					data={caminhoes}
 					title="Caminhão"
 					size={116}
-					onChangeText={value => this.handleInputChange("idCliente", value)}
-					value={this.state.idCliente}
+					placeholder="Selecione o caminhão"
+					value={this.state.descCaminhao}
+					onChange={option => this.onChangeDropdown(option, "caminhao")}
 				/>
 				<View
 					style={{
@@ -174,4 +253,7 @@ class Saida extends Component {
 	}
 }
 
-export default graphql(GET_CLIENTES)(Saida);
+export default compose(
+	graphql(GET_CLIENTES, { name: "getClientes" }),
+	graphql(GET_CAMINHAO, { name: "getCaminhoes" })
+)(Saida);

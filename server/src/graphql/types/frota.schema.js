@@ -5,14 +5,16 @@ const frotaTypes = `
         nrFrota: Int!
         name: String
         ano: Int!
-        chassi: String  
+        chassi: String,
+        caminhao: Boolean
     }
 
     input FrotaInput {
         nrFrota: Int!
         name: String
         ano: Int!
-        chassi: String    
+        chassi: String,
+        caminhao: Boolean    
     }
 `;
 
@@ -20,6 +22,7 @@ const frotaQueries = `
     frota: [Frota]
     frotaById(id: ID!): Frota
     frotaByNumber(nrFrota: Int!): Frota
+    frotaCaminhao: [Frota]
 `;
 
 const frotaMutations = `

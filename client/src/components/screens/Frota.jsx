@@ -1,13 +1,19 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
+import CheckboxTree from "react-checkbox-tree";
 
 import Main from "../template/Main";
 import { GET_FROTA } from "../resources/queries/frotaQuery";
+import { GET_GRUPOS } from "../resources/queries/grupoItensQuery";
+
 import {
 	CREATE_FROTA,
 	UPDATE_FROTA,
 	DELETE_FROTA
 } from "../resources/mutations/frotaMutation";
+
+import Modal from "../utils/Modal";
+import "react-checkbox-tree/lib/react-checkbox-tree.css";
 
 import { validateFields, renderAlert } from "../utils/funcs";
 
@@ -20,17 +26,21 @@ const headerProps = {
 const initialState = {
 	frota: {
 		id: "",
-		nrFrota: null,
+		nrFrota: "",
 		name: "",
-		ano: null,
-		chassi: ""
+		ano: "",
+		chassi: "",
+		caminhao: false
 	},
 	alert: {
 		type: "",
 		title: "",
 		msg: []
 	},
-	gridColumns: ["10%", "40%", "10%", "20%", "20"]
+	gridColumns: ["10%", "40%", "10%", "20%", "20"],
+	checked: [],
+	expanded: [],
+	nodes: []
 };
 
 class Frota extends Component {
@@ -50,8 +60,36 @@ class Frota extends Component {
 		}
 	}
 
-	componentWillMount() {
-		//TODO: Catch all users to send to component
+	componentWillReceiveProps(nextProps) {
+		const nodes = [];
+		const checked = [];
+		const expanded = [];
+
+		//vou montar aqui o node
+		if (!nextProps.getGrupos.loading && nextProps.getGrupos.grupos) {
+			nextProps.getGrupos.grupos.map(grupo => {
+				const grupoNode = {
+					value: grupo.id,
+					label: grupo.grupoItem,
+					children: []
+				};
+				expanded.push(grupo.id);
+				//agora vai adicionar o children
+				grupo.itens.map(item => {
+					const itemNode = {
+						value: item.id,
+						label: item.item,
+						icon: <i className="fa fa-angle-right" />
+					};
+					checked.push(item.id);
+					grupoNode.children.push(itemNode);
+				});
+
+				nodes.push(grupoNode);
+			});
+
+			this.setState({ nodes, expanded, checked });
+		}
 	}
 
 	clear = e => {
@@ -61,13 +99,14 @@ class Frota extends Component {
 
 	save = e => {
 		e.preventDefault();
-		const { id, nrFrota, name, ano, chassi } = this.state.frota;
+		const { id, nrFrota, name, ano, chassi, caminhao } = this.state.frota;
 
 		let frotaInput = {
 			nrFrota,
 			name,
 			ano,
-			chassi
+			chassi,
+			caminhao
 		};
 
 		//in this case required fields are the same of userInput object
@@ -139,6 +178,27 @@ class Frota extends Component {
 
 		this.setState({ frota, alert: initialState.alert });
 	}
+
+	//*******************/
+	// MODAL FUNCTIONS  //
+	openModalGroup = e => {
+		e.preventDefault();
+		this.setState({ show: true });
+	};
+
+	hideModal = () => {
+		this.setState({ show: false });
+	};
+
+	//***********************/
+	// TREEVIEW FUNCTIONS  //
+	onCheck = checked => {
+		this.setState({ checked });
+	};
+
+	onExpand = expanded => {
+		this.setState({ expanded });
+	};
 
 	renderFrota() {
 		if (this.props.data.loading) {
@@ -230,7 +290,7 @@ class Frota extends Component {
 					</div>
 				</div>
 				<div className="row">
-					<div className="col-12 col-md-6">
+					<div className="col-12 col-md-3">
 						<div className="form-group">
 							<label>Chassi</label>
 							<input
@@ -242,6 +302,27 @@ class Frota extends Component {
 								placeholder="Número do Chassi"
 							/>
 						</div>
+					</div>
+					<div className="col-12 col-md-6">
+						<div>
+							<label>{}</label>
+						</div>
+						<div className="form-check form-check-inline">
+							<input
+								className="form-check-input"
+								type="checkbox"
+								name="caminhao"
+								checked={this.state.frota.caminhao}
+								onChange={e => this.changeField(e)}
+							/>
+							<label className="form-check-label">É caminhão?</label>
+						</div>
+						<button
+							className="btn btn-info ml-2"
+							onClick={e => this.openModalGroup(e)}
+						>
+							Itens
+						</button>
 					</div>
 				</div>
 				{renderAlert(this.state.alert)}
@@ -271,10 +352,55 @@ class Frota extends Component {
 			</div>
 		);
 	}
+
+	renderGrupoItem() {
+		const { checked, expanded } = this.state;
+
+		const titleProps = {
+			icon: "object-group",
+			title: "Grupos de Itens",
+			subtitle: "Desmarque os grupos e itens não utilizados para essa Frota"
+		};
+
+		if (this.props.getGrupos.loading) {
+			return <div>Loading...</div>;
+		}
+
+		return (
+			<Main {...titleProps}>
+				<form>
+					<CheckboxTree
+						checked={checked}
+						expanded={expanded}
+						nodes={this.state.nodes}
+						onCheck={this.onCheck}
+						onExpand={this.onExpand}
+					/>
+					<button
+						className="btn btn-info ml-2"
+						onClick={e => {
+							e.preventDefault();
+							console.log("State: ", this.state);
+						}}
+					>
+						Ver State
+					</button>
+				</form>
+			</Main>
+		);
+	}
 	render() {
 		return (
 			<Main {...headerProps}>
 				<form>{this.renderForm()}</form>
+
+				<Modal
+					show={this.state.show}
+					handleClose={this.hideModal}
+					style={{ height: "80vh", overflowY: "scroll" }}
+				>
+					{this.renderGrupoItem()}
+				</Modal>
 
 				<ul className="list-group col-lg-12 listgrid">
 					<li
@@ -312,6 +438,7 @@ class Frota extends Component {
 
 export default compose(
 	graphql(GET_FROTA),
+	graphql(GET_GRUPOS, { name: "getGrupos" }),
 	graphql(CREATE_FROTA, { name: "createFrota" }),
 	graphql(UPDATE_FROTA, { name: "updateFrota" }),
 	graphql(DELETE_FROTA, { name: "deleteFrota" })

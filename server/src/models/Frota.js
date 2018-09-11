@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 const ItemFrotaSchema = new mongoose.Schema({
-	itemId: { type: String, required: true }
+	itemId: { type: String, required: true },
+	marked: { type: Boolean, required: true }
 });
 
 const GrupoItemFrotaSchema = new mongoose.Schema({
 	grupoItemId: { type: String, required: true },
-	itens: [ItemFrotaSchema]
+	marked: { type: Boolean, required: true },
+	exceptItens: [ItemFrotaSchema]
 });
 
 const FrotaSchema = new mongoose.Schema(
@@ -15,7 +17,8 @@ const FrotaSchema = new mongoose.Schema(
 		name: { type: String, required: true },
 		ano: { type: Number, required: true },
 		chassi: { type: String, required: false },
-		grupos: [GrupoItemFrotaSchema]
+		caminhao: { type: Boolean },
+		exceptGrupos: [GrupoItemFrotaSchema]
 	},
 	{ collection: "frota" }
 );

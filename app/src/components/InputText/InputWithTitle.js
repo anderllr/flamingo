@@ -10,6 +10,7 @@ const InputWithTitle = props => {
 	const {
 		title,
 		editable = true,
+		changeColor = true,
 		size,
 		sizeP,
 		keyboardType,
@@ -33,7 +34,7 @@ const InputWithTitle = props => {
 		containerStyle.push(style);
 	}
 
-	if (!editable) {
+	if (!editable && changeColor) {
 		inputContainer.push({ backgroundColor: "#ddd" });
 	}
 
@@ -65,7 +66,8 @@ InputWithTitle.propTypes = {
 	sizeP: PropTypes.string,
 	keyboardType: PropTypes.string,
 	style: PropTypes.object,
-	height: PropTypes.number
+	height: PropTypes.number,
+	changeColor: PropTypes.bool
 };
 
 export default InputWithTitle;
