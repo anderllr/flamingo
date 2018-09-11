@@ -54,3 +54,13 @@ export const GET_CAMINHAO = gql`
 		}
 	}
 `;
+
+export const GET_FROTA_GRUPOS = gql`
+	query frotaGrupoItem($id: ID!) {
+		frotaGrupoItem(id: $id) {
+			id
+			grupoItem
+			imagem
+		}
+	}
+`;

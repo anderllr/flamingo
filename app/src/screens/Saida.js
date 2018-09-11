@@ -13,6 +13,7 @@ import { RoundButton } from "../components/Button";
 import { Dropdown } from "../components/Dropdown";
 import { FuelMarker } from "../components/FuelMarker";
 import { InputWithTitle } from "../components/InputText";
+import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
 
 class Saida extends Component {
@@ -247,7 +248,9 @@ class Saida extends Component {
 		return (
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.asideInner}>{this.renderDados()}</View>
-				<View style={styles.backgroundInner} />
+				<View style={styles.backgroundInner}>
+					<ListFrotaGrupos id="5b8f0efbeff21737f7b81421" columns={4} />
+				</View>
 			</Container>
 		);
 	}

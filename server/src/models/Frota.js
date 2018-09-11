@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 
 const ItemFrotaSchema = new mongoose.Schema({
-	itemId: { type: String, required: true },
-	marked: { type: Boolean, required: true }
+	itemId: { type: String, required: true }
 });
 
 const GrupoItemFrotaSchema = new mongoose.Schema({
 	grupoItemId: { type: String, required: true },
-	marked: { type: Boolean, required: true },
 	exceptItens: [ItemFrotaSchema]
 });
 

@@ -7,6 +7,25 @@ const frotaTypes = `
         ano: Int!
         chassi: String,
         caminhao: Boolean
+        exceptGrupos: [ExceptGrupo]
+    }
+
+    type ExceptGrupo {
+        grupoItemId: ID!,
+        exceptItens: [ExceptItem]
+    }
+
+    type ExceptItem {
+        itemId: ID!
+    }
+
+    input ExceptItemInput {
+        itemId: ID!
+    }
+
+    input ExceptGrupoInput {
+        grupoItemId: ID!,
+        exceptItens: [ExceptItemInput]
     }
 
     input FrotaInput {
@@ -14,7 +33,8 @@ const frotaTypes = `
         name: String
         ano: Int!
         chassi: String,
-        caminhao: Boolean    
+        caminhao: Boolean,
+        exceptGrupos: [ExceptGrupoInput]
     }
 `;
 
@@ -23,6 +43,7 @@ const frotaQueries = `
     frotaById(id: ID!): Frota
     frotaByNumber(nrFrota: Int!): Frota
     frotaCaminhao: [Frota]
+    frotaGrupoItem(id: ID!): [GrupoItem]
 `;
 
 const frotaMutations = `

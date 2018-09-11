@@ -9,6 +9,12 @@ export const GET_FROTA = gql`
 			ano
 			chassi
 			caminhao
+			exceptGrupos {
+				grupoItemId
+				exceptItens {
+					itemId
+				}
+			}
 		}
 	}
 `;
@@ -23,6 +29,12 @@ export const GET_FROTA_BY_ID = gql`
 				ano
 				chassi
 				caminhao
+				exceptGrupos {
+					grupoItemId
+					exceptItens {
+						itemId
+					}
+				}
 			}
 		}
 	}
@@ -37,6 +49,13 @@ export const GET_FROTA_BY_NUMBER = gql`
 				name
 				ano
 				chassi
+				caminhao
+				exceptGrupos {
+					grupoItemId
+					exceptItens {
+						itemId
+					}
+				}
 			}
 		}
 	}

@@ -23,7 +23,23 @@ export default {
 			return frota.map(f => {
 				return f;
 			});
-		})
+		}),
+		frotaGrupoItem: authenticated(
+			async (parent, { id }, { db: { GrupoItem, Frota } }) => {
+				const frota = await Frota.findById(id);
+				const exceptGrupos = [];
+				frota.exceptGrupos.map(({ grupoItemId }) => {
+					exceptGrupos.push(grupoItemId);
+				});
+
+				const grupoItem = await GrupoItem.find({
+					_id: { $nin: exceptGrupos }
+				});
+				return grupoItem.map(grupo => {
+					return grupo;
+				});
+			}
+		)
 	},
 	Mutation: {
 		createFrota: authenticated(async (parent, { input }, { db: { Frota } }) => {

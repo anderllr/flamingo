@@ -40,7 +40,8 @@ const initialState = {
 	gridColumns: ["10%", "40%", "10%", "20%", "20"],
 	checked: [],
 	expanded: [],
-	nodes: []
+	nodes: [],
+	nodesAll: []
 };
 
 class Frota extends Component {
@@ -62,6 +63,7 @@ class Frota extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const nodes = [];
+		const nodesAll = [];
 		const checked = [];
 		const expanded = [];
 
@@ -76,37 +78,73 @@ class Frota extends Component {
 				expanded.push(grupo.id);
 				//agora vai adicionar o children
 				grupo.itens.map(item => {
+					const value = `${grupo.id}|${item.id}`;
 					const itemNode = {
-						value: item.id,
+						value,
 						label: item.item,
 						icon: <i className="fa fa-angle-right" />
 					};
-					checked.push(item.id);
+					checked.push(value);
+					nodesAll.push(value);
 					grupoNode.children.push(itemNode);
 				});
 
 				nodes.push(grupoNode);
 			});
 
-			this.setState({ nodes, expanded, checked });
+			this.setState({ nodes, expanded, checked, nodesAll });
 		}
 	}
 
 	clear = e => {
+		const nodes = [...this.state.nodes];
+		const nodesAll = [...this.state.nodesAll];
 		e.preventDefault();
-		this.setState({ ...initialState });
+		this.setState({ ...initialState, nodes, nodesAll });
+	};
+
+	retornaExcepts = () => {
+		const exceptGrupos = [];
+		let exceptItens = [];
+		let grupoant = "";
+		let itemSplit = [];
+		let difference = this.state.nodesAll.filter(
+			x => !this.state.checked.includes(x)
+		);
+		difference.map(item => {
+			itemSplit = item.split("|");
+
+			if (grupoant === "") grupoant = itemSplit[0];
+			if (itemSplit.length > 1) {
+				exceptItens.push({ itemId: itemSplit[1] });
+			}
+
+			if (grupoant !== itemSplit[0]) {
+				//se o grupoant é <> '' significa que mudou de grupo
+				exceptGrupos.push({ grupoItemId: grupoant, exceptItens });
+				exceptItens = [];
+				grupoant = itemSplit[0];
+			}
+		});
+		//O último depois que saiu do loop
+		if (itemSplit[0]) {
+			exceptGrupos.push({ grupoItemId: itemSplit[0], exceptItens });
+		}
+		return exceptGrupos;
 	};
 
 	save = e => {
 		e.preventDefault();
 		const { id, nrFrota, name, ano, chassi, caminhao } = this.state.frota;
 
+		const exceptGrupos = this.retornaExcepts();
 		let frotaInput = {
 			nrFrota,
 			name,
 			ano,
 			chassi,
-			caminhao
+			caminhao,
+			exceptGrupos
 		};
 
 		//in this case required fields are the same of userInput object
@@ -153,6 +191,18 @@ class Frota extends Component {
 
 	select(frota) {
 		this.setState({ frota });
+
+		//Adjust for except grups of itens
+		const exceptions = [];
+		frota.exceptGrupos.map(grupo => {
+			grupo.exceptItens.map(item => {
+				exceptions.push(`${grupo.grupoItemId}|${item.itemId}`);
+			});
+		});
+
+		let checked = this.state.nodesAll.filter(x => !exceptions.includes(x));
+
+		this.setState({ checked });
 	}
 
 	delete(frota) {
@@ -320,6 +370,7 @@ class Frota extends Component {
 						<button
 							className="btn btn-info ml-2"
 							onClick={e => this.openModalGroup(e)}
+							disabled={this.state.frota.nrFrota === ""}
 						>
 							Itens
 						</button>
@@ -376,15 +427,6 @@ class Frota extends Component {
 						onCheck={this.onCheck}
 						onExpand={this.onExpand}
 					/>
-					<button
-						className="btn btn-info ml-2"
-						onClick={e => {
-							e.preventDefault();
-							console.log("State: ", this.state);
-						}}
-					>
-						Ver State
-					</button>
 				</form>
 			</Main>
 		);
