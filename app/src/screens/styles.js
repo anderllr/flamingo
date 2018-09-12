@@ -1,10 +1,10 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-import { Platform } from "react-native";
 
 const BORDER_RADIUS = scale(5);
 
 const styles = EStyleSheet.create({
+	$underlayColor: "$darkGreen",
 	container: {
 		alignItems: "center",
 		justifyContent: "center",

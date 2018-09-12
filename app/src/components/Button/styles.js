@@ -12,7 +12,7 @@ const styles = EStyleSheet.create({
 	container: {
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: "$intenalButton",
+		backgroundColor: "$internalButton",
 		width: "100%",
 		borderRadius: BORDER_RADIUS,
 		margin: verticalScale(9),

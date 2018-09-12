@@ -6,7 +6,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 //import { HttpLink } from 'apollo-link-http'
 import { createUploadLink } from "apollo-upload-client";
-import { ApolloLink } from "apollo-link";
+//import { ApolloLink } from "apollo-link";
 import { ApolloProvider } from "react-apollo";
 import { setContext } from "apollo-link-context";
 import { Font } from "expo";
@@ -21,7 +21,7 @@ EStyleSheet.build({
 	$primaryGreen: "#00665a",
 	$darkGreen: "#005147",
 	$primaryButton: "#c39f6b",
-	$intenalButton: "#2c968a",
+	$internalButton: "#2c968a",
 	$primaryFont: "#364846",
 	$backgroundColor: "#f2f2f2",
 	$white: "#fff",

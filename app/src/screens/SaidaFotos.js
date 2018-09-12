@@ -16,7 +16,7 @@ import { InputWithTitle } from "../components/InputText";
 import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
 
-class Saida extends Component {
+class SaidaFotos extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -87,6 +87,7 @@ class Saida extends Component {
 
 	onHandlePress = item => {
 		//TODO Finish handle to other pages
+		console.log(`Clicou props ${this.state.active}`);
 		this.props.navigation.navigate("SaidaFotos", {
 			grupo: item
 		});
@@ -114,7 +115,7 @@ class Saida extends Component {
 
 		return (
 			<View>
-				<Text style={styles.titleText}>Dados da Locação</Text>
+				<Text style={styles.titleText}>Não conformidades</Text>
 				<Dropdown
 					data={clientes}
 					title="Cliente"
@@ -271,4 +272,4 @@ class Saida extends Component {
 export default compose(
 	graphql(GET_CLIENTES, { name: "getClientes" }),
 	graphql(GET_CAMINHAO, { name: "getCaminhoes" })
-)(Saida);
+)(SaidaFotos);

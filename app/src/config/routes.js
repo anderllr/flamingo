@@ -1,7 +1,7 @@
 import { createStackNavigator } from "react-navigation";
 import { StatusBar } from "react-native";
 
-import { Login, Saida, Vistoria } from "../screens";
+import { Login, Saida, Vistoria, SaidaFotos } from "../screens";
 
 //import Home from '../screens/Home';
 //import CurrencyList from '../screens/CurrencyList';
@@ -92,7 +92,17 @@ const HomeStack = createStackNavigator(
 		Saida: {
 			screen: Saida,
 			navigationOptions: {
-				headerTitle: "Saida",
+				headerTitle: "Checagem de Saída",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
+			}
+		},
+		SaidaFotos: {
+			screen: SaidaFotos,
+			navigationOptions: {
+				headerTitle: "Fotos de saída de frota",
 				headerTintColor: "white",
 				headerStyle: {
 					backgroundColor: "#00665a"

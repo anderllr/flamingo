@@ -1,8 +1,14 @@
 import React from "react";
-import { FlatList, View, StyleSheet, Text } from "react-native";
+import EStyleSheet from "react-native-extended-stylesheet";
+import { FlatList, View, Text, TouchableHighlight } from "react-native";
+import { scale } from "react-native-size-matters";
 import { Query } from "react-apollo";
 
+import { Icon } from "../../components/Icon";
+import { CachedImage } from "../../components/CachedImage";
+
 import { GET_FROTA_GRUPOS } from "../../config/resources/queries/frotaQuery";
+import styles from "./styles";
 
 const createRows = (data, columns) => {
 	const rows = Math.floor(data.length / columns); // [A]
@@ -20,7 +26,42 @@ const createRows = (data, columns) => {
 	return data; // [F]
 };
 
-const ListFrotaGrupos = ({ id, columns }) => (
+/*
+<Icon
+	name="checkmark"
+	size={scale(15)}
+	color={EStyleSheet.value("$internalButton")}
+	type="material"
+/>
+*/
+
+const ListItemGrupo = ({ data, onPress }) => {
+	if (data.empty) {
+		return <View style={[styles.groupContainer, styles.groupEmpty]} />;
+	}
+	return (
+		<TouchableHighlight
+			underlayColor={styles.$underlayColor}
+			onPress={onPress}
+			style={styles.groupContainer}
+		>
+			<View style={styles.groupItens}>
+				<View style={styles.groupIcon}>
+					<Icon
+						name="checkmark"
+						size={scale(15)}
+						color={EStyleSheet.value("$internalButton")}
+						type="ion"
+					/>
+				</View>
+				<CachedImage imageUrl={data.imagem} style={styles.groupImage} />
+				<Text style={styles.groupText}>{data.grupoItem}</Text>
+			</View>
+		</TouchableHighlight>
+	);
+};
+
+const ListFrotaGrupos = ({ id, columns, onHandlePress }) => (
 	<Query query={GET_FROTA_GRUPOS} variables={{ id }}>
 		{({ loading, error, data, refetch }) => {
 			if (loading) return <Text>Buscando os grupos</Text>;
@@ -36,37 +77,19 @@ const ListFrotaGrupos = ({ id, columns }) => (
 					data={createRows([...data.frotaGrupoItem], columns)}
 					keyExtractor={item => item.id.toString()}
 					numColumns={columns}
-					renderItem={({ item }) => {
-						if (item.empty) {
-							return <View style={[styles.item, styles.itemEmpty]} />;
-						}
-						return (
-							<View style={styles.item}>
-								<Text style={styles.text}>{item.grupoItem}</Text>
-							</View>
-						);
-					}}
+					renderItem={({ item }) => (
+						<ListItemGrupo data={item} onPress={() => onHandlePress(item)} />
+					)}
 				/>
 			);
 		}}
 	</Query>
 );
-
-const styles = StyleSheet.create({
-	item: {
-		alignItems: "center",
-		backgroundColor: "#dcda48",
-		flexGrow: 1,
-		flexBasis: 0,
-		margin: 4,
-		padding: 20
-	},
-	text: {
-		color: "#333333"
-	},
-	itemEmpty: {
-		backgroundColor: "transparent"
-	}
-});
+/*
+	<ListItemSaida
+		data={item}
+		onPress={() => props.onHandlePress(item)}
+	/>
+*/
 
 export default ListFrotaGrupos;
