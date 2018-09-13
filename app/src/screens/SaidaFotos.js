@@ -1,46 +1,48 @@
 import React, { Component } from "react";
-import { View, Text, Slider, TouchableOpacity, Platform } from "react-native";
-import { graphql, compose } from "react-apollo";
+import { View, Text, FlatList, TouchableHighlight } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import DateTimePicker from "react-native-modal-datetime-picker";
-import moment from "moment";
+import RadioGroup from "react-native-radio-buttons-group";
+import { Query } from "react-apollo";
+import { scale } from "react-native-size-matters";
 
-import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
-import { GET_CAMINHAO } from "../config/resources/queries/frotaQuery";
+import { GET_ITENS_BY_GRUPO } from "../config/resources/queries/grupoItensQuery";
 
 import { Container } from "../components/Container";
+import { Icon } from "../components/Icon";
 import { RoundButton } from "../components/Button";
 import { Dropdown } from "../components/Dropdown";
-import { FuelMarker } from "../components/FuelMarker";
 import { InputWithTitle } from "../components/InputText";
-import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
+import { createRows } from "../utils/utils";
 
 class SaidaFotos extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			idCliente: "",
-			frota: {},
-			dtSaida: "",
-			dtPrevisao: "",
-			hrSaida: "",
-			horimetro: "",
-			prCombustivel: "",
-			fuel: 0,
-			descCliente: "",
-			descCaminhao: "",
-			idCaminhao: "",
-			isDateTimePickerVisible: false,
-			fieldDateTime: "",
-			pickerMode: "date"
+			grupo: {},
+			itens: [],
+			conforme: "S",
+			descNaoConforme: "",
+			qtItem: "1",
+			idItem: "",
+			descItem: "",
+			radioConforme: [
+				{
+					label: "Conforme?",
+					value: "S"
+				},
+				{
+					label: "Não conforme?",
+					value: "N"
+				}
+			]
 		};
 	}
 
 	componentWillMount() {
 		const { navigation } = this.props;
-		const frota = navigation.getParam("frota", {});
-		this.setState({ frota });
+		const grupo = navigation.getParam("grupo", {});
+		this.setState({ grupo });
 	}
 
 	handleInputChange = (field, value) => {
@@ -52,224 +54,127 @@ class SaidaFotos extends Component {
 	};
 
 	onChangeDropdown = (option, type) => {
-		if (type === "cliente") {
-			this.setState({ idCliente: option.key, descCliente: option.label });
-		} else {
-			this.setState({ idCaminhao: option.key, descCaminhao: option.label });
-		}
+		this.setState({ idItem: option.key, descItem: option.label });
 	};
-
-	//******************************************************************/
-	//                  DATE PICKER FUNCTIONS                         //
-
-	showDateTimePicker = fieldDateTime => {
-		this.setState({
-			pickerMode: fieldDateTime === "hrSaida" ? "time" : "date",
-			isDateTimePickerVisible: true,
-			fieldDateTime
-		});
-	};
-
-	hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
-
-	handleDatePicked = date => {
-		const field = this.state.fieldDateTime;
-		const newState = {
-			...this.state,
-			[field]: moment(date).format(field === "hrSaida" ? "HH:mm" : "DD/MM/YYYY")
-		};
-		this.setState(newState);
-
-		this.hideDateTimePicker();
-	};
-
-	//******************************************************************/
 
 	onHandlePress = item => {
-		//TODO Finish handle to other pages
-		console.log(`Clicou props ${this.state.active}`);
-		this.props.navigation.navigate("SaidaFotos", {
-			grupo: item
-		});
+		//TODO -> Abrir a foto
 	};
 
-	//TODO -> Auto complete Cliente
+	onRadioPress = data => {
+		console.log("Radio Button: ", data);
+		this.setState({ radioConforme: data });
+	};
+
 	renderDados() {
-		const clientes = [];
-		const caminhoes = [];
-
-		if (!this.props.getClientes.loading && this.props.getClientes.clientes) {
-			this.props.getClientes.clientes.map(({ id, name }) => {
-				clientes.push({ key: id, label: name });
-			});
-		}
-
-		if (
-			!this.props.getCaminhoes.loading &&
-			this.props.getCaminhoes.frotaCaminhao
-		) {
-			this.props.getCaminhoes.frotaCaminhao.map(({ id, name }) => {
-				caminhoes.push({ key: id, label: name });
-			});
-		}
-
+		//TODO -> Verificar essa rotina do RadioGroup
+		let selectedButton = this.state.radioConforme.find(e => e.selected == true);
+		selectedButton = selectedButton
+			? selectedButton.value
+			: this.state.radioConforme[0].label;
 		return (
 			<View>
 				<Text style={styles.titleText}>Não conformidades</Text>
 				<Dropdown
-					data={clientes}
-					title="Cliente"
-					placeholder="Selecione o cliente"
+					data={this.state.itens}
+					title="Fato"
+					placeholder="Selecione o item"
 					size={116}
-					value={this.state.descCliente}
-					onChange={option => this.onChangeDropdown(option, "cliente")}
+					value={this.state.descItem}
+					onChange={option => this.onChangeDropdown(option, "item")}
+				/>
+				<RadioGroup
+					radioButtons={this.state.radioConforme}
+					onPress={this.onRadioPress}
+				/>
+
+				<InputWithTitle
+					title="Observações"
+					editable={true}
+					multiline={true}
+					numberOfLines={4}
+					size={116}
+					height={200}
+					value={this.state.descNaoConforme}
 				/>
 				<InputWithTitle
-					title="Frota"
-					editable={false}
-					size={116}
-					value={`${this.state.frota.nrFrota}-${this.state.frota.name}`}
+					title="Quantidade"
+					editable={true}
+					size={40}
+					value={this.state.qtItem}
 				/>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "flex-start",
-						alignItems: "flex-end"
-					}}
-				>
-					<TouchableOpacity onPress={() => this.showDateTimePicker("dtSaida")}>
-						<InputWithTitle
-							title="Data saída"
-							size={56}
-							editable={false}
-							changeColor={false}
-							value={this.state.dtSaida}
-						/>
-					</TouchableOpacity>
-
-					<TouchableOpacity
-						onPress={() => this.showDateTimePicker("dtPrevisao")}
-					>
-						<InputWithTitle
-							title="Prev.Entrega"
-							size={56}
-							editable={false}
-							changeColor={false}
-							value={this.state.dtPrevisao}
-						/>
-					</TouchableOpacity>
-
-					<DateTimePicker
-						isVisible={this.state.isDateTimePickerVisible}
-						onConfirm={this.handleDatePicked}
-						onCancel={this.hideDateTimePicker}
-						mode={this.state.pickerMode}
-					/>
-				</View>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "flex-start",
-						alignItems: "flex-end"
-					}}
-				>
-					<TouchableOpacity onPress={() => this.showDateTimePicker("hrSaida")}>
-						<InputWithTitle
-							title="Hora saída"
-							size={56}
-							editable={false}
-							changeColor={false}
-							value={this.state.hrSaida}
-						/>
-					</TouchableOpacity>
-					<InputWithTitle
-						title="Horímetro"
-						size={56}
-						keyboardType="numeric"
-						onChangeText={value => this.handleInputChange("horimetro", value)}
-						value={this.state.horimetro}
-					/>
-				</View>
-				<Dropdown
-					data={caminhoes}
-					title="Caminhão"
-					size={116}
-					placeholder="Selecione o caminhão"
-					value={this.state.descCaminhao}
-					onChange={option => this.onChangeDropdown(option, "caminhao")}
-				/>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "flex-start",
-						alignItems: "flex-end"
-					}}
-				>
-					<InputWithTitle
-						title="Km Caminhão"
-						keyboardType="numeric"
-						size={56}
-						onChangeText={value => this.handleInputChange("kmCaminhao", value)}
-						value={this.state.kmCaminhao}
-					/>
-					<InputWithTitle
-						title="Hora Munck"
-						keyboardType="numeric"
-						size={56}
-						onChangeText={value => this.handleInputChange("hrMunck", value)}
-						value={this.state.hrMunck}
-					/>
-				</View>
-				<Text style={styles.labelText}>Combustível</Text>
-				<View style={styles.fuelMarker}>
-					<FuelMarker fuel={this.state.fuel} />
-					{Platform === "ios" ? (
-						<SliderIOS
-							style={styles.slider}
-							step={10}
-							minimumTrackTintColor={EStyleSheet.value("$primaryButton")}
-							maximumTrackTintColor={EStyleSheet.value("$lyghtGray")}
-							minimumValue={0}
-							maximumValue={180}
-							thumbTintColor={EStyleSheet.value("$primaryButton")}
-							value={this.state.fuel}
-							onValueChange={val => this.setState({ fuel: val })}
-						/>
-					) : (
-						<Slider
-							style={styles.slider}
-							minimumTrackTintColor={EStyleSheet.value("$primaryButton")}
-							maximumTrackTintColor={EStyleSheet.value("$lightGray")}
-							step={10}
-							minimumValue={0}
-							thumbTintColor={EStyleSheet.value("$primaryButton")}
-							maximumValue={180}
-							value={this.state.fuel}
-							onValueChange={val => this.setState({ fuel: val })}
-						/>
-					)}
-				</View>
 			</View>
 		);
 	}
+
+	renderFotos() {
+		const ListItemGrupo = ({ data, onPress }) => {
+			if (data.empty) {
+				return <View style={[styles.groupContainer, styles.groupEmpty]} />;
+			}
+			return (
+				<TouchableHighlight
+					underlayColor={styles.$underlayColor}
+					onPress={onPress}
+					style={styles.groupContainer}
+				>
+					<View style={styles.groupItens}>
+						<View style={styles.groupIcon}>
+							<Icon
+								name="camera"
+								size={scale(20)}
+								color={EStyleSheet.value("$lightGray")}
+								type="ion"
+							/>
+						</View>
+						<Text style={styles.groupText}>{data.item}</Text>
+					</View>
+				</TouchableHighlight>
+			);
+		};
+		return (
+			<Query
+				query={GET_ITENS_BY_GRUPO}
+				variables={{ grupoItemId: this.state.grupo.id }}
+			>
+				{({ loading, error, data, refetch }) => {
+					if (loading) return <Text>Buscando os grupos</Text>;
+					if (error) {
+						return <Text>Error</Text>;
+					}
+					console.log("Dados", data, this.state.grupo.id);
+					//TODO ---> Separar os itens que não estão selecionados
+					return (
+						<FlatList
+							data={createRows([...data.itensByGrupo], 4)}
+							keyExtractor={item => item.id.toString()}
+							numColumns={4}
+							renderItem={({ item }) => (
+								<ListItemGrupo
+									data={item}
+									onPress={() => this.onHandlePress(item)}
+								/>
+							)}
+						/>
+					);
+				}}
+			</Query>
+		);
+	}
+
 	render() {
 		return (
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.asideInner}>{this.renderDados()}</View>
 				<View style={styles.backgroundInner}>
-					<Text style={styles.titleText}>Locação - Grupos da Frota</Text>
-					<ListFrotaGrupos
-						id="5b8f0efbeff21737f7b81421"
-						columns={4}
-						onHandlePress={this.onHandlePress}
-					/>
+					<Text style={styles.titleText}>{`FOTOS ${
+						this.state.grupoItem
+					}`}</Text>
+					{this.renderFotos()}
 				</View>
 			</Container>
 		);
 	}
 }
 
-export default compose(
-	graphql(GET_CLIENTES, { name: "getClientes" }),
-	graphql(GET_CAMINHAO, { name: "getCaminhoes" })
-)(SaidaFotos);
+export default SaidaFotos;

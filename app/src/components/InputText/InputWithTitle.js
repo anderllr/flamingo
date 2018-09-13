@@ -48,11 +48,11 @@ const InputWithTitle = props => {
 			<Text style={styles.titleText}>{title}</Text>
 			<View style={inputContainer}>
 				<TextInput
+					{...props}
 					underlineColorAndroid="transparent"
 					style={inputText}
 					editable={editable}
 					keyboardType={keyboardType}
-					{...props}
 				/>
 			</View>
 		</View>

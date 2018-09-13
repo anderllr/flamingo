@@ -6,34 +6,10 @@ import { Query } from "react-apollo";
 
 import { Icon } from "../../components/Icon";
 import { CachedImage } from "../../components/CachedImage";
+import { createRows } from "../../utils/utils";
 
 import { GET_FROTA_GRUPOS } from "../../config/resources/queries/frotaQuery";
 import styles from "./styles";
-
-const createRows = (data, columns) => {
-	const rows = Math.floor(data.length / columns); // [A]
-	let lastRowElements = data.length - rows * columns; // [B]
-	while (lastRowElements !== columns) {
-		// [C]
-		data.push({
-			// [D]
-			id: `empty-${lastRowElements}`,
-			name: `empty-${lastRowElements}`,
-			empty: true
-		});
-		lastRowElements += 1; // [E]
-	}
-	return data; // [F]
-};
-
-/*
-<Icon
-	name="checkmark"
-	size={scale(15)}
-	color={EStyleSheet.value("$internalButton")}
-	type="material"
-/>
-*/
 
 const ListItemGrupo = ({ data, onPress }) => {
 	if (data.empty) {
@@ -68,10 +44,6 @@ const ListFrotaGrupos = ({ id, columns, onHandlePress }) => (
 			if (error) {
 				return <Text>Error</Text>;
 			}
-			/*
-			console.log("Data: ", data);
-			return <Text>Renderizou</Text>;
-*/
 			return (
 				<FlatList
 					data={createRows([...data.frotaGrupoItem], columns)}
@@ -85,11 +57,5 @@ const ListFrotaGrupos = ({ id, columns, onHandlePress }) => (
 		}}
 	</Query>
 );
-/*
-	<ListItemSaida
-		data={item}
-		onPress={() => props.onHandlePress(item)}
-	/>
-*/
 
 export default ListFrotaGrupos;

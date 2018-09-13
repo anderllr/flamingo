@@ -80,6 +80,43 @@ const styles = EStyleSheet.create({
 	fuelMarker: {
 		flexDirection: "column",
 		alignItems: "center"
+	},
+	groupContainer: {
+		borderRadius: BORDER_RADIUS,
+		borderColor: "$border",
+		borderWidth: scale(1),
+		flexGrow: 1,
+		flexBasis: 0,
+		aspectRatio: 1,
+		margin: scale(4),
+		padding: moderateScale(5)
+	},
+	groupItens: {
+		width: "100%",
+		height: "100%",
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	groupIcon: {
+		position: "absolute",
+		right: "10%",
+		top: 0
+	},
+	groupImage: {
+		width: "50%",
+		height: "50%"
+	},
+	groupText: {
+		color: "$inputText",
+		fontSize: scale(5),
+		fontWeight: "300",
+		fontFamily: "lato-bold",
+		bottom: verticalScale(10),
+		position: "absolute"
+	},
+	groupEmpty: {
+		backgroundColor: "transparent",
+		borderColor: "transparent"
 	}
 });
 

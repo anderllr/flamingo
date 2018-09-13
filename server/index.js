@@ -10,8 +10,7 @@ import { db } from "./src/models";
 import { tokenMiddleware } from "./src/utils/tokenMiddleware";
 import {
 	verifyAdmin,
-	verifyFrota,
-	verifyFrotaItens
+	verifyFrota
 } from "./src/utils/firstData";
 
 const APP_NAME = "flamingoapp";

@@ -27,17 +27,52 @@ export default {
 		frotaGrupoItem: authenticated(
 			async (parent, { id }, { db: { GrupoItem, Frota } }) => {
 				const frota = await Frota.findById(id);
+				const grupoAll = await GrupoItem.find({});
 				const exceptGrupos = [];
-				frota.exceptGrupos.map(({ grupoItemId }) => {
-					exceptGrupos.push(grupoItemId);
-				});
+				frota.exceptGrupos.map(({ grupoItemId, exceptItens }) => {
+					const grupo = grupoAll.filter(g => g.id === grupoItemId)[0];
+					const exceptIt = exceptItens.map(it => it.itemId);
+					const itens = grupo.itens.map(it => it.id);
+					const itensRestantes = itens.filter(i => !exceptIt.includes(i));
 
+					if (itensRestantes.length === 0) {
+						exceptGrupos.push(grupoItemId);
+					}
+				});
 				const grupoItem = await GrupoItem.find({
 					_id: { $nin: exceptGrupos }
 				});
 				return grupoItem.map(grupo => {
 					return grupo;
 				});
+			}
+		),
+		frotaItensByGrupo: authenticated(
+			async (parent, { id, grupoItemId }, { db: { GrupoItem, Frota } }) => {
+				const frota = await Frota.findById(id);
+				const grupo = await GrupoItem.findById(grupoItemId);
+				return grupo.itens.filter(
+					i => !frota.exceptGrupos.exceptItens.find(e => e.itemId === i.id)
+				);
+				/*const exceptGrupos = [];
+				
+				frota.exceptGrupos.map(({ grupoItemId, exceptItens }) => {
+					const grupo = grupoAll.filter(g => g.id === grupoItemId)[0];
+					const exceptIt = exceptItens.map(it => it.itemId);
+					const itens = grupo.itens.map(it => it.id);
+					const itensRestantes = itens.filter(i => !exceptIt.includes(i));
+
+					if (itensRestantes.length === 0) {
+						exceptGrupos.push(grupoItemId);
+					}
+				});
+				const grupoItem = await GrupoItem.find({
+					_id: { $nin: exceptGrupos }
+				});
+				return grupoItem.map(grupo => {
+					return grupo;
+				});
+				*/
 			}
 		)
 	},

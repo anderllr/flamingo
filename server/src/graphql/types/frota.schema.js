@@ -44,6 +44,7 @@ const frotaQueries = `
     frotaByNumber(nrFrota: Int!): Frota
     frotaCaminhao: [Frota]
     frotaGrupoItem(id: ID!): [GrupoItem]
+    frotaItensByGrupo(id: ID!, grupoItemId: ID!): [ Item ]
 `;
 
 const frotaMutations = `
