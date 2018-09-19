@@ -15,7 +15,8 @@ const InputWithTitle = props => {
 		sizeP,
 		keyboardType,
 		style = null,
-		height
+		height,
+		visible = true
 	} = props;
 
 	const containerStyle = [styles.sizeContainer];
@@ -42,7 +43,7 @@ const InputWithTitle = props => {
 		inputContainer.push({ height: verticalScale(height) });
 		inputText.push({ fontSize: scale(height / 4) });
 	}
-
+	if (!visible) return <View />;
 	return (
 		<View style={containerStyle}>
 			<Text style={styles.titleText}>{title}</Text>
@@ -67,7 +68,8 @@ InputWithTitle.propTypes = {
 	keyboardType: PropTypes.string,
 	style: PropTypes.object,
 	height: PropTypes.number,
-	changeColor: PropTypes.bool
+	changeColor: PropTypes.bool,
+	visible: PropTypes.bool
 };
 
 export default InputWithTitle;

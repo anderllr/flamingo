@@ -64,3 +64,13 @@ export const GET_FROTA_GRUPOS = gql`
 		}
 	}
 `;
+
+export const GET_FROTA_ITENS_BY_GRUPO = gql`
+	query frotaItensByGrupo($id: ID!, $grupoItemId: ID!) {
+		frotaItensByGrupo(id: $id, grupoItemId: $grupoItemId) {
+			id
+			item
+			informaQtde
+		}
+	}
+`;

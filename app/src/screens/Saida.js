@@ -39,7 +39,15 @@ class Saida extends Component {
 
 	componentWillMount() {
 		const { navigation } = this.props;
-		const frota = navigation.getParam("frota", {});
+		//TODO --> Tirar o frota default
+		const frota = navigation.getParam("frota", {
+			id: "5b8f0efbeff21737f7b81421",
+			nrFrota: 1,
+			name: "TM 7040 - NEW HOLLAND NOVO",
+			ano: 2013,
+			chassi: "HCCZ7040JDCC04148",
+			caminhao: true
+		});
 		this.setState({ frota });
 	}
 
@@ -88,6 +96,7 @@ class Saida extends Component {
 	onHandlePress = item => {
 		//TODO Finish handle to other pages
 		this.props.navigation.navigate("SaidaFotos", {
+			frota: this.state.frota,
 			grupo: item
 		});
 	};

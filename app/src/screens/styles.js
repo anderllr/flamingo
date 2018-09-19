@@ -82,13 +82,21 @@ const styles = EStyleSheet.create({
 		alignItems: "center"
 	},
 	groupContainer: {
+		flexGrow: 1,
+		flexBasis: 0,
+		aspectRatio: 1,
+		margin: scale(4),
+		padding: moderateScale(5),
+		alignItems: "center"
+	},
+	pictureContainer: {
 		borderRadius: BORDER_RADIUS,
 		borderColor: "$border",
 		borderWidth: scale(1),
 		flexGrow: 1,
 		flexBasis: 0,
 		aspectRatio: 1,
-		margin: scale(4),
+		margin: scale(5),
 		padding: moderateScale(5)
 	},
 	groupItens: {
@@ -97,11 +105,7 @@ const styles = EStyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center"
 	},
-	groupIcon: {
-		position: "absolute",
-		right: "10%",
-		top: 0
-	},
+	groupIcon: {},
 	groupImage: {
 		width: "50%",
 		height: "50%"
@@ -111,7 +115,7 @@ const styles = EStyleSheet.create({
 		fontSize: scale(5),
 		fontWeight: "300",
 		fontFamily: "lato-bold",
-		bottom: verticalScale(10),
+		bottom: verticalScale(1),
 		position: "absolute"
 	},
 	groupEmpty: {

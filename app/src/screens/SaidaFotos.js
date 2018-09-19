@@ -5,7 +5,7 @@ import RadioGroup from "react-native-radio-buttons-group";
 import { Query } from "react-apollo";
 import { scale } from "react-native-size-matters";
 
-import { GET_ITENS_BY_GRUPO } from "../config/resources/queries/grupoItensQuery";
+import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
 
 import { Container } from "../components/Container";
 import { Icon } from "../components/Icon";
@@ -19,6 +19,7 @@ class SaidaFotos extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			frota: {},
 			grupo: {},
 			itens: [],
 			conforme: "S",
@@ -26,6 +27,7 @@ class SaidaFotos extends Component {
 			qtItem: "1",
 			idItem: "",
 			descItem: "",
+			informaQtde: true,
 			radioConforme: [
 				{
 					label: "Conforme?",
@@ -38,11 +40,25 @@ class SaidaFotos extends Component {
 			]
 		};
 	}
+	adjustRadio = conforme => {
+		const radioConforme = [
+			{
+				label: "Conforme?",
+				value: conforme
+			},
+			{
+				label: "Não conforme?",
+				value: conforme === "S" ? "N" : "S"
+			}
+		];
 
+		this.setState({ radioConforme });
+	};
 	componentWillMount() {
 		const { navigation } = this.props;
 		const grupo = navigation.getParam("grupo", {});
-		this.setState({ grupo });
+		const frota = navigation.getParam("frota", {});
+		this.setState({ grupo, frota });
 	}
 
 	handleInputChange = (field, value) => {
@@ -54,24 +70,80 @@ class SaidaFotos extends Component {
 	};
 
 	onChangeDropdown = (option, type) => {
-		this.setState({ idItem: option.key, descItem: option.label });
+		if (this.state.idItem !== "") {
+			this.changeItens();
+		}
+		const {
+			conforme,
+			descNaoConforme,
+			key,
+			label,
+			qtItem,
+			informaQtde
+		} = option;
+		this.setState({
+			idItem: key,
+			descItem: label,
+			conforme,
+			descNaoConforme,
+			qtItem,
+			informaQtde
+		});
+
+		this.adjustRadio(conforme);
 	};
 
 	onHandlePress = item => {
-		//TODO -> Abrir a foto
+		//TODO -> Selecionar o item na lateral
+		//     -> Abrir a foto
+		console.log("Item: ", item);
 	};
 
 	onRadioPress = data => {
-		console.log("Radio Button: ", data);
-		this.setState({ radioConforme: data });
+		// 0: conforme
+		// 1: não conforme
+		const { selected } = data[0];
+		const conforme = selected ? "S" : "N";
+		this.setState({ radioConforme: data, conforme });
+	};
+
+	changeItens = () => {
+		//If the item change this function updates the array of itens
+		const {
+			idItem,
+			descItem,
+			conforme,
+			descNaoConforme,
+			qtItem,
+			informaQtde
+		} = this.state;
+
+		const item = {
+			conforme,
+			descNaoConforme,
+			key: idItem,
+			label: descItem,
+			qtItem,
+			informaQtde
+		};
+
+		const itens = [
+			...this.state.itens.filter(item => {
+				return item.key !== idItem;
+			})
+		];
+
+		itens.push(item);
+		console.log("Itens: ", itens);
+		this.setState({ itens });
 	};
 
 	renderDados() {
 		//TODO -> Verificar essa rotina do RadioGroup
-		let selectedButton = this.state.radioConforme.find(e => e.selected == true);
+		/*		let selectedButton = this.state.radioConforme.find(e => e.selected == true);
 		selectedButton = selectedButton
 			? selectedButton.value
-			: this.state.radioConforme[0].label;
+			: this.state.radioConforme[0].label; */
 		return (
 			<View>
 				<Text style={styles.titleText}>Não conformidades</Text>
@@ -86,6 +158,8 @@ class SaidaFotos extends Component {
 				<RadioGroup
 					radioButtons={this.state.radioConforme}
 					onPress={this.onRadioPress}
+					flexDirection="row"
+					value={this.state.conforme}
 				/>
 
 				<InputWithTitle
@@ -95,6 +169,9 @@ class SaidaFotos extends Component {
 					numberOfLines={4}
 					size={116}
 					height={200}
+					onChangeText={value =>
+						this.handleInputChange("descNaoConforme", value)
+					}
 					value={this.state.descNaoConforme}
 				/>
 				<InputWithTitle
@@ -102,6 +179,9 @@ class SaidaFotos extends Component {
 					editable={true}
 					size={40}
 					value={this.state.qtItem}
+					onChangeText={value => this.handleInputChange("qtItem", value)}
+					visible={this.state.informaQtde}
+					keyboardType="numeric"
 				/>
 			</View>
 		);
@@ -113,42 +193,58 @@ class SaidaFotos extends Component {
 				return <View style={[styles.groupContainer, styles.groupEmpty]} />;
 			}
 			return (
-				<TouchableHighlight
-					underlayColor={styles.$underlayColor}
-					onPress={onPress}
-					style={styles.groupContainer}
-				>
-					<View style={styles.groupItens}>
-						<View style={styles.groupIcon}>
-							<Icon
-								name="camera"
-								size={scale(20)}
-								color={EStyleSheet.value("$lightGray")}
-								type="ion"
-							/>
+				<View style={styles.groupContainer}>
+					<TouchableHighlight
+						underlayColor={styles.$underlayColor}
+						onPress={onPress}
+						style={styles.pictureContainer}
+					>
+						<View style={styles.groupItens}>
+							<View>
+								<Icon
+									name="camera"
+									size={scale(20)}
+									color={EStyleSheet.value("$lightGray")}
+									type="ion"
+								/>
+							</View>
 						</View>
-						<Text style={styles.groupText}>{data.item}</Text>
-					</View>
-				</TouchableHighlight>
+					</TouchableHighlight>
+					<Text style={styles.groupText}>{data.item}</Text>
+				</View>
 			);
 		};
 		return (
 			<Query
-				query={GET_ITENS_BY_GRUPO}
-				variables={{ grupoItemId: this.state.grupo.id }}
+				query={GET_FROTA_ITENS_BY_GRUPO}
+				variables={{
+					id: this.state.frota.id,
+					grupoItemId: this.state.grupo.id
+				}}
 			>
-				{({ loading, error, data, refetch }) => {
+				{({ loading, error, data }) => {
 					if (loading) return <Text>Buscando os grupos</Text>;
 					if (error) {
 						return <Text>Error</Text>;
 					}
-					console.log("Dados", data, this.state.grupo.id);
-					//TODO ---> Separar os itens que não estão selecionados
+
+					if (this.state.itens.length === 0) {
+						data.frotaItensByGrupo.map(({ id, item, informaQtde }) => {
+							this.state.itens.push({
+								key: id,
+								label: item,
+								conforme: "S",
+								descNaoConforme: "",
+								qtItem: "1",
+								informaQtde
+							});
+						});
+					}
 					return (
 						<FlatList
-							data={createRows([...data.itensByGrupo], 4)}
+							data={createRows([...data.frotaItensByGrupo], 3)}
 							keyExtractor={item => item.id.toString()}
-							numColumns={4}
+							numColumns={3}
 							renderItem={({ item }) => (
 								<ListItemGrupo
 									data={item}
@@ -168,7 +264,7 @@ class SaidaFotos extends Component {
 				<View style={styles.asideInner}>{this.renderDados()}</View>
 				<View style={styles.backgroundInner}>
 					<Text style={styles.titleText}>{`FOTOS ${
-						this.state.grupoItem
+						this.state.grupo.grupoItem
 					}`}</Text>
 					{this.renderFotos()}
 				</View>
