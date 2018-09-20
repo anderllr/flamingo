@@ -52,7 +52,6 @@ export default {
 				const frota = await Frota.findById(id);
 				const grupo = await GrupoItem.findById(grupoItemId);
 				return grupo.itens.filter(i => {
-					console.log("Except: ", frota.exceptGrupos[0].exceptItens);
 					return !frota.exceptGrupos[0].exceptItens.find(
 						e => e.itemId === i.id
 					);

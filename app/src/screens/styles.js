@@ -121,6 +121,12 @@ const styles = EStyleSheet.create({
 	groupEmpty: {
 		backgroundColor: "transparent",
 		borderColor: "transparent"
+	},
+	separatorLine: {
+		width: "100%",
+		margin: scale(4),
+		height: verticalScale(2),
+		backgroundColor: "$backgroundColor"
 	}
 });
 

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, TouchableHighlight } from "react-native";
+import { Permissions } from "expo";
 import EStyleSheet from "react-native-extended-stylesheet";
-import RadioGroup from "react-native-radio-buttons-group";
+import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { Query } from "react-apollo";
 import { scale } from "react-native-size-matters";
 
@@ -28,40 +29,23 @@ class SaidaFotos extends Component {
 			idItem: "",
 			descItem: "",
 			informaQtde: true,
-			radioConforme: [
-				{
-					label: "Conforme?",
-					value: "S"
-				},
-				{
-					label: "Não conforme?",
-					value: "N"
-				}
-			]
+			indiceConforme: 0,
+			hasPermission: false
 		};
 	}
-	adjustRadio = conforme => {
-		const radioConforme = [
-			{
-				label: "Conforme?",
-				value: conforme
-			},
-			{
-				label: "Não conforme?",
-				value: conforme === "S" ? "N" : "S"
-			}
-		];
 
-		this.setState({ radioConforme });
-	};
-	componentWillMount() {
+	async componentWillMount() {
 		const { navigation } = this.props;
 		const grupo = navigation.getParam("grupo", {});
 		const frota = navigation.getParam("frota", {});
 		this.setState({ grupo, frota });
+
+		const { status } = await Permissions.askAsync(Permissions.CAMERA);
+		this.setState({ hasPermission: status === "granted" });
 	}
 
 	handleInputChange = (field, value) => {
+		//If the item change this function updates the array of itens
 		const newState = {
 			...this.state,
 			[field]: value
@@ -70,8 +54,10 @@ class SaidaFotos extends Component {
 	};
 
 	onChangeDropdown = (option, type) => {
+		let itens = [...this.state.itens];
 		if (this.state.idItem !== "") {
-			this.changeItens();
+			//se mudou o item salva o anterior
+			itens = this.newItens();
 		}
 		const {
 			conforme,
@@ -81,34 +67,71 @@ class SaidaFotos extends Component {
 			qtItem,
 			informaQtde
 		} = option;
+
+		//TODO descItem não está mudando
 		this.setState({
 			idItem: key,
 			descItem: label,
 			conforme,
 			descNaoConforme,
 			qtItem,
-			informaQtde
+			informaQtde,
+			itens,
+			indiceConforme: conforme === "S" ? 0 : 1
 		});
-
-		this.adjustRadio(conforme);
 	};
 
-	onHandlePress = item => {
-		//TODO -> Selecionar o item na lateral
-		//     -> Abrir a foto
-		console.log("Item: ", item);
+	onHandlePress = ({ id }) => {
+		//Seleciona o item se está clicando em um diferente
+		if (id && id !== this.state.idItem) {
+			const item = [
+				...this.state.itens.filter(it => {
+					return it.key === id;
+				})
+			];
+
+			if (item.length > 0) {
+				let itens = [...this.state.itens];
+				if (this.state.idItem !== "") {
+					//se mudou o item salva o anterior
+					itens = this.newItens();
+				}
+				const {
+					conforme,
+					descNaoConforme,
+					qtItem,
+					key,
+					label,
+					informaQtde
+				} = item[0];
+				const newState = {
+					...this.state,
+					itens,
+					conforme,
+					descNaoConforme,
+					qtItem,
+					idItem: key,
+					descItem: label,
+					informaQtde,
+					indiceConforme: conforme === "S" ? 0 : 1
+				};
+				this.setState(newState);
+			}
+		}
 	};
 
-	onRadioPress = data => {
-		// 0: conforme
-		// 1: não conforme
-		const { selected } = data[0];
-		const conforme = selected ? "S" : "N";
-		this.setState({ radioConforme: data, conforme });
+	onHandleSave = async () => {
+		let itens = [...this.state.itens];
+		if (this.state.idItem !== "") {
+			//se mudou o item salva o anterior
+			itens = this.newItens();
+
+			this.setState({ itens });
+		}
+		console.log("State: ", this.state);
 	};
 
-	changeItens = () => {
-		//If the item change this function updates the array of itens
+	newItens = () => {
 		const {
 			idItem,
 			descItem,
@@ -126,24 +149,21 @@ class SaidaFotos extends Component {
 			qtItem,
 			informaQtde
 		};
-
 		const itens = [
-			...this.state.itens.filter(item => {
-				return item.key !== idItem;
+			...this.state.itens.filter(it => {
+				return it.key !== item.key;
 			})
 		];
 
 		itens.push(item);
-		console.log("Itens: ", itens);
-		this.setState({ itens });
+		return itens;
 	};
 
+	onRadioPress(index, value) {
+		this.setState({ conforme: value, indiceConforme: index });
+	}
+
 	renderDados() {
-		//TODO -> Verificar essa rotina do RadioGroup
-		/*		let selectedButton = this.state.radioConforme.find(e => e.selected == true);
-		selectedButton = selectedButton
-			? selectedButton.value
-			: this.state.radioConforme[0].label; */
 		return (
 			<View>
 				<Text style={styles.titleText}>Não conformidades</Text>
@@ -156,11 +176,18 @@ class SaidaFotos extends Component {
 					onChange={option => this.onChangeDropdown(option, "item")}
 				/>
 				<RadioGroup
-					radioButtons={this.state.radioConforme}
-					onPress={this.onRadioPress}
-					flexDirection="row"
-					value={this.state.conforme}
-				/>
+					onSelect={(index, value) => this.onRadioPress(index, value)}
+					selectedIndex={this.state.indiceConforme}
+					style={{ flexDirection: "row" }}
+				>
+					<RadioButton value={"S"}>
+						<Text>Conforme?</Text>
+					</RadioButton>
+
+					<RadioButton value={"N"}>
+						<Text>Não Conforme?</Text>
+					</RadioButton>
+				</RadioGroup>
 
 				<InputWithTitle
 					title="Observações"
@@ -199,16 +226,7 @@ class SaidaFotos extends Component {
 						onPress={onPress}
 						style={styles.pictureContainer}
 					>
-						<View style={styles.groupItens}>
-							<View>
-								<Icon
-									name="camera"
-									size={scale(20)}
-									color={EStyleSheet.value("$lightGray")}
-									type="ion"
-								/>
-							</View>
-						</View>
+						<View style={styles.groupItens} />
 					</TouchableHighlight>
 					<Text style={styles.groupText}>{data.item}</Text>
 				</View>
@@ -267,6 +285,16 @@ class SaidaFotos extends Component {
 						this.state.grupo.grupoItem
 					}`}</Text>
 					{this.renderFotos()}
+					<View style={styles.separatorLine} />
+					<View style={{ alignItems: "flex-end" }}>
+						<RoundButton
+							text="SALVAR"
+							width={60}
+							height={30}
+							fontSize={8}
+							onPress={this.onHandleSave}
+						/>
+					</View>
 				</View>
 			</Container>
 		);
