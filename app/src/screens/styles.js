@@ -95,7 +95,7 @@ const styles = EStyleSheet.create({
 		borderWidth: scale(1),
 		flexGrow: 1,
 		flexBasis: 0,
-		aspectRatio: 1,
+		aspectRatio: 1.2,
 		margin: scale(5),
 		padding: moderateScale(5)
 	},

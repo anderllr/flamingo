@@ -2,7 +2,7 @@ import { createStackNavigator } from "react-navigation";
 import { StatusBar } from "react-native";
 
 import { Login, Saida, Vistoria, SaidaFotos } from "../screens";
-import { CameraScreen } from "../components/CameraScreen";
+import { CameraScreen, Photo, GalleryScreen } from "../components/CameraScreen";
 
 const LoginStack = createStackNavigator(
 	{
@@ -57,16 +57,12 @@ const HomeStack = createStackNavigator(
 		CameraScreen: {
 			screen: CameraScreen,
 			navigationOptions: {
-				headerTitle: "Câmera",
-				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				header: null
 			}
 		}
 	},
 	{
-		initialRouteName: "Photo",
+		initialRouteName: "Saida",
 		headerMode: "screen"
 	}
 );

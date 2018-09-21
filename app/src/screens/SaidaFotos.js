@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, TouchableHighlight } from "react-native";
-import { Permissions } from "expo";
+import { Permissions, FileSystem } from "expo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { Query } from "react-apollo";
-import { scale } from "react-native-size-matters";
 
 import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
 
@@ -15,6 +14,9 @@ import { Dropdown } from "../components/Dropdown";
 import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 import { createRows } from "../utils/utils";
+import { Photo } from "../components/CameraScreen";
+
+const PHOTOS_DIR = FileSystem.documentDirectory + "flamingo";
 
 class SaidaFotos extends Component {
 	constructor(props) {
@@ -30,7 +32,8 @@ class SaidaFotos extends Component {
 			descItem: "",
 			informaQtde: true,
 			indiceConforme: 0,
-			hasPermission: false
+			hasPermission: false,
+			showPhotos: true
 		};
 	}
 
@@ -39,9 +42,11 @@ class SaidaFotos extends Component {
 		const grupo = navigation.getParam("grupo", {});
 		const frota = navigation.getParam("frota", {});
 		this.setState({ grupo, frota });
-
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
-		this.setState({ hasPermission: status === "granted" });
+		const roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+		this.setState({
+			hasPermission: status === "granted" && roll.status === "granted"
+		});
 	}
 
 	handleInputChange = (field, value) => {
@@ -113,11 +118,20 @@ class SaidaFotos extends Component {
 					idItem: key,
 					descItem: label,
 					informaQtde,
-					indiceConforme: conforme === "S" ? 0 : 1
+					indiceConforme: conforme === "S" ? 0 : 1,
+					showPhotos: false
 				};
 				this.setState(newState);
 			}
 		}
+		this.props.navigation.navigate("CameraScreen", {
+			fileName: `vistoria_${id}`,
+			refreshList: this.refreshList.bind(this)
+		});
+	};
+
+	refreshList = () => {
+		this.setState({ showPhotos: true });
 	};
 
 	onHandleSave = async () => {
@@ -128,7 +142,6 @@ class SaidaFotos extends Component {
 
 			this.setState({ itens });
 		}
-		console.log("State: ", this.state);
 	};
 
 	newItens = () => {
@@ -214,6 +227,10 @@ class SaidaFotos extends Component {
 		);
 	}
 
+	renderPhoto = fileName => (
+		<Photo key={fileName} uri={`${PHOTOS_DIR}/${fileName}`} />
+	);
+
 	renderFotos() {
 		const ListItemGrupo = ({ data, onPress }) => {
 			if (data.empty) {
@@ -225,8 +242,14 @@ class SaidaFotos extends Component {
 						underlayColor={styles.$underlayColor}
 						onPress={onPress}
 						style={styles.pictureContainer}
+						activeOpacity={1}
 					>
-						<View style={styles.groupItens} />
+						<View style={styles.groupItens}>
+							<Photo
+								hasPermission={this.state.hasPermission}
+								fileName={`vistoria_${data.id}`}
+							/>
+						</View>
 					</TouchableHighlight>
 					<Text style={styles.groupText}>{data.item}</Text>
 				</View>
@@ -284,7 +307,7 @@ class SaidaFotos extends Component {
 					<Text style={styles.titleText}>{`FOTOS ${
 						this.state.grupo.grupoItem
 					}`}</Text>
-					{this.renderFotos()}
+					{this.state.showPhotos && this.renderFotos()}
 					<View style={styles.separatorLine} />
 					<View style={{ alignItems: "flex-end" }}>
 						<RoundButton

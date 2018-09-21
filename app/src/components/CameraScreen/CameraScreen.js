@@ -1,10 +1,4 @@
-import {
-	Constants,
-	Camera,
-	FileSystem,
-	Permissions,
-	BarCodeScanner
-} from "expo";
+import { Constants, Camera, FileSystem, Permissions } from "expo";
 import React, { Component } from "react";
 import {
 	Alert,
@@ -15,7 +9,7 @@ import {
 	Slider,
 	Platform
 } from "react-native";
-import GalleryScreen from "./GalleryScreen";
+import { withNavigationFocus } from "react-navigation";
 import isIPhoneX from "react-native-is-iphonex";
 
 import {
@@ -60,7 +54,9 @@ const wbIcons = {
 	incandescent: "wb-incandescent"
 };
 
-export default class CameraScreen extends Component {
+const PHOTOS_DIR = FileSystem.documentDirectory + "flamingo";
+
+class CameraScreen extends Component {
 	state = {
 		flash: "off",
 		zoom: 0,
@@ -69,28 +65,30 @@ export default class CameraScreen extends Component {
 		whiteBalance: "auto",
 		ratio: "16:9",
 		ratios: [],
-		barcodeScanning: false,
-		faceDetecting: false,
-		faces: [],
-		newPhotos: false,
 		permissionsGranted: false,
 		pictureSize: undefined,
 		pictureSizes: [],
 		pictureSizeId: 0,
-		showGallery: false,
-		showMoreOptions: false
+		showMoreOptions: false,
+		fileName: ""
 	};
 
 	async componentWillMount() {
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
+		const { rollStatus } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 		this.setState({ permissionsGranted: status === "granted" });
-	}
+		this.setState({ rollPermissionsGranted: rollStatus === "granted" });
 
-	componentDidMount() {
-		FileSystem.makeDirectoryAsync(
-			FileSystem.documentDirectory + "photos"
-		).catch(e => {
-			console.log(e, "Directory exists");
+		var folderInfo = await FileSystem.getInfoAsync(PHOTOS_DIR);
+		if (!folderInfo.exists) await FileSystem.makeDirectoryAsync(PHOTOS_DIR);
+
+		const { navigation } = this.props;
+		const fileName = navigation.getParam("fileName", {});
+		const refreshList = navigation.getParam("refreshList", {});
+		this.setState({ fileName, refreshList });
+
+		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${fileName}.jpg`, {
+			idempotent: true
 		});
 	}
 
@@ -99,22 +97,10 @@ export default class CameraScreen extends Component {
 		return ratios;
 	};
 
-	toggleView = () =>
-		this.setState({ showGallery: !this.state.showGallery, newPhotos: false });
-
-	toggleMoreOptions = () =>
-		this.setState({ showMoreOptions: !this.state.showMoreOptions });
-
-	toggleFacing = () =>
-		this.setState({ type: this.state.type === "back" ? "front" : "back" });
-
 	toggleFlash = () =>
 		this.setState({ flash: flashModeOrder[this.state.flash] });
 
 	setRatio = ratio => this.setState({ ratio });
-
-	toggleWB = () =>
-		this.setState({ whiteBalance: wbOrder[this.state.whiteBalance] });
 
 	toggleFocus = () =>
 		this.setState({ autoFocus: this.state.autoFocus === "on" ? "off" : "on" });
@@ -131,33 +117,30 @@ export default class CameraScreen extends Component {
 
 	setFocusDepth = depth => this.setState({ depth });
 
-	toggleBarcodeScanning = () =>
-		this.setState({ barcodeScanning: !this.state.barcodeScanning });
-
-	toggleFaceDetection = () =>
-		this.setState({ faceDetecting: !this.state.faceDetecting });
-
 	takePicture = () => {
 		if (this.camera) {
-			this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+			this.camera.takePictureAsync().then(this.onPictureSaved);
 		}
 	};
 
-	handleMountError = ({ message }) => console.error(message);
+	handleMountError = ({ message }) => console.error("Mount: ", message);
 
 	onPictureSaved = async photo => {
+		console.log("Vai deletar a antiga...");
+		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${this.state.fileName}.jpg`, {
+			idempotent: true
+		});
+
+		console.log("Agora vai salvar...");
 		await FileSystem.moveAsync({
 			from: photo.uri,
-			to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`
+			to: `${PHOTOS_DIR}/${this.state.fileName}.jpg`
 		});
-		this.setState({ newPhotos: true });
-	};
 
-	onBarCodeScanned = code => {
-		this.setState(
-			{ barcodeScanning: !this.state.barcodeScanning },
-			Alert.alert(`Barcode found: ${code.data}`)
-		);
+		if (typeof this.state.refreshList === "function") {
+			this.state.refreshList();
+		}
+		this.props.navigation.goBack();
 	};
 
 	onFacesDetected = ({ faces }) => this.setState({ faces });
@@ -200,77 +183,6 @@ export default class CameraScreen extends Component {
 		});
 	};
 
-	renderGallery() {
-		return <GalleryScreen onPress={this.toggleView.bind(this)} />;
-	}
-
-	renderFace({ bounds, faceID, rollAngle, yawAngle }) {
-		return (
-			<View
-				key={faceID}
-				transform={[
-					{ perspective: 600 },
-					{ rotateZ: `${rollAngle.toFixed(0)}deg` },
-					{ rotateY: `${yawAngle.toFixed(0)}deg` }
-				]}
-				style={[
-					styles.face,
-					{
-						...bounds.size,
-						left: bounds.origin.x,
-						top: bounds.origin.y
-					}
-				]}
-			>
-				<Text style={styles.faceText}>ID: {faceID}</Text>
-				<Text style={styles.faceText}>rollAngle: {rollAngle.toFixed(0)}</Text>
-				<Text style={styles.faceText}>yawAngle: {yawAngle.toFixed(0)}</Text>
-			</View>
-		);
-	}
-
-	renderLandmarksOfFace(face) {
-		const renderLandmark = position =>
-			position && (
-				<View
-					style={[
-						styles.landmark,
-						{
-							left: position.x - landmarkSize / 2,
-							top: position.y - landmarkSize / 2
-						}
-					]}
-				/>
-			);
-		return (
-			<View key={`landmarks-${face.faceID}`}>
-				{renderLandmark(face.leftEyePosition)}
-				{renderLandmark(face.rightEyePosition)}
-				{renderLandmark(face.leftEarPosition)}
-				{renderLandmark(face.rightEarPosition)}
-				{renderLandmark(face.leftCheekPosition)}
-				{renderLandmark(face.rightCheekPosition)}
-				{renderLandmark(face.leftMouthPosition)}
-				{renderLandmark(face.mouthPosition)}
-				{renderLandmark(face.rightMouthPosition)}
-				{renderLandmark(face.noseBasePosition)}
-				{renderLandmark(face.bottomMouthPosition)}
-			</View>
-		);
-	}
-
-	renderFaces = () => (
-		<View style={styles.facesContainer} pointerEvents="none">
-			{this.state.faces.map(this.renderFace)}
-		</View>
-	);
-
-	renderLandmarks = () => (
-		<View style={styles.facesContainer} pointerEvents="none">
-			{this.state.faces.map(this.renderLandmarksOfFace)}
-		</View>
-	);
-
 	renderNoPermissions = () => (
 		<View style={styles.noPermissions}>
 			<Text style={{ color: "white" }}>
@@ -281,19 +193,9 @@ export default class CameraScreen extends Component {
 
 	renderTopBar = () => (
 		<View style={styles.topBar}>
-			<TouchableOpacity style={styles.toggleButton} onPress={this.toggleFacing}>
-				<Ionicons name="ios-reverse-camera" size={32} color="white" />
-			</TouchableOpacity>
 			<TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
 				<MaterialIcons
 					name={flashIcons[this.state.flash]}
-					size={32}
-					color="white"
-				/>
-			</TouchableOpacity>
-			<TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-				<MaterialIcons
-					name={wbIcons[this.state.whiteBalance]}
 					size={32}
 					color="white"
 				/>
@@ -313,12 +215,6 @@ export default class CameraScreen extends Component {
 
 	renderBottomBar = () => (
 		<View style={styles.bottomBar}>
-			<TouchableOpacity
-				style={styles.bottomButton}
-				onPress={this.toggleMoreOptions}
-			>
-				<Octicons name="kebab-horizontal" size={30} color="white" />
-			</TouchableOpacity>
 			<View style={{ flex: 0.4 }}>
 				<TouchableOpacity
 					onPress={this.takePicture}
@@ -326,54 +222,6 @@ export default class CameraScreen extends Component {
 				>
 					<Ionicons name="ios-radio-button-on" size={70} color="white" />
 				</TouchableOpacity>
-			</View>
-			<TouchableOpacity style={styles.bottomButton} onPress={this.toggleView}>
-				<View>
-					<Foundation name="thumbnails" size={30} color="white" />
-					{this.state.newPhotos && <View style={styles.newPhotosDot} />}
-				</View>
-			</TouchableOpacity>
-		</View>
-	);
-
-	renderMoreOptions = () => (
-		<View style={styles.options}>
-			<View style={styles.detectors}>
-				<TouchableOpacity onPress={this.toggleFaceDetection}>
-					<MaterialIcons
-						name="tag-faces"
-						size={32}
-						color={this.state.faceDetecting ? "white" : "#858585"}
-					/>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={this.toggleBarcodeScanning}>
-					<MaterialCommunityIcons
-						name="barcode-scan"
-						size={32}
-						color={this.state.barcodeScanning ? "white" : "#858585"}
-					/>
-				</TouchableOpacity>
-			</View>
-
-			<View style={styles.pictureSizeContainer}>
-				<Text style={styles.pictureQualityLabel}>Picture quality</Text>
-				<View style={styles.pictureSizeChooser}>
-					<TouchableOpacity
-						onPress={this.previousPictureSize}
-						style={{ padding: 6 }}
-					>
-						<Ionicons name="md-arrow-dropleft" size={14} color="white" />
-					</TouchableOpacity>
-					<View style={styles.pictureSizeLabel}>
-						<Text style={{ color: "white" }}>{this.state.pictureSize}</Text>
-					</View>
-					<TouchableOpacity
-						onPress={this.nextPictureSize}
-						style={{ padding: 6 }}
-					>
-						<Ionicons name="md-arrow-dropright" size={14} color="white" />
-					</TouchableOpacity>
-				</View>
 			</View>
 		</View>
 	);
@@ -385,35 +233,17 @@ export default class CameraScreen extends Component {
 					this.camera = ref;
 				}}
 				style={styles.camera}
-				onCameraReady={this.collectPictureSizes}
 				type={this.state.type}
 				flashMode={this.state.flash}
 				autoFocus={this.state.autoFocus}
-				zoom={this.state.zoom}
 				whiteBalance={this.state.whiteBalance}
 				ratio={this.state.ratio}
 				pictureSize={this.state.pictureSize}
 				onMountError={this.handleMountError}
-				onFacesDetected={
-					this.state.faceDetecting ? this.onFacesDetected : undefined
-				}
-				onFaceDetectionError={this.onFaceDetectionError}
-				barCodeScannerSettings={{
-					barCodeTypes: [
-						BarCodeScanner.Constants.BarCodeType.qr,
-						BarCodeScanner.Constants.BarCodeType.pdf417
-					]
-				}}
-				onBarCodeScanned={
-					this.state.barcodeScanning ? this.onBarCodeScanned : undefined
-				}
 			>
 				{this.renderTopBar()}
 				{this.renderBottomBar()}
 			</Camera>
-			{this.state.faceDetecting && this.renderFaces()}
-			{this.state.faceDetecting && this.renderLandmarks()}
-			{this.state.showMoreOptions && this.renderMoreOptions()}
 		</View>
 	);
 
@@ -421,10 +251,7 @@ export default class CameraScreen extends Component {
 		const cameraScreenContent = this.state.permissionsGranted
 			? this.renderCamera()
 			: this.renderNoPermissions();
-		const content = this.state.showGallery
-			? this.renderGallery()
-			: cameraScreenContent;
-		return <View style={styles.container}>{content}</View>;
+		return <View style={styles.container}>{cameraScreenContent}</View>;
 	}
 }
 
@@ -482,15 +309,6 @@ const styles = StyleSheet.create({
 		height: 58,
 		justifyContent: "center",
 		alignItems: "center"
-	},
-	newPhotosDot: {
-		position: "absolute",
-		top: 0,
-		right: -5,
-		width: 8,
-		height: 8,
-		borderRadius: 4,
-		backgroundColor: "#4630EB"
 	},
 	options: {
 		position: "absolute",
@@ -561,3 +379,5 @@ const styles = StyleSheet.create({
 		flexDirection: "row"
 	}
 });
+
+export default withNavigationFocus(CameraScreen);

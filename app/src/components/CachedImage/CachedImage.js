@@ -23,8 +23,7 @@ export default class CachedImage extends Component {
 				: "";
 
 		const name = shorthash.unique(uri);
-		//		console.log(name);
-		const path = `${FileSystem.cacheDirectory}${name}`;
+		const path = `${FileSystem.documentDirectory}flamingo/${name}`;
 		const image = await FileSystem.getInfoAsync(path);
 		if (image.exists) {
 			//			console.log("read image from cache");
