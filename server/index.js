@@ -9,7 +9,7 @@ const env = require("dotenv").config();
 import schema from "./src/graphql/schema";
 import { db } from "./src/models";
 import { tokenMiddleware } from "./src/utils/tokenMiddleware";
-import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
+//import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
 
 import { MONGODB_URI, MONGO_PASSWORD, MONGO_USER } from "./src/utils/utils";
 
@@ -51,8 +51,8 @@ if (process.env.NODE_ENV === "production") {
 	});
 }
 
-verifyAdmin();
-verifyFrota();
+//verifyAdmin();
+//verifyFrota();
 
 app.use(
 	cors({
