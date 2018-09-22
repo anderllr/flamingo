@@ -4,37 +4,32 @@ import graphqlHTTP from "express-graphql";
 import mongoose from "mongoose";
 import cors from "cors";
 import { apolloUploadExpress } from "apollo-upload-server";
+const env = require("dotenv").config();
 
 import schema from "./src/graphql/schema";
 import { db } from "./src/models";
 import { tokenMiddleware } from "./src/utils/tokenMiddleware";
 import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
 
-import {
-	MONGO_URI,
-	MONGO_DB,
-	MONGO_PASSWORD,
-	MONGO_USER
-} from "./src/utils/utils";
+import { MONGODB_URI, MONGO_PASSWORD, MONGO_USER } from "./src/utils/utils";
 
 const APP_NAME = "flamingoapp";
 
-const MONGO_URI = `mongodb://localhost:27017/${APP_NAME}`;
+const MONGO_LOCAL = `mongodb://localhost:27017/${APP_NAME}`;
 
 const MONGO_URI = MONGODB_URI
 	? MONGODB_URI
-	: `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${MONGO_DB}`;
+	: process.env.NODE_ENV !== "production"
+		? MONGO_LOCAL
+		: `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${APP_NAME}`;
+
+console.log("Environment: ", process.env.NODE_ENV);
 
 mongoose.connect(
 	MONGO_URI,
 	{
 		useNewUrlParser: true
 	}
-);
-
-mongoose.connect(
-	MONGO_URI,
-	{ useNewUrlParser: true }
 );
 
 const PORT = 3002;
@@ -68,7 +63,7 @@ app.use(
 	bodyParser.json(),
 	graphqlHTTP(req => ({
 		schema: schema,
-		graphiql: true,
+		graphiql: process.env.NODE_ENV !== "production",
 		context: req["context"]
 	}))
 );
