@@ -23,7 +23,7 @@ const MONGO_URI = MONGODB_URI
 		? MONGO_LOCAL
 		: `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${APP_NAME}`;
 
-console.log("Environment: ", process.env.NODE_ENV);
+console.log("Mongo Link: ", MONGO_URI);
 
 mongoose.connect(
 	MONGO_URI,
@@ -41,6 +41,15 @@ const dbRequest = (req, res, next) => {
 	req["context"]["db"] = db;
 	next();
 };
+
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static("../client/build"));
+
+	// Return the main index.html, so react-router render the route in the client
+	app.get("/", (req, res) => {
+		res.sendFile(path.resolve("../client/build", "index.html"));
+	});
+}
 
 verifyAdmin();
 verifyFrota();
