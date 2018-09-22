@@ -6,7 +6,8 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "nodemon --exec babel-node index.js",
-		"production": "pm2 start --interpreter babel-node index.js"
+		"productionNew": "pm2 start --interpreter babel-node index.js",
+		"production": "babel-node index.js"
 	},
 	"keywords": [],
 	"author": "",
