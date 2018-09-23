@@ -36,7 +36,7 @@ EStyleSheet.build({
 	$shadow: "#d2d2d2"
 });
 
-const BASE_URL = "http://192.168.1.109:3002/flamingoql";
+const BASE_URL = "https://142.93.90.171/flamingoql";
 const uploadLink = createUploadLink({ uri: BASE_URL });
 
 const cache = new InMemoryCache();
@@ -45,7 +45,7 @@ const middlewareAuth = setContext(async (req, { headers }) => {
 	//TODO Change temporaly token that puted to
 	//	const token = await getToken();
 	const token =
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1MzYyNTU5NzN9.a6yXwGbs-HAemjAQX7KPsVk1ifEZNrwaX7ZG8OjD2ps";
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YmE3OTIwMzhhM2EyMTY3NGI4NjQ5OGMiLCJpYXQiOjE1Mzc3MjQwNjJ9.kNVYHJ2T1eBMHfbaNQ_k-X41R2xP9jVrmaA8uHZ4Lgg";
 	return {
 		...headers,
 		headers: {

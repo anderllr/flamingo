@@ -138,7 +138,7 @@ class GrupoItem extends Component {
 		const grupoItem = { ...grupo };
 		const imageUrl =
 			grupoItem.imagem !== ""
-				? `http://localhost:3002/${grupoItem.imagem}`
+				? `https://142.93.90.171/${grupoItem.imagem}`
 				: "";
 		this.setState({
 			grupoItem,
