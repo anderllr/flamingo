@@ -80,6 +80,7 @@ class Login extends Component {
 											this.loginHandler(token);
 										})
 										.catch(error => {
+											console.log("Error: ", error);
 											const { graphQLErrors } = error;
 											if (graphQLErrors) {
 												this.props.alertWithType(

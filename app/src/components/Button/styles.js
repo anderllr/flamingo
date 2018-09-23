@@ -33,7 +33,7 @@ const styles = EStyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 		flexDirection: "row",
-		justifyContent: "flex-start",
+		justifyContent: "center",
 		paddingLeft: moderateScale(15)
 	},
 	text: {

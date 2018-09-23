@@ -19,7 +19,7 @@ export default class CachedImage extends Component {
 	componentDidMount = async () => {
 		const uri =
 			this.props.imageUrl !== ""
-				? `https://142.93.90.171:3002/${this.props.imageUrl}`
+				? `http://142.93.90.171/${this.props.imageUrl}`
 				: "";
 
 		const name = shorthash.unique(uri);

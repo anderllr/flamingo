@@ -31,7 +31,6 @@ class Vistoria extends Component {
 
 	onHandlePress = item => {
 		//TODO Finish handle to other pages
-		console.log(`Clicou props ${this.state.active}`);
 		this.props.navigation.navigate("Saida", {
 			frota: item
 		});

@@ -36,7 +36,7 @@ EStyleSheet.build({
 	$shadow: "#d2d2d2"
 });
 
-const BASE_URL = "https://142.93.90.171/flamingoql";
+const BASE_URL = "http://142.93.90.171/flamingoql";
 const uploadLink = createUploadLink({ uri: BASE_URL });
 
 const cache = new InMemoryCache();
@@ -64,7 +64,7 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			authenticated: true, //TODO change here to false to avoid problems
+			authenticated: false, //TODO change here to false to avoid problems
 			fontLoaded: false
 		};
 	}

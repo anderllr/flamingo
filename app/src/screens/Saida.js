@@ -41,12 +41,12 @@ class Saida extends Component {
 		const { navigation } = this.props;
 		//TODO --> Tirar o frota default
 		const frota = navigation.getParam("frota", {
-			id: "5b8f0efbeff21737f7b81421",
+			id: "5ba792038a3a21674b864956",
 			nrFrota: 1,
 			name: "TM 7040 - NEW HOLLAND NOVO",
 			ano: 2013,
 			chassi: "HCCZ7040JDCC04148",
-			caminhao: true
+			caminhao: false
 		});
 		this.setState({ frota });
 	}
@@ -267,7 +267,7 @@ class Saida extends Component {
 				<View style={styles.backgroundInner}>
 					<Text style={styles.titleText}>Locação - Grupos da Frota</Text>
 					<ListFrotaGrupos
-						id="5b8f0efbeff21737f7b81421"
+						id={this.state.frota.id}
 						columns={4}
 						onHandlePress={this.onHandlePress}
 					/>

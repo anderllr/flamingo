@@ -51,11 +51,13 @@ export default {
 			async (parent, { id, grupoItemId }, { db: { GrupoItem, Frota } }) => {
 				const frota = await Frota.findById(id);
 				const grupo = await GrupoItem.findById(grupoItemId);
-				return grupo.itens.filter(i => {
-					return !frota.exceptGrupos[0].exceptItens.find(
-						e => e.itemId === i.id
-					);
-				});
+				if (frota.exceptGrupos) {
+					return grupo.itens.filter(i => {
+						return !frota.exceptGrupos[0].exceptItens.find(
+							e => e.itemId === i.id
+						);
+					});
+				} else return grupo.itens;
 			}
 		)
 	},

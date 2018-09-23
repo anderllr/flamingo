@@ -266,6 +266,7 @@ class SaidaFotos extends Component {
 				{({ loading, error, data }) => {
 					if (loading) return <Text>Buscando os grupos</Text>;
 					if (error) {
+						console.log("Error: ", error);
 						return <Text>Error</Text>;
 					}
 

@@ -62,7 +62,7 @@ const HomeStack = createStackNavigator(
 		}
 	},
 	{
-		initialRouteName: "Saida",
+		initialRouteName: "Vistoria",
 		headerMode: "screen"
 	}
 );

@@ -14,11 +14,14 @@ const RoundButton = props => {
 		fontSize,
 		color,
 		active = true,
-		icon = null
+		icon = null,
+		size,
+		sizeP
 	} = props;
 
 	const containerStyle = [styles.container];
 	const textStyle = [styles.text];
+	const wrapper = [styles.wrapper];
 
 	let sizeIcon = 0;
 	let colorIcon = "#fff";
@@ -27,6 +30,8 @@ const RoundButton = props => {
 		sizeIcon = height ? scale(height / 3) : scale(10);
 		//Put margin on text
 		textStyle.push({ marginLeft: scale(5) });
+
+		wrapper.push({ justifyContent: "flex-start" });
 	}
 
 	if (height) {
@@ -55,9 +60,17 @@ const RoundButton = props => {
 		textStyle.push(styles.inactiveText);
 	}
 
+	if (size) {
+		containerStyle.push({ width: scale(props.size) });
+	}
+
+	if (sizeP) {
+		containerStyle.push({ width: props.sizeP });
+	}
+
 	return (
 		<TouchableHighlight style={containerStyle} onPress={props.onPress}>
-			<View style={styles.wrapper}>
+			<View style={wrapper}>
 				{icon && (
 					<Icon
 						name={icon.name}
@@ -80,7 +93,9 @@ RoundButton.propTypes = {
 	active: PropTypes.bool,
 	height: PropTypes.number,
 	icon: PropTypes.object,
-	widthP: PropTypes.string
+	widthP: PropTypes.string,
+	size: PropTypes.number,
+	sizeP: PropTypes.string
 };
 
 export default RoundButton;
