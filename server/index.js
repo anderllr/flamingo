@@ -17,20 +17,22 @@ const APP_NAME = "flamingoapp";
 
 const MONGO_LOCAL = `mongodb://127.0.0.1:27017/${APP_NAME}`;
 
-const MONGO_URI = MONGODB_URI
-	? MONGODB_URI
-	: process.env.NODE_ENV !== "production"
-		? MONGO_LOCAL
-		: `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@127.0.0.1:27017/${APP_NAME}`;
+const MONGO_URI = MONGODB_URI ? MONGODB_URI : MONGO_LOCAL;
 
+let options = {
+	useNewUrlParser: true
+};
+
+if (MONGO_USER && MONGO_PASSWORD) {
+	options.user = MONGO_USER;
+	options.pass = MONGO_PASSWORD;
+}
 console.log("Mongo Link: ", MONGO_URI);
-console.log("Node env: ", process.env.NODE_ENV);
+console.log("Options: ", options);
 
 mongoose.connect(
 	MONGO_URI,
-	{
-		useNewUrlParser: true
-	}
+	options
 );
 
 const PORT = 3002;
