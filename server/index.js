@@ -19,9 +19,7 @@ const MONGO_LOCAL = `mongodb://127.0.0.1:27017/${APP_NAME}`;
 
 const MONGO_URI = MONGODB_URI ? MONGODB_URI : MONGO_LOCAL;
 
-let options = {
-	useNewUrlParser: true
-};
+let options = {};
 
 if (MONGO_USER && MONGO_PASSWORD) {
 	options.user = MONGO_USER;
