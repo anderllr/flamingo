@@ -9,7 +9,7 @@ const env = require("dotenv").config();
 import schema from "./src/graphql/schema";
 import { db } from "./src/models";
 import { tokenMiddleware } from "./src/utils/tokenMiddleware";
-//import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
+import { verifyAdmin, verifyFrota } from "./src/utils/firstData";
 
 import { MONGODB_URI, MONGO_PASSWORD, MONGO_USER } from "./src/utils/utils";
 
@@ -19,15 +19,17 @@ const MONGO_LOCAL = `mongodb://127.0.0.1:27017/${APP_NAME}`;
 
 const MONGO_URI = MONGODB_URI ? MONGODB_URI : MONGO_LOCAL;
 
-let options = {};
-
+let options = {
+	useNewUrlParser: true
+};
+/*
 if (MONGO_USER && MONGO_PASSWORD) {
 	options.user = MONGO_USER;
 	options.pass = MONGO_PASSWORD;
 }
 console.log("Mongo Link: ", MONGO_URI);
 console.log("Options: ", options);
-
+*/
 mongoose.connect(
 	MONGO_URI,
 	options
@@ -52,8 +54,8 @@ if (process.env.NODE_ENV === "production") {
 	});
 }
 
-//verifyAdmin();
-//verifyFrota();
+verifyAdmin();
+verifyFrota();
 
 app.use(
 	cors({
