@@ -10,6 +10,7 @@ const clienteTypes = `
         endereco: String!
         telefone: String!
         celular: String  
+        maplink: String
         obs: String
     }
 
@@ -22,6 +23,7 @@ const clienteTypes = `
         endereco: String!
         telefone: String!
         celular: String  
+        maplink: String
         obs: String
     }
 

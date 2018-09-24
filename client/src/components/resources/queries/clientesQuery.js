@@ -12,6 +12,7 @@ export const GET_CLIENTES = gql`
 			celular
 			estadoId
 			cidadeId
+			maplink
 			obs
 		}
 	}
@@ -30,6 +31,7 @@ export const GET_CLIENTE_BY_ID = gql`
 				celular
 				cidadeId
 				estadoId
+				maplink
 				obs
 			}
 		}
@@ -47,7 +49,9 @@ export const GET_CLIENTE_BY_NAME = gql`
 				endereco
 				telefone
 				celular
+				estadoId
 				cidadeId
+				maplink
 				obs
 			}
 		}

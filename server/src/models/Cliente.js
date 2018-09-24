@@ -17,6 +17,7 @@ const ClienteSchema = mongoose.Schema({
 	endereco: { type: String },
 	telefone: { type: String },
 	celular: { type: String },
+	maplink: { type: String },
 	obs: { type: String }
 });
 

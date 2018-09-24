@@ -31,6 +31,7 @@ const initialState = {
 		endereco: "",
 		telefone: "",
 		celular: "",
+		maplink: "",
 		obs: ""
 	},
 	alert: {
@@ -83,6 +84,7 @@ class Clientes extends Component {
 			endereco,
 			telefone,
 			celular,
+			maplink,
 			obs
 		} = this.state.cliente;
 
@@ -95,6 +97,7 @@ class Clientes extends Component {
 			endereco,
 			telefone,
 			celular,
+			maplink,
 			obs
 		};
 
@@ -390,6 +393,21 @@ class Clientes extends Component {
 								value={this.state.cliente.celular}
 								onChange={e => this.changeField(e)}
 								placeholder="Telefone"
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-12">
+						<div className="form-group">
+							<label>Map Link</label>
+							<textarea
+								type="text"
+								className="form-control"
+								name="maplink"
+								value={this.state.cliente.maplink}
+								onChange={e => this.changeField(e)}
+								placeholder="Cole aqui o link da localização do cliente"
 							/>
 						</div>
 					</div>
