@@ -1,24 +1,17 @@
 import { Constants, Camera, FileSystem, Permissions } from "expo";
 import React, { Component } from "react";
 import {
-	Alert,
 	StyleSheet,
 	Text,
 	View,
 	TouchableOpacity,
-	Slider,
 	Platform
 } from "react-native";
+import shorthash from "shorthash";
 import { withNavigationFocus } from "react-navigation";
 import isIPhoneX from "react-native-is-iphonex";
 
-import {
-	Ionicons,
-	MaterialIcons,
-	Foundation,
-	MaterialCommunityIcons,
-	Octicons
-} from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const landmarkSize = 2;
 
@@ -83,11 +76,18 @@ class CameraScreen extends Component {
 		if (!folderInfo.exists) await FileSystem.makeDirectoryAsync(PHOTOS_DIR);
 
 		const { navigation } = this.props;
-		const fileName = navigation.getParam("fileName", {});
+		const fileIds = navigation.getParam("fileIds", {});
+		const fileAnt = navigation.getParam("fileAnt", {});
 		const refreshList = navigation.getParam("refreshList", {});
+
+		//Create a unique filename to avoid refresh problem in expo
+		const d = Date();
+		const newIds = `${fileIds}-${d.toString()}`;
+		const fileName = shorthash.unique(newIds);
+
 		this.setState({ fileName, refreshList });
 
-		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${fileName}.jpg`, {
+		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${fileAnt}.jpg`, {
 			idempotent: true
 		});
 	}
@@ -126,23 +126,27 @@ class CameraScreen extends Component {
 	handleMountError = ({ message }) => console.error("Mount: ", message);
 
 	onPictureSaved = async photo => {
-		console.log("Vai deletar a antiga...");
 		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${this.state.fileName}.jpg`, {
 			idempotent: true
 		});
 
-		console.log("Agora vai salvar...");
 		await FileSystem.moveAsync({
 			from: photo.uri,
 			to: `${PHOTOS_DIR}/${this.state.fileName}.jpg`
 		});
 
 		if (typeof this.state.refreshList === "function") {
-			this.state.refreshList();
+			this.state.refreshList(this.state.fileName);
 		}
 		this.props.navigation.goBack();
 	};
 
+	onExit = () => {
+		if (typeof this.state.refreshList === "function") {
+			this.state.refreshList();
+		}
+		this.props.navigation.goBack();
+	};
 	onFacesDetected = ({ faces }) => this.setState({ faces });
 	onFaceDetectionError = state => console.warn("Faces detection error:", state);
 
@@ -193,6 +197,9 @@ class CameraScreen extends Component {
 
 	renderTopBar = () => (
 		<View style={styles.topBar}>
+			<TouchableOpacity style={styles.toggleButton} onPress={this.onExit}>
+				<MaterialIcons name={"close"} size={32} color="white" />
+			</TouchableOpacity>
 			<TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
 				<MaterialIcons
 					name={flashIcons[this.state.flash]}
@@ -215,11 +222,8 @@ class CameraScreen extends Component {
 
 	renderBottomBar = () => (
 		<View style={styles.bottomBar}>
-			<View style={{ flex: 0.4 }}>
-				<TouchableOpacity
-					onPress={this.takePicture}
-					style={{ alignSelf: "center" }}
-				>
+			<View style={{ flex: 1 }}>
+				<TouchableOpacity onPress={this.takePicture}>
 					<Ionicons name="ios-radio-button-on" size={70} color="white" />
 				</TouchableOpacity>
 			</View>
@@ -272,12 +276,10 @@ const styles = StyleSheet.create({
 		paddingTop: Constants.statusBarHeight / 2
 	},
 	bottomBar: {
-		paddingBottom: isIPhoneX ? 25 : 5,
+		paddingBottom: isIPhoneX ? 25 : 0,
 		backgroundColor: "transparent",
-		alignSelf: "flex-end",
-		justifyContent: "space-between",
-		flex: 0.12,
-		flexDirection: "row"
+		alignItems: "center",
+		flex: 0.2
 	},
 	noPermissions: {
 		flex: 1,

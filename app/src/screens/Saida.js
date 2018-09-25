@@ -40,14 +40,7 @@ class Saida extends Component {
 	componentWillMount() {
 		const { navigation } = this.props;
 		//TODO --> Tirar o frota default
-		const frota = navigation.getParam("frota", {
-			id: "5ba792038a3a21674b864956",
-			nrFrota: 1,
-			name: "TM 7040 - NEW HOLLAND NOVO",
-			ano: 2013,
-			chassi: "HCCZ7040JDCC04148",
-			caminhao: false
-		});
+		const frota = navigation.getParam("frota", {});
 		this.setState({ frota });
 	}
 

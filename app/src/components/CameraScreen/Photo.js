@@ -9,7 +9,7 @@ const pictureSize = 150;
 
 export default class Photo extends Component {
 	state = {
-		uri: null
+		source: null
 	};
 	_mounted = false;
 
@@ -22,7 +22,6 @@ export default class Photo extends Component {
 	}
 
 	async componentWillMount() {
-		console.log("Abriu Foto");
 		const path = `${FileSystem.documentDirectory}flamingo/${
 			this.props.fileName
 		}.jpg`;

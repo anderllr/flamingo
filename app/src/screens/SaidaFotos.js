@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { View, Text, FlatList, TouchableHighlight } from "react-native";
 import { Permissions, FileSystem } from "expo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { Query } from "react-apollo";
+import { scale, verticalScale } from "react-native-size-matters";
+import { connectAlert } from "../components/Alert";
 
 import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
 
@@ -15,8 +17,6 @@ import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 import { createRows } from "../utils/utils";
 import { Photo } from "../components/CameraScreen";
-
-const PHOTOS_DIR = FileSystem.documentDirectory + "flamingo";
 
 class SaidaFotos extends Component {
 	constructor(props) {
@@ -33,7 +33,9 @@ class SaidaFotos extends Component {
 			informaQtde: true,
 			indiceConforme: 0,
 			hasPermission: false,
-			showPhotos: true
+			showPhotos: true,
+			showPreview: false,
+			fileName: ""
 		};
 	}
 
@@ -70,7 +72,8 @@ class SaidaFotos extends Component {
 			key,
 			label,
 			qtItem,
-			informaQtde
+			informaQtde,
+			fileName
 		} = option;
 
 		//TODO descItem não está mudando
@@ -81,12 +84,15 @@ class SaidaFotos extends Component {
 			descNaoConforme,
 			qtItem,
 			informaQtde,
+			fileName,
 			itens,
 			indiceConforme: conforme === "S" ? 0 : 1
 		});
 	};
 
-	onHandlePress = ({ id }) => {
+	onHandlePress = async ({ id, preview }) => {
+		let showPreview = preview && this.state.fileName !== "";
+
 		//Seleciona o item se está clicando em um diferente
 		if (id && id !== this.state.idItem) {
 			const item = [
@@ -107,8 +113,12 @@ class SaidaFotos extends Component {
 					qtItem,
 					key,
 					label,
-					informaQtde
+					informaQtde,
+					fileName
 				} = item[0];
+
+				showPreview = fileName !== "";
+
 				const newState = {
 					...this.state,
 					itens,
@@ -119,19 +129,43 @@ class SaidaFotos extends Component {
 					descItem: label,
 					informaQtde,
 					indiceConforme: conforme === "S" ? 0 : 1,
-					showPhotos: false
+					showPhotos: false,
+					fileName,
+					showPreview
 				};
 				this.setState(newState);
 			}
+		} else {
+			this.setState({ showPreview, showPhotos: false });
 		}
-		this.props.navigation.navigate("CameraScreen", {
-			fileName: `vistoria_${id}`,
-			refreshList: this.refreshList.bind(this)
-		});
+
+		const fileIds = `${this.state.frota.id}-${id}vistoria_saida`;
+		if (!showPreview) {
+			//Busca o arquivo anterior
+			const item = [
+				...this.state.itens.filter(it => {
+					return it.key === id;
+				})
+			];
+			const fileAnt = item[0].fileName;
+			this.props.navigation.navigate("CameraScreen", {
+				fileAnt,
+				fileIds,
+				refreshList: this.refreshList.bind(this)
+			});
+		}
 	};
 
-	refreshList = () => {
-		this.setState({ showPhotos: true });
+	refreshList = async fileName => {
+		await this.setState({ fileName, showPhotos: true });
+
+		let itens = [...this.state.itens];
+		if (this.state.idItem !== "") {
+			//se mudou o item salva o anterior
+			itens = this.newItens();
+
+			this.setState({ itens });
+		}
 	};
 
 	onHandleSave = async () => {
@@ -142,6 +176,21 @@ class SaidaFotos extends Component {
 
 			this.setState({ itens });
 		}
+
+		//Agora verifica se todas as fotos foram tiradas para salvar e voltar para tela anterior
+		const saveItens = [
+			...itens.filter(it => {
+				return it.fileName === "";
+			})
+		];
+
+		if (saveItens.length > 0) {
+			this.props.alertWithType(
+				"warn",
+				"Aviso",
+				"É preciso tirar todas as fotos para salvar!"
+			);
+		}
 	};
 
 	newItens = () => {
@@ -151,7 +200,8 @@ class SaidaFotos extends Component {
 			conforme,
 			descNaoConforme,
 			qtItem,
-			informaQtde
+			informaQtde,
+			fileName
 		} = this.state;
 
 		const item = {
@@ -160,7 +210,8 @@ class SaidaFotos extends Component {
 			key: idItem,
 			label: descItem,
 			qtItem,
-			informaQtde
+			informaQtde,
+			fileName
 		};
 		const itens = [
 			...this.state.itens.filter(it => {
@@ -175,6 +226,24 @@ class SaidaFotos extends Component {
 	onRadioPress(index, value) {
 		this.setState({ conforme: value, indiceConforme: index });
 	}
+
+	newPhoto = () => {
+		this.setState({ showPreview: false });
+		this.onHandlePress({ id: this.state.idItem, preview: false });
+	};
+
+	onClosePreview = () => {
+		this.setState({ showPreview: false, showPhotos: true });
+	};
+
+	returnFileName = id => {
+		const itens = [
+			...this.state.itens.filter(it => {
+				return it.key === id;
+			})
+		];
+		return itens[0].fileName;
+	};
 
 	renderDados() {
 		return (
@@ -208,7 +277,6 @@ class SaidaFotos extends Component {
 					multiline={true}
 					numberOfLines={4}
 					size={116}
-					height={200}
 					onChangeText={value =>
 						this.handleInputChange("descNaoConforme", value)
 					}
@@ -227,8 +295,47 @@ class SaidaFotos extends Component {
 		);
 	}
 
-	renderPhoto = fileName => (
-		<Photo key={fileName} uri={`${PHOTOS_DIR}/${fileName}`} />
+	renderPhoto = () => (
+		<View
+			style={{
+				flex: 1,
+				borderRadius: scale(5),
+				borderColor: "#ddd",
+				borderWidth: scale(1)
+			}}
+		>
+			<View style={{ flex: 0.8, marginTop: verticalScale(10) }}>
+				<Photo
+					hasPermission={this.state.hasPermission}
+					fileName={this.state.fileName}
+				/>
+			</View>
+			<View
+				style={{
+					flex: 0.2,
+					flexDirection: "row",
+					justifyContent: "space-between",
+					margin: scale(10)
+				}}
+			>
+				<RoundButton
+					text="NOVA FOTO"
+					width={90}
+					height={30}
+					fontSize={8}
+					icon={{ name: "camera", type: "ion" }}
+					onPress={this.newPhoto}
+				/>
+
+				<RoundButton
+					text="VOLTAR"
+					width={90}
+					height={30}
+					fontSize={8}
+					onPress={this.onClosePreview}
+				/>
+			</View>
+		</View>
 	);
 
 	renderFotos() {
@@ -247,7 +354,7 @@ class SaidaFotos extends Component {
 						<View style={styles.groupItens}>
 							<Photo
 								hasPermission={this.state.hasPermission}
-								fileName={`vistoria_${data.id}`}
+								fileName={this.returnFileName(data.id)}
 							/>
 						</View>
 					</TouchableHighlight>
@@ -278,22 +385,40 @@ class SaidaFotos extends Component {
 								conforme: "S",
 								descNaoConforme: "",
 								qtItem: "1",
-								informaQtde
+								informaQtde,
+								fileName: ""
 							});
 						});
 					}
 					return (
-						<FlatList
-							data={createRows([...data.frotaItensByGrupo], 3)}
-							keyExtractor={item => item.id.toString()}
-							numColumns={3}
-							renderItem={({ item }) => (
-								<ListItemGrupo
-									data={item}
-									onPress={() => this.onHandlePress(item)}
+						<Fragment>
+							<FlatList
+								data={createRows([...data.frotaItensByGrupo], 3)}
+								keyExtractor={item => item.id.toString()}
+								numColumns={3}
+								renderItem={({ item }) => (
+									<ListItemGrupo
+										data={item}
+										onPress={() =>
+											this.onHandlePress({
+												id: item.id,
+												preview: true
+											})
+										}
+									/>
+								)}
+							/>
+							<View style={styles.separatorLine} />
+							<View style={{ alignItems: "flex-end" }}>
+								<RoundButton
+									text="SALVAR"
+									width={60}
+									height={30}
+									fontSize={8}
+									onPress={this.onHandleSave}
 								/>
-							)}
-						/>
+							</View>
+						</Fragment>
 					);
 				}}
 			</Query>
@@ -308,21 +433,13 @@ class SaidaFotos extends Component {
 					<Text style={styles.titleText}>{`FOTOS ${
 						this.state.grupo.grupoItem
 					}`}</Text>
-					{this.state.showPhotos && this.renderFotos()}
-					<View style={styles.separatorLine} />
-					<View style={{ alignItems: "flex-end" }}>
-						<RoundButton
-							text="SALVAR"
-							width={60}
-							height={30}
-							fontSize={8}
-							onPress={this.onHandleSave}
-						/>
-					</View>
+					{this.state.showPreview
+						? this.renderPhoto()
+						: this.state.showPhotos && this.renderFotos()}
 				</View>
 			</Container>
 		);
 	}
 }
 
-export default SaidaFotos;
+export default connectAlert(SaidaFotos);

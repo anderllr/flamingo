@@ -16,7 +16,8 @@ const InputWithTitle = props => {
 		keyboardType,
 		style = null,
 		height,
-		visible = true
+		visible = true,
+		numberOfLines
 	} = props;
 
 	const containerStyle = [styles.sizeContainer];
@@ -69,7 +70,8 @@ InputWithTitle.propTypes = {
 	style: PropTypes.object,
 	height: PropTypes.number,
 	changeColor: PropTypes.bool,
-	visible: PropTypes.bool
+	visible: PropTypes.bool,
+	numberOfLines: PropTypes.number
 };
 
 export default InputWithTitle;
