@@ -43,11 +43,14 @@ class SaidaFotos extends Component {
 		const { navigation } = this.props;
 		const grupo = navigation.getParam("grupo", {});
 		const frota = navigation.getParam("frota", {});
-		this.setState({ grupo, frota });
+		const saveItens = navigation.getParam("saveItens", {});
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		const roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 		this.setState({
-			hasPermission: status === "granted" && roll.status === "granted"
+			hasPermission: status === "granted" && roll.status === "granted",
+			grupo,
+			frota,
+			saveItens
 		});
 	}
 
@@ -139,7 +142,7 @@ class SaidaFotos extends Component {
 			this.setState({ showPreview, showPhotos: false });
 		}
 
-		const fileIds = `${this.state.frota.id}-${id}vistoria_saida`;
+		const fileN = `$vistoriasaida_${this.state.frota.id}_${Date.now()}`;
 		if (!showPreview) {
 			//Busca o arquivo anterior
 			const item = [
@@ -150,7 +153,7 @@ class SaidaFotos extends Component {
 			const fileAnt = item[0].fileName;
 			this.props.navigation.navigate("CameraScreen", {
 				fileAnt,
-				fileIds,
+				fileName: fileN,
 				refreshList: this.refreshList.bind(this)
 			});
 		}
@@ -190,7 +193,14 @@ class SaidaFotos extends Component {
 				"Aviso",
 				"É preciso tirar todas as fotos para salvar!"
 			);
+			return;
 		}
+
+		if (typeof this.state.saveItens === "function") {
+			this.state.saveItens(itens);
+		}
+
+		this.props.navigation.goBack();
 	};
 
 	newItens = () => {
@@ -251,7 +261,7 @@ class SaidaFotos extends Component {
 				<Text style={styles.titleText}>Não conformidades</Text>
 				<Dropdown
 					data={this.state.itens}
-					title="Fato"
+					title="Item"
 					placeholder="Selecione o item"
 					size={116}
 					value={this.state.descItem}

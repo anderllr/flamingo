@@ -7,7 +7,6 @@ import {
 	TouchableOpacity,
 	Platform
 } from "react-native";
-import shorthash from "shorthash";
 import { withNavigationFocus } from "react-navigation";
 import isIPhoneX from "react-native-is-iphonex";
 
@@ -76,14 +75,9 @@ class CameraScreen extends Component {
 		if (!folderInfo.exists) await FileSystem.makeDirectoryAsync(PHOTOS_DIR);
 
 		const { navigation } = this.props;
-		const fileIds = navigation.getParam("fileIds", {});
+		const fileName = navigation.getParam("fileName", {});
 		const fileAnt = navigation.getParam("fileAnt", {});
 		const refreshList = navigation.getParam("refreshList", {});
-
-		//Create a unique filename to avoid refresh problem in expo
-		const d = Date();
-		const newIds = `${fileIds}-${d.toString()}`;
-		const fileName = shorthash.unique(newIds);
 
 		this.setState({ fileName, refreshList });
 

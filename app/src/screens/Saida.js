@@ -6,7 +6,6 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
-import { GET_CAMINHAO } from "../config/resources/queries/frotaQuery";
 
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
@@ -15,6 +14,7 @@ import { FuelMarker } from "../components/FuelMarker";
 import { InputWithTitle } from "../components/InputText";
 import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
+import { connectAlert } from "../components/Alert";
 
 class Saida extends Component {
 	constructor(props) {
@@ -29,11 +29,13 @@ class Saida extends Component {
 			prCombustivel: "",
 			fuel: 0,
 			descCliente: "",
-			descCaminhao: "",
-			idCaminhao: "",
 			isDateTimePickerVisible: false,
 			fieldDateTime: "",
-			pickerMode: "date"
+			pickerMode: "date",
+			grupo: {},
+			grupos: [],
+			gruposCompletos: [],
+			totGrupos: 0
 		};
 	}
 
@@ -55,8 +57,6 @@ class Saida extends Component {
 	onChangeDropdown = (option, type) => {
 		if (type === "cliente") {
 			this.setState({ idCliente: option.key, descCliente: option.label });
-		} else {
-			this.setState({ idCaminhao: option.key, descCaminhao: option.label });
 		}
 	};
 
@@ -85,32 +85,71 @@ class Saida extends Component {
 	};
 
 	//******************************************************************/
+	// FUNÇOES DA LISTA DE GRUPOS
 
-	onHandlePress = item => {
+	onHandlePress = (item, totGrupos) => {
+		//Deixa o grupo selecionado para quando voltar salvar
+		this.setState({ grupo: item, totGrupos });
 		//TODO Finish handle to other pages
 		this.props.navigation.navigate("SaidaFotos", {
 			frota: this.state.frota,
-			grupo: item
+			grupo: item,
+			saveItens: this.saveItens.bind(this)
 		});
 	};
 
-	//TODO -> Auto complete Cliente
+	//************************************************************** */
+	// FUNÇÃO QUE É EXECUTADA APÓS O LANÇAMENTO DAS FOTOS
+
+	saveItens = async itens => {
+		//Salva os grupos com os itens
+		//marca como salvo na lista para checar o ícone
+		const grupo = { ...this.state.grupo };
+		const grupos = [
+			...this.state.grupos.filter(g => {
+				return g.id !== grupo.id;
+			})
+		];
+
+		const gruposCompletos = [
+			...this.state.gruposCompletos.filter(g => {
+				return g !== grupo.id;
+			})
+		];
+
+		grupo.itens = [...itens];
+
+		grupos.push(grupo);
+		gruposCompletos.push(grupo.id);
+		this.setState({ grupos, gruposCompletos });
+	};
+
+	//***************************************************************/
+	//    SALVA A TELA TOTAL
+	//***************************************************************/
+	onHandleSave = async () => {
+		console.log("Grupos: ", this.state.grupos);
+		if (this.state.gruposCompletos.length < this.state.totGrupos) {
+			//Significa que os grupos ainda não estão completos
+			this.props.alertWithType(
+				"warn",
+				"Aviso",
+				"É preciso tirar todas as fotos para salvar!"
+			);
+			return;
+		}
+	};
+
+	//***************************************************************/
+	//    FIM DO SALVAMENTO
+	//***************************************************************/
+
 	renderDados() {
 		const clientes = [];
-		const caminhoes = [];
 
 		if (!this.props.getClientes.loading && this.props.getClientes.clientes) {
 			this.props.getClientes.clientes.map(({ id, name }) => {
 				clientes.push({ key: id, label: name });
-			});
-		}
-
-		if (
-			!this.props.getCaminhoes.loading &&
-			this.props.getCaminhoes.frotaCaminhao
-		) {
-			this.props.getCaminhoes.frotaCaminhao.map(({ id, name }) => {
-				caminhoes.push({ key: id, label: name });
 			});
 		}
 
@@ -121,6 +160,7 @@ class Saida extends Component {
 					data={clientes}
 					title="Cliente"
 					placeholder="Selecione o cliente"
+					height={32}
 					size={116}
 					value={this.state.descCliente}
 					onChange={option => this.onChangeDropdown(option, "cliente")}
@@ -128,6 +168,7 @@ class Saida extends Component {
 				<InputWithTitle
 					title="Frota"
 					editable={false}
+					height={32}
 					size={116}
 					value={`${this.state.frota.nrFrota}-${this.state.frota.name}`}
 				/>
@@ -142,6 +183,7 @@ class Saida extends Component {
 						<InputWithTitle
 							title="Data saída"
 							size={56}
+							height={32}
 							editable={false}
 							changeColor={false}
 							value={this.state.dtSaida}
@@ -154,6 +196,7 @@ class Saida extends Component {
 						<InputWithTitle
 							title="Prev.Entrega"
 							size={56}
+							height={32}
 							editable={false}
 							changeColor={false}
 							value={this.state.dtPrevisao}
@@ -180,45 +223,17 @@ class Saida extends Component {
 							size={56}
 							editable={false}
 							changeColor={false}
+							height={32}
 							value={this.state.hrSaida}
 						/>
 					</TouchableOpacity>
 					<InputWithTitle
 						title="Horímetro"
 						size={56}
+						height={32}
 						keyboardType="numeric"
 						onChangeText={value => this.handleInputChange("horimetro", value)}
 						value={this.state.horimetro}
-					/>
-				</View>
-				<Dropdown
-					data={caminhoes}
-					title="Caminhão"
-					size={116}
-					placeholder="Selecione o caminhão"
-					value={this.state.descCaminhao}
-					onChange={option => this.onChangeDropdown(option, "caminhao")}
-				/>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "flex-start",
-						alignItems: "flex-end"
-					}}
-				>
-					<InputWithTitle
-						title="Km Caminhão"
-						keyboardType="numeric"
-						size={56}
-						onChangeText={value => this.handleInputChange("kmCaminhao", value)}
-						value={this.state.kmCaminhao}
-					/>
-					<InputWithTitle
-						title="Hora Munck"
-						keyboardType="numeric"
-						size={56}
-						onChangeText={value => this.handleInputChange("hrMunck", value)}
-						value={this.state.hrMunck}
 					/>
 				</View>
 				<Text style={styles.labelText}>Combustível</Text>
@@ -263,14 +278,25 @@ class Saida extends Component {
 						id={this.state.frota.id}
 						columns={4}
 						onHandlePress={this.onHandlePress}
+						gruposCompletos={this.state.gruposCompletos}
+						onCount={this.onCount}
 					/>
+					<View style={styles.separatorLine} />
+					<View style={{ alignItems: "flex-end" }}>
+						<RoundButton
+							text="SALVAR"
+							width={60}
+							height={30}
+							fontSize={8}
+							onPress={this.onHandleSave}
+						/>
+					</View>
 				</View>
 			</Container>
 		);
 	}
 }
 
-export default compose(
-	graphql(GET_CLIENTES, { name: "getClientes" }),
-	graphql(GET_CAMINHAO, { name: "getCaminhoes" })
-)(Saida);
+export default compose(graphql(GET_CLIENTES, { name: "getClientes" }))(
+	connectAlert(Saida)
+);

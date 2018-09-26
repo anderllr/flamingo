@@ -4,6 +4,7 @@ import { clienteQueries } from "./types/cliente.schema";
 import { grupoItemQueries } from "./types/grupoitem.schema";
 import { itensQueries } from "./types/itens.schema";
 import { uploadQueries } from "./types/upload.schema";
+import { vistoriaQueries } from "./types/vistoria.schema";
 
 const Query = `
     type Query {
@@ -12,7 +13,8 @@ const Query = `
         ${clienteQueries},
         ${grupoItemQueries},
         ${itensQueries},
-        ${uploadQueries}
+        ${uploadQueries},
+        ${vistoriaQueries}
     }
 `;
 

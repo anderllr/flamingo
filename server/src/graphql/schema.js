@@ -10,6 +10,7 @@ import { clienteTypes } from "./types/cliente.schema";
 import { grupoItemTypes } from "./types/grupoitem.schema";
 import { itensTypes } from "./types/itens.schema";
 import { uploadTypes } from "./types/upload.schema";
+import { vistoriaTypes } from "./types/vistoria.schema";
 
 import userResolvers from "./resolvers/user.resolver";
 import frotaResolvers from "./resolvers/frota.resolver";
@@ -17,6 +18,7 @@ import clienteResolvers from "./resolvers/cliente.resolver";
 import grupoItemResolvers from "./resolvers/grupoitem.resolver";
 import itensResolvers from "./resolvers/itens.resolver";
 import uploadResolvers from "./resolvers/upload.resolver";
+import vistoriaResolvers from "./resolvers/vistoria.resolver";
 
 //using lodash to merge my resolvers
 const resolvers = merge(
@@ -25,7 +27,8 @@ const resolvers = merge(
 	clienteResolvers,
 	grupoItemResolvers,
 	itensResolvers,
-	uploadResolvers
+	uploadResolvers,
+	vistoriaResolvers
 );
 
 const SchemaDefinition = `
@@ -45,7 +48,8 @@ export default makeExecutableSchema({
 		clienteTypes,
 		grupoItemTypes,
 		itensTypes,
-		uploadTypes
+		uploadTypes,
+		vistoriaTypes
 	],
 	resolvers
 });

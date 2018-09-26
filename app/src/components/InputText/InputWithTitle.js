@@ -54,6 +54,7 @@ const InputWithTitle = props => {
 					underlineColorAndroid="transparent"
 					style={inputText}
 					editable={editable}
+					pointerEvents={editable ? "auto" : "none"}
 					keyboardType={keyboardType}
 				/>
 			</View>

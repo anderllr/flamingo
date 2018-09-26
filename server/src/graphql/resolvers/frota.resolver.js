@@ -3,7 +3,7 @@ import { authenticated } from "./auth.resolver";
 export default {
 	Query: {
 		frota: authenticated(async (parent, args, { db: { Frota } }) => {
-			const frota = await Frota.find(args);
+			const frota = await Frota.find(args).sort("nrFrota");
 			return frota.map(f => {
 				return f;
 			});
@@ -19,7 +19,7 @@ export default {
 			}
 		),
 		frotaCaminhao: authenticated(async (parent, args, { db: { Frota } }) => {
-			const frota = await Frota.find({ caminhao: true });
+			const frota = await Frota.find({ caminhao: true }).sort("nrFrota");
 			return frota.map(f => {
 				return f;
 			});
@@ -27,23 +27,14 @@ export default {
 		frotaGrupoItem: authenticated(
 			async (parent, { id }, { db: { GrupoItem, Frota } }) => {
 				const frota = await Frota.findById(id);
-				const grupoAll = await GrupoItem.find({});
-				const exceptGrupos = [];
-				frota.exceptGrupos.map(({ grupoItemId, exceptItens }) => {
-					const grupo = grupoAll.filter(g => g.id === grupoItemId)[0];
-					const exceptIt = exceptItens.map(it => it.itemId);
-					const itens = grupo.itens.map(it => it.id);
-					const itensRestantes = itens.filter(i => !exceptIt.includes(i));
+				const grupoAll = await GrupoItem.find({
+					itens: { $not: { $size: 0 } }
+				});
 
-					if (itensRestantes.length === 0) {
-						exceptGrupos.push(grupoItemId);
-					}
-				});
-				const grupoItem = await GrupoItem.find({
-					_id: { $nin: exceptGrupos }
-				});
-				return grupoItem.map(grupo => {
-					return grupo;
+				if (frota.exceptGrupos) {
+				}
+				return grupoAll.map(g => {
+					return g;
 				});
 			}
 		),

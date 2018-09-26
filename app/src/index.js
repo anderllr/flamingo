@@ -16,6 +16,7 @@ import { createRootNavigator } from "./config/routes";
 import { AlertProvider } from "./components/Alert";
 import store from "./config/store";
 import { getToken } from "./utils";
+import { BASE_URL, PORT } from "./utils/consts";
 
 EStyleSheet.build({
 	$primaryGreen: "#00665a",
@@ -36,8 +37,9 @@ EStyleSheet.build({
 	$shadow: "#d2d2d2"
 });
 
-const BASE_URL = "http://142.93.90.171/flamingoql";
-const uploadLink = createUploadLink({ uri: BASE_URL });
+const URL = PORT > 0 ? `${BASE_URL}:${PORT}` : BASE_URL;
+
+const uploadLink = createUploadLink({ uri: `${URL}/flamingoql` });
 
 const cache = new InMemoryCache();
 
@@ -45,7 +47,7 @@ const middlewareAuth = setContext(async (req, { headers }) => {
 	//TODO Change temporaly token that puted to
 	//	const token = await getToken();
 	const token =
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YmE3OTIwMzhhM2EyMTY3NGI4NjQ5OGMiLCJpYXQiOjE1Mzc3MjQwNjJ9.kNVYHJ2T1eBMHfbaNQ_k-X41R2xP9jVrmaA8uHZ4Lgg";
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1Mzc5OTYwNDF9.uq1SkMv0XmATShHqiHcfWoxARiOQGj51qORu0eUp7OQ";
 	return {
 		...headers,
 		headers: {

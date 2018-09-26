@@ -1,7 +1,7 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
-const INPUT_HEIGHT = verticalScale(32);
+const INPUT_HEIGHT = verticalScale(42);
 
 const styles = EStyleSheet.create({
 	sizeContainer: {
