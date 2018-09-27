@@ -81,7 +81,7 @@ class CameraScreen extends Component {
 
 		this.setState({ fileName, refreshList });
 
-		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${fileAnt}.jpg`, {
+		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${fileAnt}.png`, {
 			idempotent: true
 		});
 	}
@@ -120,13 +120,13 @@ class CameraScreen extends Component {
 	handleMountError = ({ message }) => console.error("Mount: ", message);
 
 	onPictureSaved = async photo => {
-		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${this.state.fileName}.jpg`, {
+		await FileSystem.deleteAsync(`${PHOTOS_DIR}/${this.state.fileName}.png`, {
 			idempotent: true
 		});
 
 		await FileSystem.moveAsync({
 			from: photo.uri,
-			to: `${PHOTOS_DIR}/${this.state.fileName}.jpg`
+			to: `${PHOTOS_DIR}/${this.state.fileName}.png`
 		});
 
 		if (typeof this.state.refreshList === "function") {

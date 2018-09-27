@@ -12,7 +12,7 @@ const uploadQueries = `
 `;
 
 const uploadMutations = `
-    uploadFile(file: Upload!, screen: String!, id: String!): File
+    uploadFile(file: Upload!, fileName: String, screen: String, id: String): File
     multipleUpload(files: [Upload!]!): [File!]!
 `;
 

@@ -27,7 +27,7 @@ class SaidaFotos extends Component {
 			itens: [],
 			conforme: "S",
 			descNaoConforme: "",
-			qtItem: "1",
+			qtItem: 1,
 			idItem: "",
 			descItem: "",
 			informaQtde: true,
@@ -142,7 +142,7 @@ class SaidaFotos extends Component {
 			this.setState({ showPreview, showPhotos: false });
 		}
 
-		const fileN = `$vistoriasaida_${this.state.frota.id}_${Date.now()}`;
+		const fileN = `vistoriasaida_${this.state.frota.id}_${Date.now()}`;
 		if (!showPreview) {
 			//Busca o arquivo anterior
 			const item = [
@@ -196,8 +196,27 @@ class SaidaFotos extends Component {
 			return;
 		}
 
+		//Se chegou até aqui é pq está tudo certo... vou normalizar os dados para mudar o nome da chave do item
+		const newItens = itens.map(
+			({
+				key: itemId,
+				conforme,
+				descNaoConforme,
+				fileName,
+				informaQtde,
+				qtItem
+			}) => ({
+				itemId,
+				conforme,
+				descNaoConforme,
+				fileName,
+				informaQtde,
+				qtItem
+			})
+		);
+
 		if (typeof this.state.saveItens === "function") {
-			this.state.saveItens(itens);
+			this.state.saveItens(newItens);
 		}
 
 		this.props.navigation.goBack();
@@ -296,7 +315,7 @@ class SaidaFotos extends Component {
 					title="Quantidade"
 					editable={true}
 					size={40}
-					value={this.state.qtItem}
+					value={this.state.qtItem.toString()}
 					onChangeText={value => this.handleInputChange("qtItem", value)}
 					visible={this.state.informaQtde}
 					keyboardType="numeric"
@@ -394,7 +413,7 @@ class SaidaFotos extends Component {
 								label: item,
 								conforme: "S",
 								descNaoConforme: "",
-								qtItem: "1",
+								qtItem: 1,
 								informaQtde,
 								fileName: ""
 							});

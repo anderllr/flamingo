@@ -55,17 +55,26 @@ export default {
 		uploads: () => []
 	},
 	Mutation: {
-		uploadFile: async (parent, { file, screen, id }, { db: { GrupoItem } }) => {
+		uploadFile: async (
+			parent,
+			{ file, screen, id, fileName },
+			{ db: { GrupoItem } }
+		) => {
+			console.log("Entrou no upload..", file);
 			const { createReadStream, mimetype } = await file;
+			console.log("Type", mimetype);
 			const extension = mimetype.split("/").pop();
 
-			const filename = `${screen}-${id}.${extension}`;
+			const filename = fileName ? fileName : `${screen}-${id}.${extension}`;
 
 			const result = processUpload({ createReadStream, filename });
 			if (result) {
-				//Se o resultado não está nulo vai gravar no banco o nome da imagem
-				const grupoItem = await GrupoItem.findById(id);
-				await grupoItem.set({ imagem: filename }).save();
+				if (id) {
+					//pois o upload pode ter vindo do app
+					//Se o resultado não está nulo vai gravar no banco o nome da imagem
+					const grupoItem = await GrupoItem.findById(id);
+					await grupoItem.set({ imagem: filename }).save();
+				}
 				return result;
 			}
 			return null;

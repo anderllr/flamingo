@@ -4,6 +4,7 @@ export default {
 	Query: {
 		vistoria: authenticated(async (parent, args, { db: { Vistoria } }) => {
 			const vistoria = await Vistoria.find(args);
+
 			return vistoria.map(v => {
 				return v;
 			});

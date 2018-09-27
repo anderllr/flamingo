@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import { View, Text, Slider, TouchableOpacity, Platform } from "react-native";
+import { FileSystem } from "expo";
 import { graphql, compose } from "react-apollo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import { ReactNativeFile } from "apollo-upload-client";
 import moment from "moment";
 
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+import { CREATE_VISTORIA } from "../config/resources/mutations/vistoriaMutation";
+import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
 
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
@@ -25,8 +29,7 @@ class Saida extends Component {
 			dtSaida: "",
 			dtPrevisao: "",
 			hrSaida: "",
-			horimetro: "",
-			prCombustivel: "",
+			horimetro: 0,
 			fuel: 0,
 			descCliente: "",
 			isDateTimePickerVisible: false,
@@ -88,9 +91,13 @@ class Saida extends Component {
 	// FUNÇOES DA LISTA DE GRUPOS
 
 	onHandlePress = (item, totGrupos) => {
-		//Deixa o grupo selecionado para quando voltar salvar
-		this.setState({ grupo: item, totGrupos });
-		//TODO Finish handle to other pages
+		//Deixa o grupo selecionado para quando voltar salvar já no formato da api
+		const grupo = {
+			grupoItemId: item.id,
+			grupoItem: item.grupoItem
+		};
+		this.setState({ grupo, totGrupos });
+
 		this.props.navigation.navigate("SaidaFotos", {
 			frota: this.state.frota,
 			grupo: item,
@@ -107,20 +114,20 @@ class Saida extends Component {
 		const grupo = { ...this.state.grupo };
 		const grupos = [
 			...this.state.grupos.filter(g => {
-				return g.id !== grupo.id;
+				return g.grupoItemId !== grupo.grupoItemId;
 			})
 		];
 
 		const gruposCompletos = [
 			...this.state.gruposCompletos.filter(g => {
-				return g !== grupo.id;
+				return g !== grupo.grupoItemId;
 			})
 		];
 
 		grupo.itens = [...itens];
 
 		grupos.push(grupo);
-		gruposCompletos.push(grupo.id);
+		gruposCompletos.push(grupo.grupoItemId);
 		this.setState({ grupos, gruposCompletos });
 	};
 
@@ -128,7 +135,7 @@ class Saida extends Component {
 	//    SALVA A TELA TOTAL
 	//***************************************************************/
 	onHandleSave = async () => {
-		console.log("Grupos: ", this.state.grupos);
+		/* TODO -> Reativar a validação
 		if (this.state.gruposCompletos.length < this.state.totGrupos) {
 			//Significa que os grupos ainda não estão completos
 			this.props.alertWithType(
@@ -138,8 +145,95 @@ class Saida extends Component {
 			);
 			return;
 		}
+*/
+		//Se passou agora vai montar o vistoria input
+		//** Inicia as validações */
+		let msg = "";
+		if (this.state.idCliente === "") msg += "Cliente |";
+		if (this.state.dtSaida === "") msg += "Data saída |";
+		if (this.state.dtPrevisao === "") msg += "Data previsão |";
+		if (this.state.hrSaida === "") msg += "Hora Saída |";
+		if (this.state.horimetro === 0) msg += "Horímetro/KM";
+
+		if (msg !== "") {
+			msg = "Você precisa preencher o(s) campo(s): " + msg;
+			this.props.alertWithType("warn", "Aviso", msg);
+			return;
+		}
+
+		const vistoriaInput = {
+			frotaId: this.state.frota.id,
+			clienteId: this.state.idCliente,
+			dtSaida: this.state.dtSaida,
+			dtPrevisao: this.state.dtPrevisao,
+			hrSaida: this.state.hrSaida,
+			horimetroSaida: this.state.horimetro,
+			combustivelSaida: this.state.fuel,
+			status: "SAIDA",
+			grupos: this.state.grupos
+		};
+
+		//		console.log("Vistoria Input: ", vistoriaInput);
+
+		this.props
+			.createVistoria({ variables: { vistoriaInput } })
+			.then(async () => {
+				//UPLOAD NAS IMAGENS
+				const images = [];
+				this.state.grupos.map(({ itens }) =>
+					itens.map(({ fileName }) => images.push(fileName))
+				);
+
+				const { resolve, reject } = await new Promise((resolve, reject) => {
+					const result = images.map(async fileName => {
+						return await this.uploadFile(fileName);
+					});
+
+					if (result === "success") {
+						resolve(result);
+					} else reject(result);
+				});
+				//FIM DO UPLOAD
+				if (resolve === "success") {
+					this.props.navigation.goBack();
+				} else {
+					this.props.alertWithType("error", "Error", resolve);
+				}
+			})
+			.catch(e => {
+				let message = "";
+				if (e.graphQLErrors) {
+					message = e.graphQLErrors[0]
+						? e.graphQLErrors[0].message
+						: e.graphQLErrors;
+				}
+				this.props.alertWithType("error", "Error", message);
+			});
 	};
 
+	uploadFile = fileName => {
+		return new Promise(async (resolve, reject) => {
+			const path = `${FileSystem.documentDirectory}flamingo/${fileName}.png`;
+			const fileLocal = await FileSystem.getInfoAsync(path);
+			if (fileLocal.exists) {
+				const file = new ReactNativeFile({
+					uri: fileLocal.uri,
+					type: "image/png",
+					name: `${fileName}.png`
+				});
+				console.log("File: ", file);
+				//verifica que foi carregado um arquivo então salva
+				this.props
+					.uploadFile({
+						variables: { file, fileName: `${fileName}.png`, screen: "", id: "" }
+					})
+					.then(() => resolve("success"))
+					.catch(e => reject(e));
+			} else {
+				reject("Arquivo inválido");
+			}
+		});
+	};
 	//***************************************************************/
 	//    FIM DO SALVAMENTO
 	//***************************************************************/
@@ -233,7 +327,7 @@ class Saida extends Component {
 						height={32}
 						keyboardType="numeric"
 						onChangeText={value => this.handleInputChange("horimetro", value)}
-						value={this.state.horimetro}
+						value={this.state.horimetro.toString()}
 					/>
 				</View>
 				<Text style={styles.labelText}>Combustível</Text>
@@ -297,6 +391,8 @@ class Saida extends Component {
 	}
 }
 
-export default compose(graphql(GET_CLIENTES, { name: "getClientes" }))(
-	connectAlert(Saida)
-);
+export default compose(
+	graphql(GET_CLIENTES, { name: "getClientes" }),
+	graphql(CREATE_VISTORIA, { name: "createVistoria" }),
+	graphql(UPLOAD_FILE, { name: "uploadFile" })
+)(connectAlert(Saida));
