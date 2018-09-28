@@ -42,13 +42,30 @@ export default {
 			async (parent, { id, grupoItemId }, { db: { GrupoItem, Frota } }) => {
 				const frota = await Frota.findById(id);
 				const grupo = await GrupoItem.findById(grupoItemId);
-				if (frota.exceptGrupos) {
+				if (frota.exceptGrupos.exceptItens) {
 					return grupo.itens.filter(i => {
 						return !frota.exceptGrupos[0].exceptItens.find(
 							e => e.itemId === i.id
 						);
 					});
 				} else return grupo.itens;
+			}
+		),
+		frotaDisponivel: authenticated(
+			async (parent, { nrFrota, name }, { db: { Frota, Vistoria } }) => {
+				const options = {};
+				if (nrFrota > 0) options.nrFrota = nrFrota;
+
+				if (name !== "") options.name = new RegExp(name, "i");
+
+				const vistoria = await Vistoria.find({ status: "SAIDA" });
+				const locados = vistoria.map(({ frotaId }) => frotaId);
+				const frota = await Frota.find({
+					$and: [{ _id: { $nin: locados } }, options]
+				});
+				return frota.map(f => {
+					return f;
+				});
 			}
 		)
 	},

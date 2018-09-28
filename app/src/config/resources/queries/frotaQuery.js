@@ -28,6 +28,19 @@ export const GET_FROTA_BY_ID = gql`
 	}
 `;
 
+export const GET_FROTA_DISPONIVEL = gql`
+	query frotaDisponivel($nrFrota: Int, $name: String) {
+		frotaDisponivel(nrFrota: $nrFrota, name: $name) {
+			id
+			nrFrota
+			name
+			ano
+			chassi
+			caminhao
+		}
+	}
+`;
+
 export const GET_FROTA_BY_NUMBER = gql`
 	query frotaByNumber($nrFrota: Int!) {
 		query {

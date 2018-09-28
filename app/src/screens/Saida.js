@@ -1,6 +1,13 @@
 import React, { Component } from "react";
-import { View, Text, Slider, TouchableOpacity, Platform } from "react-native";
-import { FileSystem } from "expo";
+import {
+	View,
+	Text,
+	Slider,
+	TouchableOpacity,
+	Platform,
+	ActivityIndicator
+} from "react-native";
+import { FileSystem, BlurView } from "expo";
 import { graphql, compose } from "react-apollo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -38,7 +45,8 @@ class Saida extends Component {
 			grupo: {},
 			grupos: [],
 			gruposCompletos: [],
-			totGrupos: 0
+			totGrupos: 0,
+			wait: false
 		};
 	}
 
@@ -132,6 +140,14 @@ class Saida extends Component {
 	};
 
 	//***************************************************************/
+	//    FUNÇÃO DA ASSINATURA
+	//***************************************************************/
+
+	onHandleSign = async () => {
+		console.log("Clicou na assinatura...");
+	};
+
+	//***************************************************************/
 	//    SALVA A TELA TOTAL
 	//***************************************************************/
 	onHandleSave = async () => {
@@ -173,31 +189,35 @@ class Saida extends Component {
 			grupos: this.state.grupos
 		};
 
-		//		console.log("Vistoria Input: ", vistoriaInput);
-
 		this.props
 			.createVistoria({ variables: { vistoriaInput } })
 			.then(async () => {
 				//UPLOAD NAS IMAGENS
+				this.setState({ wait: true });
 				const images = [];
 				this.state.grupos.map(({ itens }) =>
 					itens.map(({ fileName }) => images.push(fileName))
 				);
 
-				const { resolve, reject } = await new Promise((resolve, reject) => {
-					const result = images.map(async fileName => {
-						return await this.uploadFile(fileName);
+				const result = await new Promise(async (resolve, reject) => {
+					let error = "";
+					await images.map(async fileName => {
+						const result = await this.uploadFile(fileName);
+						if (result !== "success") {
+							error += `${result} |`;
+						}
 					});
-
-					if (result === "success") {
-						resolve(result);
-					} else reject(result);
+					if (error === "") {
+						resolve("success");
+					} else reject(error);
 				});
+
+				this.setState({ wait: false });
 				//FIM DO UPLOAD
-				if (resolve === "success") {
+				if (result === "success") {
 					this.props.navigation.goBack();
 				} else {
-					this.props.alertWithType("error", "Error", resolve);
+					this.props.alertWithType("error", "Error", result);
 				}
 			})
 			.catch(e => {
@@ -213,19 +233,24 @@ class Saida extends Component {
 
 	uploadFile = fileName => {
 		return new Promise(async (resolve, reject) => {
-			const path = `${FileSystem.documentDirectory}flamingo/${fileName}.png`;
+			const path = `${FileSystem.documentDirectory}flamingo/${fileName}.jpeg`;
 			const fileLocal = await FileSystem.getInfoAsync(path);
 			if (fileLocal.exists) {
 				const file = new ReactNativeFile({
 					uri: fileLocal.uri,
-					type: "image/png",
-					name: `${fileName}.png`
+					type: "image/jpeg",
+					name: `${fileName}.jpeg`
 				});
-				console.log("File: ", file);
+
 				//verifica que foi carregado um arquivo então salva
 				this.props
 					.uploadFile({
-						variables: { file, fileName: `${fileName}.png`, screen: "", id: "" }
+						variables: {
+							file,
+							fileName: `${fileName}.jpeg`,
+							screen: "",
+							id: ""
+						}
 					})
 					.then(() => resolve("success"))
 					.catch(e => reject(e));
@@ -238,6 +263,29 @@ class Saida extends Component {
 	//    FIM DO SALVAMENTO
 	//***************************************************************/
 
+	renderActivity() {
+		return (
+			<BlurView
+				tint="light"
+				intensity={70}
+				style={{
+					flex: 1,
+					position: "absolute",
+					justifyContent: "center",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					alignItems: "center"
+				}}
+			>
+				<ActivityIndicator
+					size="large"
+					color={EStyleSheet.value("$primaryGreen")}
+				/>
+			</BlurView>
+		);
+	}
 	renderDados() {
 		const clientes = [];
 
@@ -322,7 +370,7 @@ class Saida extends Component {
 						/>
 					</TouchableOpacity>
 					<InputWithTitle
-						title="Horímetro"
+						title="Horímetro/Km"
 						size={56}
 						height={32}
 						keyboardType="numeric"
@@ -376,7 +424,15 @@ class Saida extends Component {
 						onCount={this.onCount}
 					/>
 					<View style={styles.separatorLine} />
-					<View style={{ alignItems: "flex-end" }}>
+					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
+						<RoundButton
+							text="ASSINAR"
+							width={60}
+							height={30}
+							fontSize={8}
+							active={false}
+							onPress={this.onHandleSign}
+						/>
 						<RoundButton
 							text="SALVAR"
 							width={60}
@@ -386,6 +442,7 @@ class Saida extends Component {
 						/>
 					</View>
 				</View>
+				{this.state.wait && this.renderActivity()}
 			</Container>
 		);
 	}

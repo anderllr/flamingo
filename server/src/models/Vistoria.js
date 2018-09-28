@@ -44,8 +44,8 @@ const SignChegadaSchema = new mongoose.Schema({
 
 const VistoriaSchema = new mongoose.Schema(
 	{
-		frotaId: { type: String, required: true },
-		clienteId: { type: String, required: true },
+		frotaId: { type: mongoose.Schema.ObjectId, required: true },
+		clienteId: { type: mongoose.Schema.ObjectId, required: true },
 		dtSaida: { type: String, required: true },
 		dtPrevisao: { type: String, required: true },
 		hrSaida: { type: String, required: true },

@@ -16,7 +16,8 @@ const RoundButton = props => {
 		active = true,
 		icon = null,
 		size,
-		sizeP
+		sizeP,
+		style
 	} = props;
 
 	const containerStyle = [styles.container];
@@ -68,6 +69,11 @@ const RoundButton = props => {
 		containerStyle.push({ width: props.sizeP });
 	}
 
+	if (style) {
+		containerStyle.push(style);
+		console.log("entrou no style: ", containerStyle);
+	}
+
 	return (
 		<TouchableHighlight style={containerStyle} onPress={props.onPress}>
 			<View style={wrapper}>
@@ -95,7 +101,8 @@ RoundButton.propTypes = {
 	icon: PropTypes.object,
 	widthP: PropTypes.string,
 	size: PropTypes.number,
-	sizeP: PropTypes.string
+	sizeP: PropTypes.string,
+	style: PropTypes.object
 };
 
 export default RoundButton;

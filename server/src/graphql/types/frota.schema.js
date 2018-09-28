@@ -45,6 +45,7 @@ const frotaQueries = `
     frotaCaminhao: [Frota]
     frotaGrupoItem(id: ID!): [GrupoItem]
     frotaItensByGrupo(id: ID!, grupoItemId: ID!): [ Item ]
+    frotaDisponivel(nrFrota: Int, name: String): [Frota]  
 `;
 
 const frotaMutations = `

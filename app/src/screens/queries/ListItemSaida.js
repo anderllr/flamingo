@@ -9,7 +9,7 @@ import { Icon } from "../../components/Icon";
 const ListItemSaida = ({ data, onPress }) => (
 	<TouchableHighlight underlayColor={styles.$underlayColor} onPress={onPress}>
 		<View style={styles.listContainer}>
-			<View style={{ width: "55%", flexDirection: "column" }}>
+			<View style={{ width: "50%", flexDirection: "column" }}>
 				<Text style={[styles.text, styles.textTitle]}>Frota</Text>
 				<Text style={styles.text}>{`${data.nrFrota}-${data.name}`}</Text>
 			</View>
@@ -17,9 +17,9 @@ const ListItemSaida = ({ data, onPress }) => (
 				<Text style={[styles.text, styles.textTitle]}>Ano</Text>
 				<Text style={styles.text}>{data.ano}</Text>
 			</View>
-			<View style={{ width: "20%", flexDirection: "column" }}>
-				<Text style={[styles.text, styles.textTitle]}>Última locação</Text>
-				<Text style={styles.text}>15/08/2018</Text>
+			<View style={{ width: "25%", flexDirection: "column" }}>
+				<Text style={[styles.text, styles.textTitle]}>Chassi</Text>
+				<Text style={styles.text}>{data.chassi}</Text>
 			</View>
 			<View
 				style={{

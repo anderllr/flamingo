@@ -60,9 +60,7 @@ export default {
 			{ file, screen, id, fileName },
 			{ db: { GrupoItem } }
 		) => {
-			console.log("Entrou no upload..", file);
 			const { createReadStream, mimetype } = await file;
-			console.log("Type", mimetype);
 			const extension = mimetype.split("/").pop();
 
 			const filename = fileName ? fileName : `${screen}-${id}.${extension}`;
