@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { FlatList, View, Text, TouchableHighlight } from "react-native";
 import { scale } from "react-native-size-matters";
@@ -45,6 +45,21 @@ const ListItemGrupo = ({ data, onPress, gruposCompletos }) => {
 	);
 };
 
+const ListGrupo = ({ data, columns, gruposCompletos, onHandlePress }) => (
+	<FlatList
+		data={createRows([...data], columns)}
+		keyExtractor={item => item.id.toString()}
+		numColumns={columns}
+		renderItem={({ item }) => (
+			<ListItemGrupo
+				data={item}
+				gruposCompletos={gruposCompletos}
+				onPress={() => onHandlePress(item, data.length)}
+			/>
+		)}
+	/>
+);
+
 class ListFrotaGrupos extends Component {
 	constructor(props) {
 		super(props);
@@ -53,33 +68,39 @@ class ListFrotaGrupos extends Component {
 		};
 	}
 
-	render() {
-		const { id, columns, onHandlePress, gruposCompletos, onCount } = this.props;
+	renderQuery() {
 		return (
-			<Query query={GET_FROTA_GRUPOS} variables={{ id }}>
+			<Query query={GET_FROTA_GRUPOS} variables={{ id: this.props.id }}>
 				{({ loading, error, data, refetch }) => {
 					if (loading) return <Text>Buscando os grupos</Text>;
 					if (error) {
 						return <Text>Error</Text>;
 					}
-					return (
-						<FlatList
-							data={createRows([...data.frotaGrupoItem], columns)}
-							keyExtractor={item => item.id.toString()}
-							numColumns={columns}
-							renderItem={({ item }) => (
-								<ListItemGrupo
-									data={item}
-									gruposCompletos={gruposCompletos}
-									onPress={() =>
-										onHandlePress(item, data.frotaGrupoItem.length)
-									}
-								/>
-							)}
-						/>
-					);
+					return <ListGrupo data={data.frotaGrupoItem} {...this.props} />;
 				}}
 			</Query>
+		);
+	}
+
+	renderData() {
+		const data = this.props.grupos.map(
+			({ grupoItemId, grupoItem, imagem, itens }) => {
+				return {
+					id: grupoItemId,
+					grupoItem,
+					imagem,
+					itens
+				};
+			}
+		);
+
+		return <ListGrupo data={data} {...this.props} />;
+	}
+
+	render() {
+		const { grupos = null } = this.props;
+		return (
+			<Fragment>{!grupos ? this.renderQuery() : this.renderData()}</Fragment>
 		);
 	}
 }

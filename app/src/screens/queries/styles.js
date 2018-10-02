@@ -23,10 +23,12 @@ export default EStyleSheet.create({
 		color: "$listText",
 		marginTop: verticalScale(3),
 		fontFamily: "lato-bold",
-		letterSpacing: 0.35
+		letterSpacing: 0.35,
+		fontWeight: "300"
 	},
 	textTitle: {
-		fontWeight: "bold"
+		fontWeight: "bold",
+		marginBottom: scale(4)
 	},
 	groupContainer: {
 		borderRadius: BORDER_RADIUS,

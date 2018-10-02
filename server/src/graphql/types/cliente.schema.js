@@ -31,7 +31,7 @@ const clienteTypes = `
 
 const clienteQueries = `
     clientes: [Cliente]
-    cliente(id: ID!): Cliente!
+    clienteById(id: ID!): Cliente!
     clientesByName(name: String!): [Cliente]
 `;
 

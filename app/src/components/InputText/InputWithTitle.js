@@ -15,7 +15,7 @@ const InputWithTitle = props => {
 		sizeP,
 		keyboardType,
 		style = null,
-		height,
+		height = null,
 		visible = true,
 		numberOfLines
 	} = props;
@@ -40,7 +40,7 @@ const InputWithTitle = props => {
 		inputContainer.push({ backgroundColor: "#ddd" });
 	}
 
-	if (!height) {
+	if (height) {
 		inputContainer.push({ height: verticalScale(height) });
 		inputText.push({ fontSize: scale(height / 4) });
 	}

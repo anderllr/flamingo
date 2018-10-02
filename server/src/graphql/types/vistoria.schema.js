@@ -22,11 +22,13 @@ const vistoriaTypes = `
     type VistoriaGrupo {
         grupoItemId: ID!
         grupoItem: String!
+        imagem: String      
         itens: [VistoriaItem]
     }
 
     type VistoriaItem {
         itemId: ID!
+        item: String!
         conforme: String!
         descNaoConforme: String
         informaQtde: Boolean
@@ -61,6 +63,18 @@ const vistoriaTypes = `
         imgSignCliente: String!
     }    
 
+    type VistoriaList {
+        id : ID!,
+        dtSaida : String!,
+        dtPrevisao : String!,
+        frotaId: ID!,
+        nrFrota : Int!,
+        nameFrota : String!,
+        clienteId: ID!,
+        nameCliente: String!,
+        fazenda: String
+    }
+
     input VistoriaInput {
         frotaId: ID!
         clienteId: ID!        
@@ -82,11 +96,13 @@ const vistoriaTypes = `
     input VistoriaGrupoInput {
         grupoItemId: ID!
         grupoItem: String!
+        imagem: String!
         itens: [VistoriaItemInput]
     }
 
     input VistoriaItemInput {
         itemId: ID!
+        item: String!
         conforme: String!
         descNaoConforme: String
         informaQtde: Boolean
@@ -125,6 +141,7 @@ const vistoriaTypes = `
 const vistoriaQueries = `
     vistoria: [Vistoria]
     vistoriaById(id: ID!): Vistoria
+    vistoriaDevolucao(frotaId: ID, clienteId: ID): [VistoriaList]
 `;
 
 const vistoriaMutations = `

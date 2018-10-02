@@ -7,8 +7,6 @@ import { Query } from "react-apollo";
 import { scale, verticalScale } from "react-native-size-matters";
 import { connectAlert } from "../components/Alert";
 
-import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
-
 import { Container } from "../components/Container";
 import { Icon } from "../components/Icon";
 import { RoundButton } from "../components/Button";
@@ -17,12 +15,13 @@ import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 import { createRows } from "../utils/utils";
 import { Photo } from "../components/CameraScreen";
+import { CachedImage } from "../components/CachedImage";
 
-class SaidaFotos extends Component {
+class DevolucaoFotos extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			frota: {},
+			frotaId: "",
 			grupo: {},
 			itens: [],
 			conforme: "S",
@@ -35,21 +34,34 @@ class SaidaFotos extends Component {
 			hasPermission: false,
 			showPhotos: true,
 			showPreview: false,
-			fileName: ""
+			fileName: "",
+			fileNameFim: ""
 		};
 	}
 
 	async componentWillMount() {
 		const { navigation } = this.props;
 		const grupo = navigation.getParam("grupo", {});
-		const frota = navigation.getParam("frota", {});
+		const frotaId = navigation.getParam("frotaId", "");
 		const saveItens = navigation.getParam("saveItens", {});
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		const roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+		//TODO Ajustar essa questão dos itens
+		const itens = grupo.itens.map(
+			({ itemId: key, item: label, fileNameFim, ...rest }) => ({
+				key,
+				label,
+				fileNameFim: !fileNameFim ? "" : fileNameFim,
+				...rest
+			})
+		);
+
 		this.setState({
 			hasPermission: status === "granted" && roll.status === "granted",
 			grupo,
-			frota,
+			itens,
+			frotaId,
 			saveItens
 		});
 	}
@@ -76,9 +88,11 @@ class SaidaFotos extends Component {
 			label,
 			qtItem,
 			informaQtde,
-			fileName
+			fileName,
+			fileNameFim
 		} = option;
 
+		//TODO descItem não está mudando
 		this.setState({
 			idItem: key,
 			descItem: label,
@@ -87,13 +101,14 @@ class SaidaFotos extends Component {
 			qtItem,
 			informaQtde,
 			fileName,
+			fileNameFim,
 			itens,
 			indiceConforme: conforme === "S" ? 0 : 1
 		});
 	};
 
 	onHandlePress = async ({ id, preview }) => {
-		let showPreview = preview && this.state.fileName !== "";
+		let showPreview = preview && this.state.fileNameFim !== "";
 
 		//Seleciona o item se está clicando em um diferente
 		if (id && id !== this.state.idItem) {
@@ -116,10 +131,11 @@ class SaidaFotos extends Component {
 					key,
 					label,
 					informaQtde,
-					fileName
+					fileName,
+					fileNameFim
 				} = item[0];
 
-				showPreview = fileName !== "";
+				showPreview = fileNameFim !== "";
 
 				const newState = {
 					...this.state,
@@ -133,6 +149,7 @@ class SaidaFotos extends Component {
 					indiceConforme: conforme === "S" ? 0 : 1,
 					showPhotos: false,
 					fileName,
+					fileNameFim,
 					showPreview
 				};
 				this.setState(newState);
@@ -141,7 +158,7 @@ class SaidaFotos extends Component {
 			this.setState({ showPreview, showPhotos: false });
 		}
 
-		const fileN = `vistoriasaida_${this.state.frota.id}_${Date.now()}`;
+		const fileN = `vistoriachegada_${this.state.frotaId}_${Date.now()}`;
 		if (!showPreview) {
 			//Busca o arquivo anterior
 			const item = [
@@ -149,7 +166,7 @@ class SaidaFotos extends Component {
 					return it.key === id;
 				})
 			];
-			const fileAnt = item[0].fileName;
+			const fileAnt = item[0].fileNameFim;
 			this.props.navigation.navigate("CameraScreen", {
 				fileAnt,
 				fileName: fileN,
@@ -158,8 +175,8 @@ class SaidaFotos extends Component {
 		}
 	};
 
-	refreshList = async fileName => {
-		await this.setState({ fileName, showPhotos: true });
+	refreshList = async fileNameFim => {
+		await this.setState({ fileNameFim, showPhotos: true });
 
 		let itens = [...this.state.itens];
 		if (this.state.idItem !== "") {
@@ -182,7 +199,7 @@ class SaidaFotos extends Component {
 		//Agora verifica se todas as fotos foram tiradas para salvar e voltar para tela anterior
 		const saveItens = [
 			...itens.filter(it => {
-				return it.fileName === "";
+				return it.fileNameFim === "";
 			})
 		];
 
@@ -199,18 +216,18 @@ class SaidaFotos extends Component {
 		const newItens = itens.map(
 			({
 				key: itemId,
-				label: item,
 				conforme,
 				descNaoConforme,
 				fileName,
+				fileNameFim,
 				informaQtde,
 				qtItem
 			}) => ({
 				itemId,
-				item,
 				conforme,
 				descNaoConforme,
 				fileName,
+				fileNameFim,
 				informaQtde,
 				qtItem
 			})
@@ -231,7 +248,8 @@ class SaidaFotos extends Component {
 			descNaoConforme,
 			qtItem,
 			informaQtde,
-			fileName
+			fileName,
+			fileNameFim
 		} = this.state;
 
 		const item = {
@@ -241,7 +259,8 @@ class SaidaFotos extends Component {
 			label: descItem,
 			qtItem,
 			informaQtde,
-			fileName
+			fileName,
+			fileNameFim
 		};
 		const itens = [
 			...this.state.itens.filter(it => {
@@ -272,7 +291,8 @@ class SaidaFotos extends Component {
 				return it.key === id;
 			})
 		];
-		return itens[0].fileName;
+
+		return itens[0] ? itens[0].fileNameFim : "";
 	};
 
 	renderDados() {
@@ -321,6 +341,9 @@ class SaidaFotos extends Component {
 					visible={this.state.informaQtde}
 					keyboardType="numeric"
 				/>
+				<View style={styles.groupItens}>
+					<CachedImage imageName={`${this.state.fileName}.jpeg`} />
+				</View>
 			</View>
 		);
 	}
@@ -337,7 +360,7 @@ class SaidaFotos extends Component {
 			<View style={{ flex: 0.8, marginTop: verticalScale(10) }}>
 				<Photo
 					hasPermission={this.state.hasPermission}
-					fileName={this.state.fileName}
+					fileName={this.state.fileNameFim}
 				/>
 			</View>
 			<View
@@ -392,66 +415,46 @@ class SaidaFotos extends Component {
 				</View>
 			);
 		};
-		return (
-			<Query
-				query={GET_FROTA_ITENS_BY_GRUPO}
-				variables={{
-					id: this.state.frota.id,
-					grupoItemId: this.state.grupo.id
-				}}
-			>
-				{({ loading, error, data }) => {
-					if (loading) return <Text>Buscando os grupos</Text>;
-					if (error) {
-						console.log("Error: ", error);
-						return <Text>Error</Text>;
-					}
+		if (!this.state.grupo.itens) return <View />;
 
-					if (this.state.itens.length === 0) {
-						data.frotaItensByGrupo.map(({ id, item, informaQtde }) => {
-							this.state.itens.push({
-								key: id,
-								label: item,
-								conforme: "S",
-								descNaoConforme: "",
-								qtItem: 1,
-								informaQtde,
-								fileName: ""
-							});
-						});
-					}
-					return (
-						<Fragment>
-							<FlatList
-								data={createRows([...data.frotaItensByGrupo], 3)}
-								keyExtractor={item => item.id.toString()}
-								numColumns={3}
-								renderItem={({ item }) => (
-									<ListItemGrupo
-										data={item}
-										onPress={() =>
-											this.onHandlePress({
-												id: item.id,
-												preview: true
-											})
-										}
-									/>
-								)}
-							/>
-							<View style={styles.separatorLine} />
-							<View style={{ alignItems: "flex-end" }}>
-								<RoundButton
-									text="SALVAR"
-									width={60}
-									height={30}
-									fontSize={8}
-									onPress={this.onHandleSave}
-								/>
-							</View>
-						</Fragment>
-					);
-				}}
-			</Query>
+		const itensLista = this.state.grupo.itens.map(
+			({ itemId: id, ...rest }) => ({
+				id,
+				...rest
+			})
+		);
+
+		console.log("Itens Lista: ", itensLista);
+
+		return (
+			<Fragment>
+				<FlatList
+					data={createRows([...itensLista], 3)}
+					keyExtractor={item => item.id.toString()}
+					numColumns={3}
+					renderItem={({ item }) => (
+						<ListItemGrupo
+							data={item}
+							onPress={() =>
+								this.onHandlePress({
+									id: item.id,
+									preview: true
+								})
+							}
+						/>
+					)}
+				/>
+				<View style={styles.separatorLine} />
+				<View style={{ alignItems: "flex-end" }}>
+					<RoundButton
+						text="SALVAR"
+						width={60}
+						height={30}
+						fontSize={8}
+						onPress={this.onHandleSave}
+					/>
+				</View>
+			</Fragment>
 		);
 	}
 
@@ -472,4 +475,4 @@ class SaidaFotos extends Component {
 	}
 }
 
-export default connectAlert(SaidaFotos);
+export default connectAlert(DevolucaoFotos);

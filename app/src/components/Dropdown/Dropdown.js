@@ -29,7 +29,13 @@ class Dropdown extends Component {
 	};
 
 	render() {
-		const { editable = true, size, sizeP, style = null, height } = this.props;
+		const {
+			editable = true,
+			size,
+			sizeP,
+			style = null,
+			height = null
+		} = this.props;
 
 		const containerStyle = [styles.sizeContainer];
 		const inputContainer = [styles.inputContainer];
@@ -51,7 +57,7 @@ class Dropdown extends Component {
 			inputContainer.push({ backgroundColor: "#ddd" });
 		}
 
-		if (!height) {
+		if (height) {
 			inputContainer.push({ height: verticalScale(height) });
 			inputText.push({ fontSize: scale(height / 4) });
 		}

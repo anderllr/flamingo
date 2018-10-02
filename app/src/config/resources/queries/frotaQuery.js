@@ -15,15 +15,13 @@ export const GET_FROTA = gql`
 
 export const GET_FROTA_BY_ID = gql`
 	query frotaById($id: ID!) {
-		query {
-			frotaById(id: $id) {
-				id
-				nrFrota
-				name
-				ano
-				chassi
-				caminhao
-			}
+		frotaById(id: $id) {
+			id
+			nrFrota
+			name
+			ano
+			chassi
+			caminhao
 		}
 	}
 `;

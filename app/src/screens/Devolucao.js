@@ -14,8 +14,10 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import { ReactNativeFile } from "apollo-upload-client";
 import moment from "moment";
 
-import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
-import { CREATE_VISTORIA } from "../config/resources/mutations/vistoriaMutation";
+import { GET_VISTORIA_BY_ID } from "../config/resources/queries/vistoriaQuery";
+import { GET_FROTA_BY_ID } from "../config/resources/queries/frotaQuery";
+import { GET_CLIENTE_BY_ID } from "../config/resources/queries/clientesQuery";
+import { UPDATE_VISTORIA } from "../config/resources/mutations/vistoriaMutation";
 import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
 
 import { Container } from "../components/Container";
@@ -27,18 +29,14 @@ import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
 import { connectAlert } from "../components/Alert";
 
-class Saida extends Component {
+class Devolucao extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			idCliente: "",
-			frota: {},
-			dtSaida: "",
-			dtPrevisao: "",
-			hrSaida: "",
-			horimetro: 0,
+			dtChegada: "",
+			hrChegada: "",
+			horimetroChegada: 0,
 			fuel: 0,
-			descCliente: "",
 			isDateTimePickerVisible: false,
 			fieldDateTime: "",
 			pickerMode: "date",
@@ -50,12 +48,10 @@ class Saida extends Component {
 		};
 	}
 
-	componentWillMount() {
-		const { navigation } = this.props;
-		const frota = navigation.getParam("frota", {});
-		this.setState({ frota });
+	/*	componentWillReceiveProps(nextProps) {
+		console.log("Props: ", nextProps);
 	}
-
+*/
 	handleInputChange = (field, value) => {
 		const newState = {
 			...this.state,
@@ -64,18 +60,12 @@ class Saida extends Component {
 		this.setState(newState);
 	};
 
-	onChangeDropdown = (option, type) => {
-		if (type === "cliente") {
-			this.setState({ idCliente: option.key, descCliente: option.label });
-		}
-	};
-
 	//******************************************************************/
 	//                  DATE PICKER FUNCTIONS                         //
 
 	showDateTimePicker = fieldDateTime => {
 		this.setState({
-			pickerMode: fieldDateTime === "hrSaida" ? "time" : "date",
+			pickerMode: fieldDateTime === "hrChegada" ? "time" : "date",
 			isDateTimePickerVisible: true,
 			fieldDateTime
 		});
@@ -87,7 +77,9 @@ class Saida extends Component {
 		const field = this.state.fieldDateTime;
 		const newState = {
 			...this.state,
-			[field]: moment(date).format(field === "hrSaida" ? "HH:mm" : "DD/MM/YYYY")
+			[field]: moment(date).format(
+				field === "hrChegada" ? "HH:mm" : "DD/MM/YYYY"
+			)
 		};
 		this.setState(newState);
 
@@ -98,17 +90,19 @@ class Saida extends Component {
 	// FUNÇOES DA LISTA DE GRUPOS
 
 	onHandlePress = (item, totGrupos) => {
+		//TODO ver necessidade de regravar o grupo aqui
 		//Deixa o grupo selecionado para quando voltar salvar já no formato da api
 		const grupo = {
 			grupoItemId: item.id,
 			grupoItem: item.grupoItem,
-			imagem: item.imagem
+			imagem: item.imagem,
+			itens: item.itens
 		};
 		this.setState({ grupo, totGrupos });
 
-		this.props.navigation.navigate("SaidaFotos", {
-			frota: this.state.frota,
+		this.props.navigation.navigate("DevolucaoFotos", {
 			grupo: item,
+			frotaId: this.props.getFrota.frotaById.id,
 			saveItens: this.saveItens.bind(this)
 		});
 	};
@@ -164,17 +158,17 @@ class Saida extends Component {
 		//Se passou agora vai montar o vistoria input
 		//** Inicia as validações */
 		let msg = "";
-		if (this.state.idCliente === "") msg += "Cliente |";
-		if (this.state.dtSaida === "") msg += "Data saída |";
-		if (this.state.dtPrevisao === "") msg += "Data previsão |";
-		if (this.state.hrSaida === "") msg += "Hora Saída |";
-		if (this.state.horimetro === 0) msg += "Horímetro/KM";
+		if (this.state.dtChegada === "") msg += "Data chegada |";
+		if (this.state.hrChegada === "") msg += "Hora chegada |";
+		if (this.state.horimetroChegada === 0) msg += "Horímetro/KM";
 
 		if (msg !== "") {
 			msg = "Você precisa preencher o(s) campo(s): " + msg;
 			this.props.alertWithType("warn", "Aviso", msg);
 			return;
 		}
+
+		//TODO gravar utilizando operador rest
 
 		const vistoriaInput = {
 			frotaId: this.state.frota.id,
@@ -286,32 +280,30 @@ class Saida extends Component {
 		);
 	}
 	renderDados() {
-		const clientes = [];
-
-		if (!this.props.getClientes.loading && this.props.getClientes.clientes) {
-			this.props.getClientes.clientes.map(({ id, name }) => {
-				clientes.push({ key: id, label: name });
-			});
-		}
-
 		return (
 			<View>
 				<Text style={styles.titleText}>Dados da Locação</Text>
-				<Dropdown
-					data={clientes}
+				<InputWithTitle
 					title="Cliente"
-					placeholder="Selecione o cliente"
-					height={32}
+					editable={false}
+					height={22}
 					size={116}
-					value={this.state.descCliente}
-					onChange={option => this.onChangeDropdown(option, "cliente")}
+					value={`${
+						!this.props.getCliente.loading
+							? this.props.getCliente.clienteById.name
+							: ""
+					}`}
 				/>
 				<InputWithTitle
 					title="Frota"
 					editable={false}
-					height={32}
+					height={22}
 					size={116}
-					value={`${this.state.frota.nrFrota}-${this.state.frota.name}`}
+					value={`${
+						!this.props.getFrota.loading
+							? this.props.getFrota.frotaById.name
+							: ""
+					}`}
 				/>
 				<View
 					style={{
@@ -320,27 +312,59 @@ class Saida extends Component {
 						alignItems: "flex-end"
 					}}
 				>
-					<TouchableOpacity onPress={() => this.showDateTimePicker("dtSaida")}>
+					<InputWithTitle
+						title="Data Saída"
+						editable={false}
+						height={22}
+						size={56}
+						value={`${
+							!this.props.data.loading
+								? this.props.data.vistoriaById.dtSaida
+								: ""
+						}`}
+					/>
+					<InputWithTitle
+						title="Hora Saída"
+						editable={false}
+						height={22}
+						size={56}
+						value={`${
+							!this.props.data.loading
+								? this.props.data.vistoriaById.hrSaida
+								: ""
+						}`}
+					/>
+				</View>
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "flex-start",
+						alignItems: "flex-end"
+					}}
+				>
+					<TouchableOpacity
+						onPress={() => this.showDateTimePicker("dtChegada")}
+					>
 						<InputWithTitle
-							title="Data saída"
+							title="Data Chegada"
 							size={56}
 							height={32}
 							editable={false}
 							changeColor={false}
-							value={this.state.dtSaida}
+							value={this.state.dtChegada}
 						/>
 					</TouchableOpacity>
 
 					<TouchableOpacity
-						onPress={() => this.showDateTimePicker("dtPrevisao")}
+						onPress={() => this.showDateTimePicker("hrChegada")}
 					>
 						<InputWithTitle
-							title="Prev.Entrega"
+							title="Hora"
 							size={56}
 							height={32}
 							editable={false}
 							changeColor={false}
-							value={this.state.dtPrevisao}
+							value={this.state.hrChegada}
 						/>
 					</TouchableOpacity>
 
@@ -358,23 +382,26 @@ class Saida extends Component {
 						alignItems: "flex-end"
 					}}
 				>
-					<TouchableOpacity onPress={() => this.showDateTimePicker("hrSaida")}>
-						<InputWithTitle
-							title="Hora saída"
-							size={56}
-							editable={false}
-							changeColor={false}
-							height={32}
-							value={this.state.hrSaida}
-						/>
-					</TouchableOpacity>
+					<InputWithTitle
+						title="Hori./Km Saída"
+						editable={false}
+						height={32}
+						size={56}
+						value={`${
+							!this.props.data.loading
+								? this.props.data.vistoriaById.horimetroSaida
+								: ""
+						}`}
+					/>
 					<InputWithTitle
 						title="Horímetro/Km"
 						size={56}
 						height={32}
 						keyboardType="numeric"
-						onChangeText={value => this.handleInputChange("horimetro", value)}
-						value={this.state.horimetro.toString()}
+						onChangeText={value =>
+							this.handleInputChange("horimetroChegada", value)
+						}
+						value={this.state.horimetroChegada.toString()}
 					/>
 				</View>
 				<Text style={styles.labelText}>Combustível</Text>
@@ -416,10 +443,15 @@ class Saida extends Component {
 				<View style={styles.backgroundInner}>
 					<Text style={styles.titleText}>Locação - Grupos da Frota</Text>
 					<ListFrotaGrupos
-						id={this.state.frota.id}
+						id={0}
 						columns={4}
 						onHandlePress={this.onHandlePress}
 						gruposCompletos={this.state.gruposCompletos}
+						grupos={
+							this.props.data.loading
+								? null
+								: this.props.data.vistoriaById.grupos
+						}
 					/>
 					<View style={styles.separatorLine} />
 					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
@@ -447,7 +479,29 @@ class Saida extends Component {
 }
 
 export default compose(
-	graphql(GET_CLIENTES, { name: "getClientes" }),
-	graphql(CREATE_VISTORIA, { name: "createVistoria" }),
-	graphql(UPLOAD_FILE, { name: "uploadFile" })
-)(connectAlert(Saida));
+	graphql(GET_CLIENTE_BY_ID, {
+		name: "getCliente",
+		options: props => ({
+			variables: {
+				id: props.navigation.state.params.clienteId
+			}
+		})
+	}),
+	graphql(GET_FROTA_BY_ID, {
+		name: "getFrota",
+		options: props => ({
+			variables: {
+				id: props.navigation.state.params.frotaId
+			}
+		})
+	}),
+	graphql(UPDATE_VISTORIA, { name: "updateVistoria" }),
+	graphql(UPLOAD_FILE, { name: "uploadFile" }),
+	graphql(GET_VISTORIA_BY_ID, {
+		options: props => ({
+			variables: {
+				id: props.navigation.state.params.id
+			}
+		})
+	})
+)(connectAlert(Devolucao));

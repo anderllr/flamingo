@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { View, Text } from "react-native";
 import { verticalScale } from "react-native-size-matters";
 import { graphql, compose } from "react-apollo";
@@ -9,8 +9,9 @@ import { RoundButton } from "../components/Button";
 import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 
-import { ListFrotaSaida } from "./queries";
+import { ListFrotaSaida, ListFrotaDevolucao } from "./queries";
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+import { GET_FROTA } from "../config/resources/queries/frotaQuery";
 
 class Vistoria extends Component {
 	constructor(props) {
@@ -25,7 +26,11 @@ class Vistoria extends Component {
 			nrFrotaSaida: 0,
 			nameSaida: "",
 			idCliente: "",
-			descCliente: ""
+			descCliente: "",
+			idFrota: "",
+			descFrota: "",
+			frotaId: null,
+			clienteId: null
 		};
 	}
 
@@ -49,58 +54,80 @@ class Vistoria extends Component {
 		});
 	};
 
+	onHandleDev = ({ id, clienteId, frotaId }) => {
+		//TODO Finish handle to other pages
+		this.props.navigation.navigate("Devolucao", { id, clienteId, frotaId });
+	};
+
 	onSearchSaida = () => {
 		const { nrFrota, name } = this.state;
 		this.setState({ nrFrotaSaida: nrFrota, nameSaida: name });
 	};
 
+	onSearchDevolucao = () => {
+		const { idCliente, idFrota } = this.state;
+		this.setState({ frotaId: idFrota, clienteId: idCliente });
+	};
+
 	onChangeDropdown = (option, type) => {
 		if (type === "cliente") {
 			this.setState({ idCliente: option.key, descCliente: option.label });
+		} else if (type === "frota") {
+			this.setState({ idFrota: option.key, descFrota: option.label });
 		}
 	};
 
 	renderSaida() {
 		return (
-			<View
-				style={{
-					flexDirection: "row",
-					marginBottom: 20,
-					marginTop: 20,
-					justifyContent: "flex-start"
-				}}
-			>
-				<InputWithTitle
-					title="Número"
-					size={40}
-					height={30}
-					keyboardType="numeric"
-					onChangeText={value => this.handleInputChange("nrFrota", value)}
-					value={this.state.nrFrota === 0 ? "" : this.state.nrFrota.toString()}
-				/>
-				<InputWithTitle
-					title="Nome da Frota"
-					size={90}
-					height={30}
-					onChangeText={value => this.handleInputChange("name", value)}
-					value={this.state.name}
-				/>
+			<Fragment>
 				<View
 					style={{
-						marginTop: verticalScale(7)
+						flexDirection: "row",
+						marginBottom: 20,
+						marginTop: 20,
+						justifyContent: "flex-start"
 					}}
 				>
-					<RoundButton
-						text="BUSCAR"
-						width={80}
-						height={40}
-						fontSize={8}
-						icon={{ name: "search", type: "ion" }}
-						active={false}
-						onPress={() => this.onSearchSaida()}
+					<InputWithTitle
+						title="Número"
+						size={40}
+						height={32}
+						keyboardType="numeric"
+						onChangeText={value => this.handleInputChange("nrFrota", value)}
+						value={
+							this.state.nrFrota === 0 ? "" : this.state.nrFrota.toString()
+						}
 					/>
+					<InputWithTitle
+						title="Nome da Frota"
+						size={85}
+						height={32}
+						onChangeText={value => this.handleInputChange("name", value)}
+						value={this.state.name}
+					/>
+					<View
+						style={{
+							marginTop: verticalScale(6)
+						}}
+					>
+						<RoundButton
+							text="BUSCAR"
+							width={70}
+							height={32}
+							fontSize={8}
+							icon={{ name: "search", type: "ion" }}
+							active={false}
+							onPress={() => this.onSearchSaida()}
+						/>
+					</View>
 				</View>
-			</View>
+				<ListFrotaSaida
+					onHandlePress={this.onHandlePress}
+					active={this.state.active}
+					name={this.state.nameSaida}
+					nrFrota={this.state.nrFrotaSaida}
+				/>
+			</Fragment>
 		);
 	}
 	// TODO: button to search devolucao
@@ -112,40 +139,66 @@ class Vistoria extends Component {
 				clientes.push({ key: id, label: name });
 			});
 		}
+
+		const frota = [];
+
+		if (!this.props.getFrota.loading && this.props.getFrota.frota) {
+			this.props.getFrota.frota.map(({ id, nrFrota, name }) => {
+				frota.push({ key: id, label: `${nrFrota}-${name}` });
+			});
+		}
+
 		return (
-			<View
-				style={{
-					flexDirection: "row",
-					marginBottom: 20,
-					marginTop: 20,
-					justifyContent: "flex-start"
-				}}
-			>
-				<InputWithTitle
-					title="Número da Frota"
-					size={70}
-					onChangeText={value => this.handleInputChange("nrFrota", value)}
-					value={this.state.nrFrota.toString()}
-				/>
-				<InputWithTitle
-					title="Nome da Frota"
-					size={120}
-					onChangeText={value => this.handleInputChange("name", value)}
-					value={this.state.name}
-				/>
-				<View style={{ flexDirection: "column" }}>
-					<Text style={styles.titleText}>Dados da Locação</Text>
+			<Fragment>
+				<View
+					style={{
+						flexDirection: "row",
+						marginBottom: 20,
+						marginTop: 20,
+						justifyContent: "flex-start"
+					}}
+				>
+					<Dropdown
+						data={frota}
+						title="Frota"
+						placeholder="Selecione a frota"
+						height={32}
+						size={125}
+						value={this.state.descFrota}
+						onChange={option => this.onChangeDropdown(option, "frota")}
+					/>
 					<Dropdown
 						data={clientes}
 						title="Cliente"
 						placeholder="Selecione o cliente"
 						height={32}
-						size={116}
+						size={125}
 						value={this.state.descCliente}
 						onChange={option => this.onChangeDropdown(option, "cliente")}
 					/>
+					<View
+						style={{
+							marginTop: verticalScale(7)
+						}}
+					>
+						<RoundButton
+							text="BUSCAR"
+							width={70}
+							height={32}
+							fontSize={8}
+							icon={{ name: "search", type: "ion" }}
+							active={false}
+							onPress={() => this.onSearchDevolucao()}
+						/>
+					</View>
 				</View>
-			</View>
+				<ListFrotaDevolucao
+					onHandlePress={this.onHandleDev}
+					active={this.state.active}
+					frotaId={this.state.frotaId}
+					clienteId={this.state.clienteId}
+				/>
+			</Fragment>
 		);
 	}
 
@@ -257,12 +310,6 @@ class Vistoria extends Component {
 						: this.state.active === "devolucao"
 							? this.renderDevolucao()
 							: this.renderConsulta()}
-					<ListFrotaSaida
-						onHandlePress={this.onHandlePress}
-						active={this.state.active}
-						name={this.state.nameSaida}
-						nrFrota={this.state.nrFrotaSaida}
-					/>
 				</View>
 			</Container>
 		);
@@ -287,6 +334,7 @@ export default compose(
   )(RepositoryList); 
 */
 
-export default compose(graphql(GET_CLIENTES, { name: "getClientes" }))(
-	Vistoria
-);
+export default compose(
+	graphql(GET_CLIENTES, { name: "getClientes" }),
+	graphql(GET_FROTA, { name: "getFrota" })
+)(Vistoria);

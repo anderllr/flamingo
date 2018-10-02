@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const VistoriaItemSchema = new mongoose.Schema({
 	itemId: { type: String, required: true },
+	item: { type: String, required: true },
 	conforme: { type: String, required: true },
 	descNaoConforme: { type: String, required: false },
 	informaQtde: { type: Boolean, required: true },
@@ -17,6 +18,7 @@ const VistoriaItemSchema = new mongoose.Schema({
 const VistoriaGrupoSchema = new mongoose.Schema({
 	grupoItemId: { type: String, required: true },
 	grupoItem: { type: String, required: true },
+	imagem: { type: String, required: true },
 	itens: [VistoriaItemSchema]
 });
 

@@ -1,8 +1,14 @@
 import { createStackNavigator } from "react-navigation";
-import { StatusBar } from "react-native";
 
-import { Login, Saida, Vistoria, SaidaFotos } from "../screens";
-import { CameraScreen, Photo, GalleryScreen } from "../components/CameraScreen";
+import {
+	Login,
+	Saida,
+	Vistoria,
+	SaidaFotos,
+	Devolucao,
+	DevolucaoFotos
+} from "../screens";
+import { CameraScreen } from "../components/CameraScreen";
 
 const LoginStack = createStackNavigator(
 	{
@@ -28,6 +34,26 @@ const HomeStack = createStackNavigator(
 			screen: Vistoria,
 			navigationOptions: {
 				headerTitle: "Vistoria",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
+			}
+		},
+		Devolucao: {
+			screen: Devolucao,
+			navigationOptions: {
+				headerTitle: "Devolução",
+				headerTintColor: "white",
+				headerStyle: {
+					backgroundColor: "#00665a"
+				}
+			}
+		},
+		DevolucaoFotos: {
+			screen: DevolucaoFotos,
+			navigationOptions: {
+				headerTitle: "Fotos da devolução",
 				headerTintColor: "white",
 				headerStyle: {
 					backgroundColor: "#00665a"

@@ -11,16 +11,30 @@ const ListItemDevolucao = ({ data, onPress }) => (
 		<View style={styles.listContainer}>
 			<View style={{ width: "55%", flexDirection: "column" }}>
 				<Text style={[styles.text, styles.textTitle]}>Frota/Cliente</Text>
-				<Text style={styles.text}>{`${data.nrFrota}-${data.name}`}</Text>
-				<Text style={styles.text}>JOÃO DA NEVES - FAZ. ESPERANÇA</Text>
+				<Text style={styles.text}>{`${data.nrFrota}-${data.nameFrota}`}</Text>
+				<Text style={[styles.text, { fontWeight: "100" }]}>{`${
+					data.nameCliente
+				}-${data.fazenda}`}</Text>
 			</View>
-			<View style={{ width: "15%", flexDirection: "column" }}>
+			<View
+				style={{
+					width: "15%",
+					flexDirection: "column",
+					alignItems: "center"
+				}}
+			>
 				<Text style={[styles.text, styles.textTitle]}>Locação</Text>
-				<Text style={styles.text}>15/08/2018</Text>
+				<Text style={styles.text}>{`${data.dtSaida}`}</Text>
 			</View>
-			<View style={{ width: "20%", flexDirection: "column" }}>
+			<View
+				style={{
+					width: "20%",
+					flexDirection: "column",
+					alignItems: "center"
+				}}
+			>
 				<Text style={[styles.text, styles.textTitle]}>Devolução Prevista</Text>
-				<Text style={styles.text}>31/10/2018</Text>
+				<Text style={styles.text}>{`${data.dtPrevisao}`}</Text>
 			</View>
 			<View
 				style={{

@@ -18,20 +18,18 @@ export const GET_CLIENTES = gql`
 `;
 
 export const GET_CLIENTE_BY_ID = gql`
-	query cliente($id: ID!) {
-		query {
-			cliente(id: $id) {
-				id
-				email
-				name
-				fazenda
-				endereco
-				telefone
-				celular
-				cidadeId
-				estadoId
-				obs
-			}
+	query clienteById($id: ID!) {
+		clienteById(id: $id) {
+			id
+			email
+			name
+			fazenda
+			endereco
+			telefone
+			celular
+			cidadeId
+			estadoId
+			obs
 		}
 	}
 `;

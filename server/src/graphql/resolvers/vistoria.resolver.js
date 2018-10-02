@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { authenticated } from "./auth.resolver";
 
 export default {
@@ -12,7 +13,81 @@ export default {
 		vistoriaById: authenticated(async (parent, args, { db: { Vistoria } }) => {
 			const vistoria = await Vistoria.findById(args.id);
 			return vistoria;
-		})
+		}),
+		vistoriaDevolucao: authenticated(
+			async (parent, { frotaId, clienteId }, { db: { Vistoria } }) => {
+				//Cria os filtros
+				const match = {
+					status: "SAIDA"
+				};
+
+				if (frotaId) match.frotaId = mongoose.Types.ObjectId(frotaId);
+				if (clienteId) match.clienteId = mongoose.Types.ObjectId(clienteId);
+
+				const vistoria = await Vistoria.aggregate([
+					{
+						$match: match
+					},
+					{
+						$lookup: {
+							from: "frota",
+							localField: "frotaId",
+							foreignField: "_id",
+							as: "frota"
+						}
+					},
+					{ $unwind: "$frota" },
+					{
+						$lookup: {
+							from: "clientes",
+							localField: "clienteId",
+							foreignField: "_id",
+							as: "cliente"
+						}
+					},
+					{ $unwind: "$cliente" },
+					{
+						$project: {
+							id: 1,
+							dtSaida: 1,
+							dtPrevisao: 1,
+							clienteId: 1,
+							frotaId: "$frota._id",
+							nrFrota: "$frota.nrFrota",
+							nameFrota: "$frota.name",
+							nameCliente: "$cliente.name",
+							fazenda: "$cliente.fazenda"
+						}
+					}
+				]);
+
+				return vistoria.map(
+					({
+						_id,
+						dtSaida,
+						dtPrevisao,
+						clienteId,
+						frotaId,
+						nrFrota,
+						nameFrota,
+						nameCliente,
+						fazenda
+					}) => {
+						return {
+							id: _id,
+							dtSaida,
+							dtPrevisao,
+							clienteId,
+							frotaId,
+							nrFrota,
+							nameFrota,
+							nameCliente,
+							fazenda
+						};
+					}
+				);
+			}
+		)
 	},
 	Mutation: {
 		createVistoria: authenticated(
