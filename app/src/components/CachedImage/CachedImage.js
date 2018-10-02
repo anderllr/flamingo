@@ -25,12 +25,12 @@ export default class CachedImage extends Component {
 
 			const uri = this.props.imageUrl !== "" ? `${URL}/${name}` : "";
 
-			console.log("name: ", name);
+			//			console.log("name: ", name);
 
 			const path = `${FileSystem.documentDirectory}flamingo/${name}`;
 			const image = await FileSystem.getInfoAsync(path);
 			if (image.exists) {
-				console.log("Imagem Existe");
+				//				console.log("Imagem Existe");
 				this.setState({
 					source: {
 						uri: image.uri
@@ -38,7 +38,7 @@ export default class CachedImage extends Component {
 				});
 				return;
 			}
-			console.log("Não existe vai fazer o download...", uri);
+			//			console.log("Não existe vai fazer o download...", uri);
 			const newImage = await FileSystem.downloadAsync(uri, path);
 			this.setState({
 				source: {
