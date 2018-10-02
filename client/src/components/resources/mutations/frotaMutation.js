@@ -4,6 +4,7 @@ export const CREATE_FROTA = gql`
 	mutation createFrota($frotaInput: FrotaInput!) {
 		createFrota(input: $frotaInput) {
 			id
+			nrFrota
 		}
 	}
 `;

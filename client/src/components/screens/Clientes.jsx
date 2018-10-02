@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import axios from "axios";
 import { Typeahead } from "react-bootstrap-typeahead";
+import InputMask from "react-input-mask";
 
 import Main from "../template/Main";
 import { GET_CLIENTES } from "../resources/queries/clientesQuery";
@@ -175,10 +176,9 @@ class Clientes extends Component {
 		if (e.target.type === "checkbox") {
 			cliente[e.target.name] = e.target.checked;
 		} else {
-			let value =
-				e.target.name === "email"
-					? e.target.value.toLowerCase()
-					: e.target.value.toUpperCase();
+			let value = ["email", "maplink"].includes(e.target.name)
+				? e.target.value.toLowerCase()
+				: e.target.value.toUpperCase();
 			cliente[e.target.name] = value;
 		}
 
@@ -373,26 +373,24 @@ class Clientes extends Component {
 					<div className="col-6 col-md-3">
 						<div className="form-group">
 							<label>Telefone</label>
-							<input
-								type="text"
-								className="form-control"
+							<InputMask
 								name="telefone"
+								className="form-control"
+								mask="(99) 9999-9999"
 								value={this.state.cliente.telefone}
 								onChange={e => this.changeField(e)}
-								placeholder="Telefone"
 							/>
 						</div>
 					</div>
 					<div className="col-6 col-md-3">
 						<div className="form-group">
 							<label>Celular</label>
-							<input
-								type="text"
-								className="form-control"
+							<InputMask
 								name="celular"
+								className="form-control"
+								mask="(99) 99999-9999"
 								value={this.state.cliente.celular}
 								onChange={e => this.changeField(e)}
-								placeholder="Telefone"
 							/>
 						</div>
 					</div>
@@ -409,7 +407,11 @@ class Clientes extends Component {
 								onChange={e => this.changeField(e)}
 								placeholder="Cole aqui o link da localização do cliente"
 							/>
-							<a href={`${this.state.cliente.maplink}`}>Ir para o link...</a>
+							{this.state.cliente.maplink !== "" && (
+								<a href={`${this.state.cliente.maplink}`} target="_blank">
+									Ir para o link...
+								</a>
+							)}
 						</div>
 					</div>
 				</div>

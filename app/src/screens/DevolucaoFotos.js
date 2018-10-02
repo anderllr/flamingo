@@ -157,6 +157,7 @@ class DevolucaoFotos extends Component {
 
 				showPreview = fileNameFim !== "";
 
+				console.log("Filename sel: ", fileName);
 				const newState = {
 					...this.state,
 					itens,
@@ -376,8 +377,20 @@ class DevolucaoFotos extends Component {
 					visible={this.state.informaQtde}
 					keyboardType="numeric"
 				/>
-				<View>
-					<CachedImage imageName={`${this.state.fileName}.jpeg`} />
+				<View
+					style={{
+						aspectRatio: 1,
+						width: scale(116),
+						borderColor: EStyleSheet.value("$border"),
+						borderWidth: scale(1),
+						borderRadius: scale(5)
+					}}
+				>
+					<CachedImage
+						imageName={
+							this.state.fileName !== "" ? `${this.state.fileName}.jpeg` : null
+						}
+					/>
 				</View>
 			</View>
 		);
@@ -459,7 +472,7 @@ class DevolucaoFotos extends Component {
 			})
 		);
 
-		console.log("Itens Lista: ", itensLista);
+		//		console.log("Itens Lista: ", itensLista);
 
 		return (
 			<Fragment>

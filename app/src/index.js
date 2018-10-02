@@ -45,7 +45,7 @@ const cache = new InMemoryCache();
 
 const middlewareAuth = setContext(async (req, { headers }) => {
 	//TODO Change temporaly token that puted to
-	//	const token = await getToken();
+	//const token = await getToken();
 	const token =
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1Mzc5OTYwNDF9.uq1SkMv0XmATShHqiHcfWoxARiOQGj51qORu0eUp7OQ";
 	return {
@@ -66,7 +66,7 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			authenticated: true, //TODO change here to false to avoid problems
+			authenticated: true, //TODO change here to production
 			fontLoaded: false
 		};
 	}

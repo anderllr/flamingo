@@ -139,7 +139,7 @@ class Frota extends Component {
 
 		const exceptGrupos = this.retornaExcepts();
 		let frotaInput = {
-			nrFrota,
+			nrFrota: nrFrota === "" ? 0 : nrFrota,
 			name,
 			ano,
 			chassi,
@@ -149,11 +149,7 @@ class Frota extends Component {
 
 		//in this case required fields are the same of userInput object
 		const errors = validateFields(
-			[
-				{ field: "name", name: "Nome" },
-				{ field: "nrFrota", name: "Nr. Frota" },
-				{ field: "ano", name: "Ano" }
-			],
+			[{ field: "name", name: "Nome" }, { field: "ano", name: "Ano" }],
 			this.state.frota
 		);
 		if (errors.length > 0) {
@@ -180,7 +176,12 @@ class Frota extends Component {
 		} else {
 			this.props
 				.createFrota({ variables: { frotaInput } })
-				.then(() => {
+				.then(res => {
+					const frota = {
+						...this.state.frota,
+						nrFrota: res.data.createFrota.nrFrota
+					};
+					this.setState({ frota });
 					this.props.data.refetch();
 				})
 				.catch(e => {

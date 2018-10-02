@@ -47,10 +47,10 @@ class Devolucao extends Component {
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
+	/*	componentWillReceiveProps(nextProps) {
 		console.log("Props: ", nextProps);
 	}
-
+*/
 	handleInputChange = (field, value) => {
 		const newState = {
 			...this.state,

@@ -60,6 +60,7 @@ export default {
 
 				const vistoria = await Vistoria.find({ status: "SAIDA" });
 				const locados = vistoria.map(({ frotaId }) => frotaId);
+				//				console.log("Locados: ", locados);
 				const frota = await Frota.find({
 					$and: [{ _id: { $nin: locados } }, options]
 				});
@@ -71,7 +72,28 @@ export default {
 	},
 	Mutation: {
 		createFrota: authenticated(async (parent, { input }, { db: { Frota } }) => {
-			const frota = new Frota(input);
+			//valida número da frota se vier zero ẽ pq precisa gerar automático
+			const { nrFrota, name, ano, chassi, caminhao, exceptGrupos } = input;
+			let nrFrotaNew = 0;
+			if (nrFrota === 0) {
+				const nrF = await Frota.find()
+					.sort({ nrFrota: -1 })
+					.limit(1);
+				if (nrF) {
+					nrFrotaNew = nrF[0].nrFrota + 1;
+				} else nrFrotaNew = 1;
+			}
+			if (nrFrotaNew === 0) nrFrotaNew = nrFrota;
+			const newInput = {
+				nrFrota: nrFrotaNew,
+				name,
+				ano,
+				chassi,
+				caminhao,
+				exceptGrupos
+			};
+
+			const frota = new Frota(newInput);
 			await frota.save();
 			return frota;
 		}),

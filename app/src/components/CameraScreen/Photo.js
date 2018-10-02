@@ -22,16 +22,18 @@ export default class Photo extends Component {
 	}
 
 	async componentWillMount() {
-		const path = `${FileSystem.documentDirectory}flamingo/${
-			this.props.fileName
-		}.jpeg`;
-		const image = await FileSystem.getInfoAsync(path);
-		if (image.exists) {
-			this.setState({
-				source: {
-					uri: image.uri
-				}
-			});
+		if (this.props.fileName && this.props.fileName !== "") {
+			const path = `${FileSystem.documentDirectory}flamingo/${
+				this.props.fileName
+			}.jpeg`;
+			const image = await FileSystem.getInfoAsync(path);
+			if (image.exists) {
+				this.setState({
+					source: {
+						uri: image.uri
+					}
+				});
+			}
 		}
 	}
 

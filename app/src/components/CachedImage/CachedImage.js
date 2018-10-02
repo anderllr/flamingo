@@ -18,27 +18,34 @@ export default class CachedImage extends Component {
 	};
 
 	componentDidMount = async () => {
-		const URL = PORT > 0 ? `${BASE_URL}:${PORT}` : BASE_URL;
 		const name = this.props.imageName;
-		const uri = this.props.imageUrl !== "" ? `${URL}/${name}` : "";
 
-		const path = `${FileSystem.documentDirectory}flamingo/${name}`;
-		const image = await FileSystem.getInfoAsync(path);
-		if (image.exists) {
+		if (name) {
+			const URL = PORT > 0 ? `${BASE_URL}:${PORT}` : BASE_URL;
+
+			const uri = this.props.imageUrl !== "" ? `${URL}/${name}` : "";
+
+			console.log("name: ", name);
+
+			const path = `${FileSystem.documentDirectory}flamingo/${name}`;
+			const image = await FileSystem.getInfoAsync(path);
+			if (image.exists) {
+				console.log("Imagem Existe");
+				this.setState({
+					source: {
+						uri: image.uri
+					}
+				});
+				return;
+			}
+			console.log("Não existe vai fazer o download...", uri);
+			const newImage = await FileSystem.downloadAsync(uri, path);
 			this.setState({
 				source: {
-					uri: image.uri
+					uri: newImage.uri
 				}
 			});
-			return;
 		}
-
-		const newImage = await FileSystem.downloadAsync(uri, path);
-		this.setState({
-			source: {
-				uri: newImage.uri
-			}
-		});
 	};
 
 	render() {
