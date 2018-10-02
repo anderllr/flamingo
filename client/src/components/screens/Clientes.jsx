@@ -401,7 +401,7 @@ class Clientes extends Component {
 					<div className="col-12 col-md-12">
 						<div className="form-group">
 							<label>Map Link</label>
-							<textarea
+							<input
 								type="text"
 								className="form-control"
 								name="maplink"
@@ -409,6 +409,7 @@ class Clientes extends Component {
 								onChange={e => this.changeField(e)}
 								placeholder="Cole aqui o link da localização do cliente"
 							/>
+							<a href={`${this.state.cliente.maplink}`}>Ir para o link...</a>
 						</div>
 					</div>
 				</div>

@@ -24,9 +24,9 @@ class DevolucaoFotos extends Component {
 			frotaId: "",
 			grupo: {},
 			itens: [],
-			conforme: "S",
-			descNaoConforme: "",
-			qtItem: 1,
+			conformeFim: "S",
+			descNaoConformeFim: "",
+			qtItemFim: 1,
 			idItem: "",
 			descItem: "",
 			informaQtde: true,
@@ -49,10 +49,21 @@ class DevolucaoFotos extends Component {
 
 		//TODO Ajustar essa questão dos itens
 		const itens = grupo.itens.map(
-			({ itemId: key, item: label, fileNameFim, ...rest }) => ({
+			({
+				itemId: key,
+				item: label,
+				fileNameFim,
+				conformeFim,
+				descNaoConformeFim,
+				qtItemFim,
+				...rest
+			}) => ({
 				key,
 				label,
 				fileNameFim: !fileNameFim ? "" : fileNameFim,
+				conformeFim: !conformeFim ? "S" : conformeFim,
+				descNaoConformeFim: !descNaoConformeFim ? "" : descNaoConformeFim,
+				qtItemFim: !qtItemFim ? 1 : qtItemFim,
 				...rest
 			})
 		);
@@ -84,6 +95,9 @@ class DevolucaoFotos extends Component {
 		const {
 			conforme,
 			descNaoConforme,
+			conformeFim,
+			descNaoConformeFim,
+			qtItemFim,
 			key,
 			label,
 			qtItem,
@@ -101,9 +115,12 @@ class DevolucaoFotos extends Component {
 			qtItem,
 			informaQtde,
 			fileName,
+			conformeFim,
+			descNaoConformeFim,
+			qtItemFim,
 			fileNameFim,
 			itens,
-			indiceConforme: conforme === "S" ? 0 : 1
+			indiceConforme: conformeFim === "S" ? 0 : 1
 		});
 	};
 
@@ -131,6 +148,9 @@ class DevolucaoFotos extends Component {
 					key,
 					label,
 					informaQtde,
+					conformeFim,
+					descNaoConformeFim,
+					qtItemFim,
 					fileName,
 					fileNameFim
 				} = item[0];
@@ -146,9 +166,12 @@ class DevolucaoFotos extends Component {
 					idItem: key,
 					descItem: label,
 					informaQtde,
-					indiceConforme: conforme === "S" ? 0 : 1,
+					indiceConforme: conformeFim === "S" ? 0 : 1,
 					showPhotos: false,
 					fileName,
+					conformeFim,
+					descNaoConformeFim,
+					qtItemFim,
 					fileNameFim,
 					showPreview
 				};
@@ -219,6 +242,9 @@ class DevolucaoFotos extends Component {
 				conforme,
 				descNaoConforme,
 				fileName,
+				conformeFim,
+				descNaoConformeFim,
+				qtItemFim,
 				fileNameFim,
 				informaQtde,
 				qtItem
@@ -227,6 +253,9 @@ class DevolucaoFotos extends Component {
 				conforme,
 				descNaoConforme,
 				fileName,
+				conformeFim,
+				descNaoConformeFim,
+				qtItemFim,
 				fileNameFim,
 				informaQtde,
 				qtItem
@@ -249,6 +278,9 @@ class DevolucaoFotos extends Component {
 			qtItem,
 			informaQtde,
 			fileName,
+			conformeFim,
+			descNaoConformeFim,
+			qtItemFim,
 			fileNameFim
 		} = this.state;
 
@@ -259,6 +291,9 @@ class DevolucaoFotos extends Component {
 			label: descItem,
 			qtItem,
 			informaQtde,
+			conformeFim,
+			descNaoConformeFim,
+			qtItemFim,
 			fileName,
 			fileNameFim
 		};
@@ -273,7 +308,7 @@ class DevolucaoFotos extends Component {
 	};
 
 	onRadioPress(index, value) {
-		this.setState({ conforme: value, indiceConforme: index });
+		this.setState({ conformeFim: value, indiceConforme: index });
 	}
 
 	newPhoto = () => {
@@ -328,20 +363,20 @@ class DevolucaoFotos extends Component {
 					numberOfLines={4}
 					size={116}
 					onChangeText={value =>
-						this.handleInputChange("descNaoConforme", value)
+						this.handleInputChange("descNaoConformeFim", value)
 					}
-					value={this.state.descNaoConforme}
+					value={this.state.descNaoConformeFim}
 				/>
 				<InputWithTitle
 					title="Quantidade"
 					editable={true}
 					size={40}
-					value={this.state.qtItem.toString()}
-					onChangeText={value => this.handleInputChange("qtItem", value)}
+					value={this.state.qtItemFim.toString()}
+					onChangeText={value => this.handleInputChange("qtItemFim", value)}
 					visible={this.state.informaQtde}
 					keyboardType="numeric"
 				/>
-				<View style={styles.groupItens}>
+				<View>
 					<CachedImage imageName={`${this.state.fileName}.jpeg`} />
 				</View>
 			</View>

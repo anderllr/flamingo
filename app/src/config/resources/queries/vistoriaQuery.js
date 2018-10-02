@@ -50,7 +50,6 @@ export const GET_VISTORIA_BY_ID = gql`
 					fileName
 					conformeFim
 					descNaoConformeFim
-					informaQtdeFim
 					qtItemFim
 					fileNameFim
 				}

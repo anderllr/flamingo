@@ -10,7 +10,6 @@ const VistoriaItemSchema = new mongoose.Schema({
 	fileName: { type: String, required: true },
 	conformeFim: { type: String, required: false },
 	descNaoConformeFim: { type: String, required: false },
-	informaQtdeFim: { type: Boolean, required: false },
 	qtItemFim: { type: Number, required: false },
 	fileNameFim: { type: String, required: false }
 });

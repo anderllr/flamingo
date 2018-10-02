@@ -22,7 +22,6 @@ import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
 
 import { Container } from "../components/Container";
 import { RoundButton } from "../components/Button";
-import { Dropdown } from "../components/Dropdown";
 import { FuelMarker } from "../components/FuelMarker";
 import { InputWithTitle } from "../components/InputText";
 import ListFrotaGrupos from "./queries/ListFrotaGrupos";
@@ -48,10 +47,10 @@ class Devolucao extends Component {
 		};
 	}
 
-	/*	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps) {
 		console.log("Props: ", nextProps);
 	}
-*/
+
 	handleInputChange = (field, value) => {
 		const newState = {
 			...this.state,
@@ -169,7 +168,9 @@ class Devolucao extends Component {
 		}
 
 		//TODO gravar utilizando operador rest
-
+		this.props.navigation.goBack();
+		return;
+		//TODO finalizar todo o processo de gravação
 		const vistoriaInput = {
 			frotaId: this.state.frota.id,
 			clienteId: this.state.idCliente,
@@ -183,7 +184,7 @@ class Devolucao extends Component {
 		};
 
 		this.props
-			.createVistoria({ variables: { vistoriaInput } })
+			.updateVistoria({ variables: { vistoriaInput } })
 			.then(async () => {
 				//UPLOAD NAS IMAGENS
 				this.setState({ wait: true });

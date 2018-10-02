@@ -36,7 +36,6 @@ const vistoriaTypes = `
         fileName: String!
         conformeFim: String
         descNaoConformeFim: String
-        informaQtdeFim: Boolean
         qtItemFim: Int
         fileNameFim: String
     }
@@ -110,7 +109,6 @@ const vistoriaTypes = `
         fileName: String!
         conformeFim: String
         descNaoConformeFim: String
-        informaQtdeFim: Boolean
         qtItemFim: Int
         fileNameFim: String
     }
