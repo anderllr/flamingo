@@ -43,6 +43,15 @@ class SaidaFotos extends Component {
 		const { navigation } = this.props;
 		const grupo = navigation.getParam("grupo", {});
 		const frota = navigation.getParam("frota", {});
+		const grupoitens = navigation.getParam("itens", {});
+		//ajusta os itens para o mapeamento local
+
+		const itens = grupoitens.map(({ item: label, itemId: key, ...rest }) => ({
+			key,
+			label,
+			...rest
+		}));
+		console.log("Itens: ", itens);
 		const saveItens = navigation.getParam("saveItens", {});
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		const roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -50,6 +59,7 @@ class SaidaFotos extends Component {
 			hasPermission: status === "granted" && roll.status === "granted",
 			grupo,
 			frota,
+			itens,
 			saveItens
 		});
 	}
@@ -168,6 +178,18 @@ class SaidaFotos extends Component {
 
 			this.setState({ itens });
 		}
+
+		//Salva na tela anterior para não perder o state
+
+		const newItens = itens.map(({ key: itemId, label: item, ...rest }) => ({
+			itemId,
+			item,
+			...rest
+		}));
+
+		if (typeof this.state.saveItens === "function") {
+			this.state.saveItens(newItens, false);
+		}
 	};
 
 	onHandleSave = async () => {
@@ -196,28 +218,14 @@ class SaidaFotos extends Component {
 		}
 
 		//Se chegou até aqui é pq está tudo certo... vou normalizar os dados para mudar o nome da chave do item
-		const newItens = itens.map(
-			({
-				key: itemId,
-				label: item,
-				conforme,
-				descNaoConforme,
-				fileName,
-				informaQtde,
-				qtItem
-			}) => ({
-				itemId,
-				item,
-				conforme,
-				descNaoConforme,
-				fileName,
-				informaQtde,
-				qtItem
-			})
-		);
+		const newItens = itens.map(({ key: itemId, label: item, ...rest }) => ({
+			itemId,
+			item,
+			...rest
+		}));
 
 		if (typeof this.state.saveItens === "function") {
-			this.state.saveItens(newItens);
+			this.state.saveItens(newItens, true);
 		}
 
 		this.props.navigation.goBack();

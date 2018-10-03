@@ -60,7 +60,7 @@ export default {
 						}
 					}
 				]);
-
+				console.log("Vistoria: ", vistoria);
 				return vistoria.map(
 					({
 						_id,
@@ -91,7 +91,9 @@ export default {
 	},
 	Mutation: {
 		createVistoria: authenticated(
-			async (parent, { input }, { db: { Vistoria } }) => {
+			async (parent, { input }, { authUser, db: { Vistoria } }) => {
+				//Add logged user to register
+				input.usuarioSaidaId = authUser.id;
 				const vistoria = new Vistoria(input);
 				await vistoria.save();
 				return vistoria;

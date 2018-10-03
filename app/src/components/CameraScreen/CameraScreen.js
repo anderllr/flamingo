@@ -211,6 +211,12 @@ class CameraScreen extends Component {
 					AF
 				</Text>
 			</TouchableOpacity>
+			<TouchableOpacity style={styles.toggleButton} onPress={this.zoomIn}>
+				<MaterialIcons name="zoom-in" size={32} color="white" />
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.toggleButton} onPress={this.zoomOut}>
+				<MaterialIcons name="zoom-out" size={32} color="white" />
+			</TouchableOpacity>
 		</View>
 	);
 
@@ -238,6 +244,7 @@ class CameraScreen extends Component {
 				ratio={this.state.ratio}
 				pictureSize={this.state.pictureSize}
 				onMountError={this.handleMountError}
+				zoom={this.state.zoom}
 			>
 				{this.renderTopBar()}
 				{this.renderBottomBar()}

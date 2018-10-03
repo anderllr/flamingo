@@ -1,4 +1,6 @@
 import { createStackNavigator } from "react-navigation";
+import { StatusBar, Platform } from "react-native";
+import { verticalScale } from "react-native-size-matters";
 
 import {
 	Login,
@@ -28,6 +30,22 @@ const LoginStack = createStackNavigator(
 	}
 );
 
+const headerStyle =
+	Platform.OS === "ios"
+		? { backgroundColor: "#00665a" }
+		: {
+				backgroundColor: "#00665a",
+				height: verticalScale(18)
+		  };
+
+const headerTitleStyle =
+	Platform.OS === "ios"
+		? {}
+		: {
+				fontWeight: "100",
+				marginBottom: verticalScale(5)
+		  };
+
 const HomeStack = createStackNavigator(
 	{
 		Vistoria: {
@@ -35,9 +53,8 @@ const HomeStack = createStackNavigator(
 			navigationOptions: {
 				headerTitle: "Vistoria",
 				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
 			}
 		},
 		Devolucao: {
@@ -45,9 +62,8 @@ const HomeStack = createStackNavigator(
 			navigationOptions: {
 				headerTitle: "Devolução",
 				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
 			}
 		},
 		DevolucaoFotos: {
@@ -55,9 +71,8 @@ const HomeStack = createStackNavigator(
 			navigationOptions: {
 				headerTitle: "Fotos da devolução",
 				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
 			}
 		},
 		Saida: {
@@ -65,9 +80,8 @@ const HomeStack = createStackNavigator(
 			navigationOptions: {
 				headerTitle: "Checagem de Saída",
 				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
 			}
 		},
 		SaidaFotos: {
@@ -75,9 +89,8 @@ const HomeStack = createStackNavigator(
 			navigationOptions: {
 				headerTitle: "Fotos de saída de frota",
 				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
 			}
 		},
 		CameraScreen: {

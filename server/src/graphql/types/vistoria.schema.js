@@ -3,7 +3,9 @@ const vistoriaTypes = `
     type Vistoria {
         id: ID!
         frotaId: ID!
-        clienteId: ID!        
+        clienteId: ID! 
+        usuarioSaidaId: ID
+        usuarioChegadaId: ID
         dtSaida: String!
         dtPrevisao: String!
         hrSaida: String!        

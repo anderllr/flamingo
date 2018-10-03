@@ -106,9 +106,21 @@ class Saida extends Component {
 		};
 		this.setState({ grupo, totGrupos });
 
+		const grupoItens = this.state.grupos.filter(g => {
+			return g.grupoItemId === grupo.grupoItemId;
+		});
+		let itens = [];
+
+		if (grupoItens.length > 0) {
+			if (grupoItens[0].itens) {
+				itens = grupoItens[0].itens;
+			}
+		}
+
 		this.props.navigation.navigate("SaidaFotos", {
 			frota: this.state.frota,
 			grupo: item,
+			itens,
 			saveItens: this.saveItens.bind(this)
 		});
 	};
@@ -116,7 +128,7 @@ class Saida extends Component {
 	//************************************************************** */
 	// FUNÇÃO QUE É EXECUTADA APÓS O LANÇAMENTO DAS FOTOS
 
-	saveItens = async itens => {
+	saveItens = async (itens, completo) => {
 		//Salva os grupos com os itens
 		//marca como salvo na lista para checar o ícone
 		const grupo = { ...this.state.grupo };
@@ -126,17 +138,23 @@ class Saida extends Component {
 			})
 		];
 
-		const gruposCompletos = [
-			...this.state.gruposCompletos.filter(g => {
-				return g !== grupo.grupoItemId;
-			})
-		];
-
 		grupo.itens = [...itens];
 
 		grupos.push(grupo);
-		gruposCompletos.push(grupo.grupoItemId);
-		this.setState({ grupos, gruposCompletos });
+
+		if (completo) {
+			const gruposCompletos = [
+				...this.state.gruposCompletos.filter(g => {
+					return g !== grupo.grupoItemId;
+				})
+			];
+			gruposCompletos.push(grupo.grupoItemId);
+			this.setState({ grupos, gruposCompletos });
+
+			return;
+		}
+
+		this.setState({ grupos });
 	};
 
 	//***************************************************************/

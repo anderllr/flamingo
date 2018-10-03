@@ -77,6 +77,21 @@ class Vistoria extends Component {
 		}
 	};
 
+	/**************************************************************************/
+	/* ROTINAS PARA OS BUTTONS LATERAIS */
+
+	showDevolucao = () => {
+		this.setState({
+			active: "devolucao",
+			idFrota: "",
+			descFrota: "",
+			idCliente: "",
+			descCliente: "",
+			frotaId: "",
+			clienteId: ""
+		});
+	};
+
 	renderSaida() {
 		return (
 			<Fragment>
@@ -291,7 +306,7 @@ class Vistoria extends Component {
 						height={50}
 						fontSize={8}
 						icon={{ name: "return-left", type: "ion" }}
-						onPress={() => this.setState({ active: "devolucao" })}
+						onPress={() => this.showDevolucao()}
 						active={this.state.active === "devolucao"}
 					/>
 					<RoundButton

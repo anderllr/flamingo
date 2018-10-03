@@ -18,11 +18,7 @@ const Container = ({ children, backgroundColor }) => {
 
 	return (
 		<Fragment>
-			<StatusBar
-				translucent
-				backgroundColor="#005147"
-				barStyle="light-content"
-			/>
+			<StatusBar hidden={true} />
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 				<View style={containerStyles}>{children}</View>
 			</TouchableWithoutFeedback>

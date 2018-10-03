@@ -47,6 +47,8 @@ const VistoriaSchema = new mongoose.Schema(
 	{
 		frotaId: { type: mongoose.Schema.ObjectId, required: true },
 		clienteId: { type: mongoose.Schema.ObjectId, required: true },
+		usuarioSaidaId: { type: mongoose.Schema.ObjectId, required: false },
+		usuarioChegadaId: { type: mongoose.Schema.ObjectId, required: false },
 		dtSaida: { type: String, required: true },
 		dtPrevisao: { type: String, required: true },
 		hrSaida: { type: String, required: true },
