@@ -288,7 +288,7 @@ class Devolucao extends Component {
 					title="Cliente"
 					editable={false}
 					height={22}
-					size={116}
+					size={160}
 					value={`${
 						!this.props.getCliente.loading
 							? this.props.getCliente.clienteById.name
@@ -299,7 +299,7 @@ class Devolucao extends Component {
 					title="Frota"
 					editable={false}
 					height={22}
-					size={116}
+					size={160}
 					value={`${
 						!this.props.getFrota.loading
 							? this.props.getFrota.frotaById.name
@@ -317,7 +317,7 @@ class Devolucao extends Component {
 						title="Data Saída"
 						editable={false}
 						height={22}
-						size={56}
+						size={78}
 						value={`${
 							!this.props.data.loading
 								? this.props.data.vistoriaById.dtSaida
@@ -328,7 +328,7 @@ class Devolucao extends Component {
 						title="Hora Saída"
 						editable={false}
 						height={22}
-						size={56}
+						size={78}
 						value={`${
 							!this.props.data.loading
 								? this.props.data.vistoriaById.hrSaida
@@ -348,8 +348,8 @@ class Devolucao extends Component {
 					>
 						<InputWithTitle
 							title="Data Chegada"
-							size={56}
-							height={32}
+							size={78}
+							height={22}
 							editable={false}
 							changeColor={false}
 							value={this.state.dtChegada}
@@ -361,8 +361,8 @@ class Devolucao extends Component {
 					>
 						<InputWithTitle
 							title="Hora"
-							size={56}
-							height={32}
+							size={78}
+							height={22}
 							editable={false}
 							changeColor={false}
 							value={this.state.hrChegada}
@@ -386,8 +386,8 @@ class Devolucao extends Component {
 					<InputWithTitle
 						title="Hori./Km Saída"
 						editable={false}
-						height={32}
-						size={56}
+						height={22}
+						size={78}
 						value={`${
 							!this.props.data.loading
 								? this.props.data.vistoriaById.horimetroSaida
@@ -396,8 +396,8 @@ class Devolucao extends Component {
 					/>
 					<InputWithTitle
 						title="Horímetro/Km"
-						size={56}
-						height={32}
+						size={78}
+						height={22}
 						keyboardType="numeric"
 						onChangeText={value =>
 							this.handleInputChange("horimetroChegada", value)

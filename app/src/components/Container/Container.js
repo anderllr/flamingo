@@ -1,11 +1,6 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import {
-	View,
-	TouchableWithoutFeedback,
-	Keyboard,
-	StatusBar
-} from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 
 import styles from "./styles";
 
@@ -18,7 +13,6 @@ const Container = ({ children, backgroundColor }) => {
 
 	return (
 		<Fragment>
-			<StatusBar hidden={true} />
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 				<View style={containerStyles}>{children}</View>
 			</TouchableWithoutFeedback>

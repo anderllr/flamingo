@@ -1,6 +1,7 @@
 import { createStackNavigator } from "react-navigation";
-import { StatusBar, Platform } from "react-native";
+import { Platform } from "react-native";
 import { verticalScale } from "react-native-size-matters";
+import { Constants } from "expo";
 
 import {
 	Login,
@@ -35,7 +36,9 @@ const headerStyle =
 		? { backgroundColor: "#00665a" }
 		: {
 				backgroundColor: "#00665a",
-				height: verticalScale(18)
+				height: verticalScale(40),
+				paddingTop: -Constants.statusBarHeight,
+				marginTop: -verticalScale(25)
 		  };
 
 const headerTitleStyle =

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import { View, TextInput, Text } from "react-native";
 import ModalSelector from "react-native-modal-selector";
-import { scale, verticalScale } from "react-native-size-matters";
+import { moderateScale, verticalScale } from "react-native-size-matters";
 
 import styles from "./styles";
 
@@ -42,7 +42,7 @@ class Dropdown extends Component {
 		const inputText = [styles.inputText];
 
 		if (size) {
-			containerStyle.push({ width: scale(size) });
+			containerStyle.push({ width: moderateScale(size) });
 		}
 
 		if (sizeP) {
@@ -59,7 +59,7 @@ class Dropdown extends Component {
 
 		if (height) {
 			inputContainer.push({ height: verticalScale(height) });
-			inputText.push({ fontSize: scale(height / 4) });
+			inputText.push({ fontSize: moderateScale(height / 2.5) });
 		}
 
 		return (

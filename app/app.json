@@ -4,7 +4,7 @@
 		"slug": "flamingo-vistoria",
 		"sdkVersion": "27.0.0",
 		"androidStatusBar": {
-			"backgroundColor": "#005147"
+			"backgroundColor": "#000000"
 		},
 		"privacy": "unlisted",
 		"orientation": "landscape"

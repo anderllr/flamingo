@@ -1,32 +1,38 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { FlatList, View, Text, TouchableHighlight } from "react-native";
+import { FlatList } from "react-native";
 import { graphql } from "react-apollo";
 
 import { GET_FROTA_DISPONIVEL } from "../../config/resources/queries/frotaQuery";
 import ListItemSaida from "./ListItemSaida";
 
-//TODO: make search with parameters passed by Main Screen
-//TODO: Change query to search date of the last location
+class ListFrotaSaida extends Component {
+	static propTypes = {
+		nrFrota: PropTypes.number,
+		name: PropTypes.string,
+		onPress: PropTypes.func
+	};
 
-const ListFrotaSaida = props => {
-	return (
-		<FlatList
-			data={props.data.frotaDisponivel}
-			keyExtractor={item => item.id.toString()}
-			renderItem={({ item, index }) => (
-				<ListItemSaida data={item} onPress={() => props.onHandlePress(item)} />
-			)}
-		/>
-	);
-};
+	refetchData = () => {
+		this.props.data.refetch();
+	};
 
-ListFrotaSaida.propTypes = {
-	nrFrota: PropTypes.number,
-	name: PropTypes.string,
-	onPress: PropTypes.func
-};
+	render() {
+		return (
+			<FlatList
+				data={this.props.data.frotaDisponivel}
+				keyExtractor={item => item.id.toString()}
+				renderItem={({ item, index }) => (
+					<ListItemSaida
+						data={item}
+						onPress={() => this.props.onHandlePress(item)}
+					/>
+				)}
+			/>
+		);
+	}
+}
 
 export default graphql(GET_FROTA_DISPONIVEL, {
 	options: props => ({

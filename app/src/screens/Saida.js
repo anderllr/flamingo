@@ -320,7 +320,7 @@ class Saida extends Component {
 					title="Cliente"
 					placeholder="Selecione o cliente"
 					height={32}
-					size={116}
+					size={160}
 					value={this.state.descCliente}
 					onChange={option => this.onChangeDropdown(option, "cliente")}
 				/>
@@ -328,7 +328,7 @@ class Saida extends Component {
 					title="Frota"
 					editable={false}
 					height={32}
-					size={116}
+					size={160}
 					value={`${this.state.frota.nrFrota}-${this.state.frota.name}`}
 				/>
 				<View
@@ -341,7 +341,7 @@ class Saida extends Component {
 					<TouchableOpacity onPress={() => this.showDateTimePicker("dtSaida")}>
 						<InputWithTitle
 							title="Data saída"
-							size={56}
+							size={78}
 							height={32}
 							editable={false}
 							changeColor={false}
@@ -354,7 +354,7 @@ class Saida extends Component {
 					>
 						<InputWithTitle
 							title="Prev.Entrega"
-							size={56}
+							size={78}
 							height={32}
 							editable={false}
 							changeColor={false}
@@ -379,7 +379,7 @@ class Saida extends Component {
 					<TouchableOpacity onPress={() => this.showDateTimePicker("hrSaida")}>
 						<InputWithTitle
 							title="Hora saída"
-							size={56}
+							size={78}
 							editable={false}
 							changeColor={false}
 							height={32}
@@ -388,7 +388,7 @@ class Saida extends Component {
 					</TouchableOpacity>
 					<InputWithTitle
 						title="Horímetro/Km"
-						size={56}
+						size={78}
 						height={32}
 						keyboardType="numeric"
 						onChangeText={value => this.handleInputChange("horimetro", value)}

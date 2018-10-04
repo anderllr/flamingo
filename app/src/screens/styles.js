@@ -1,7 +1,7 @@
 import EStyleSheet from "react-native-extended-stylesheet";
-import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import { verticalScale, moderateScale } from "react-native-size-matters";
 
-const BORDER_RADIUS = scale(5);
+const BORDER_RADIUS = moderateScale(5);
 
 const styles = EStyleSheet.create({
 	$underlayColor: "$darkGreen",
@@ -45,8 +45,8 @@ const styles = EStyleSheet.create({
 		backgroundColor: "$white",
 		padding: moderateScale(10),
 		marginTop: verticalScale(10),
-		marginLeft: scale(10),
-		marginBottom: scale(3),
+		marginLeft: moderateScale(10),
+		marginBottom: moderateScale(3),
 		borderRadius: BORDER_RADIUS
 	},
 	backgroundInner: {
@@ -54,13 +54,13 @@ const styles = EStyleSheet.create({
 		backgroundColor: "$white",
 		padding: moderateScale(10),
 		marginTop: verticalScale(10),
-		marginLeft: scale(10),
-		marginBottom: scale(3),
-		marginRight: scale(10),
+		marginLeft: moderateScale(10),
+		marginBottom: moderateScale(3),
+		marginRight: moderateScale(10),
 		borderRadius: BORDER_RADIUS
 	},
 	titleText: {
-		fontSize: scale(9),
+		fontSize: moderateScale(9),
 		fontWeight: "500",
 		fontFamily: "lato-bold",
 		marginBottom: verticalScale(10),
@@ -68,14 +68,14 @@ const styles = EStyleSheet.create({
 	},
 	labelText: {
 		color: "$titleText",
-		fontSize: scale(6),
+		fontSize: moderateScale(6),
 		fontWeight: "300",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35
 	},
 	slider: {
 		marginTop: 0,
-		width: scale(110)
+		width: moderateScale(110)
 	},
 	fuelMarker: {
 		flexDirection: "column",
@@ -85,18 +85,18 @@ const styles = EStyleSheet.create({
 		flexGrow: 1,
 		flexBasis: 0,
 		aspectRatio: 1,
-		margin: scale(4),
+		margin: moderateScale(4),
 		padding: moderateScale(5),
 		alignItems: "center"
 	},
 	pictureContainer: {
 		borderRadius: BORDER_RADIUS,
 		borderColor: "$border",
-		borderWidth: scale(1),
+		borderWidth: moderateScale(1),
 		flexGrow: 1,
 		flexBasis: 0,
 		aspectRatio: 1.2,
-		margin: scale(5),
+		margin: moderateScale(5),
 		padding: moderateScale(5)
 	},
 	groupItens: {
@@ -112,7 +112,7 @@ const styles = EStyleSheet.create({
 	},
 	groupText: {
 		color: "$inputText",
-		fontSize: scale(5),
+		fontSize: moderateScale(5),
 		fontWeight: "300",
 		fontFamily: "lato-bold",
 		bottom: verticalScale(1),
@@ -124,9 +124,16 @@ const styles = EStyleSheet.create({
 	},
 	separatorLine: {
 		width: "100%",
-		margin: scale(4),
+		margin: moderateScale(4),
 		height: verticalScale(2),
 		backgroundColor: "$backgroundColor"
+	},
+	radioText: {
+		color: "$titleText",
+		fontSize: moderateScale(9),
+		fontWeight: "200",
+		fontFamily: "lato-bold",
+		letterSpacing: 0.35
 	}
 });
 

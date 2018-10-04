@@ -4,7 +4,7 @@ import { Permissions, FileSystem } from "expo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { Query } from "react-apollo";
-import { scale, verticalScale } from "react-native-size-matters";
+import { moderateScale, verticalScale } from "react-native-size-matters";
 import { connectAlert } from "../components/Alert";
 
 import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
@@ -291,21 +291,27 @@ class SaidaFotos extends Component {
 					data={this.state.itens}
 					title="Item"
 					placeholder="Selecione o item"
-					size={116}
+					size={160}
+					height={30}
 					value={this.state.descItem}
 					onChange={option => this.onChangeDropdown(option, "item")}
 				/>
 				<RadioGroup
 					onSelect={(index, value) => this.onRadioPress(index, value)}
 					selectedIndex={this.state.indiceConforme}
-					style={{ flexDirection: "row" }}
+					size={moderateScale(12)}
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-around",
+						padding: 0
+					}}
 				>
 					<RadioButton value={"S"}>
-						<Text>Conforme?</Text>
+						<Text style={styles.radioText}>Conforme?</Text>
 					</RadioButton>
 
 					<RadioButton value={"N"}>
-						<Text>Não Conforme?</Text>
+						<Text style={styles.radioText}>Não Conforme?</Text>
 					</RadioButton>
 				</RadioGroup>
 
@@ -313,8 +319,9 @@ class SaidaFotos extends Component {
 					title="Observações"
 					editable={true}
 					multiline={true}
+					height={80}
 					numberOfLines={4}
-					size={116}
+					size={160}
 					onChangeText={value =>
 						this.handleInputChange("descNaoConforme", value)
 					}
@@ -323,7 +330,8 @@ class SaidaFotos extends Component {
 				<InputWithTitle
 					title="Quantidade"
 					editable={true}
-					size={40}
+					size={65}
+					height={30}
 					value={this.state.qtItem.toString()}
 					onChangeText={value => this.handleInputChange("qtItem", value)}
 					visible={this.state.informaQtde}
@@ -337,9 +345,9 @@ class SaidaFotos extends Component {
 		<View
 			style={{
 				flex: 1,
-				borderRadius: scale(5),
+				borderRadius: moderateScale(5),
 				borderColor: "#ddd",
-				borderWidth: scale(1)
+				borderWidth: moderateScale(1)
 			}}
 		>
 			<View style={{ flex: 0.8, marginTop: verticalScale(10) }}>
@@ -353,7 +361,7 @@ class SaidaFotos extends Component {
 					flex: 0.2,
 					flexDirection: "row",
 					justifyContent: "space-between",
-					margin: scale(10)
+					margin: moderateScale(10)
 				}}
 			>
 				<RoundButton

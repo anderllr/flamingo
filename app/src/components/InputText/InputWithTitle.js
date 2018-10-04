@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { scale, verticalScale } from "react-native-size-matters";
+import { moderateScale, verticalScale } from "react-native-size-matters";
 
 import { View, TextInput, Text } from "react-native";
 
@@ -25,7 +25,7 @@ const InputWithTitle = props => {
 	const inputText = [styles.inputText];
 
 	if (size) {
-		containerStyle.push({ width: scale(props.size) });
+		containerStyle.push({ width: moderateScale(props.size) });
 	}
 
 	if (sizeP) {
@@ -42,7 +42,7 @@ const InputWithTitle = props => {
 
 	if (height) {
 		inputContainer.push({ height: verticalScale(height) });
-		inputText.push({ fontSize: scale(height / 4) });
+		inputText.push({ fontSize: moderateScale(height / 2.5) });
 	}
 	if (!visible) return <View />;
 	return (

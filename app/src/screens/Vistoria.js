@@ -62,6 +62,8 @@ class Vistoria extends Component {
 	onSearchSaida = () => {
 		const { nrFrota, name } = this.state;
 		this.setState({ nrFrotaSaida: nrFrota, nameSaida: name });
+		//	console.log("This: ", this);
+		//this.listfrotasaida.refetchData();
 	};
 
 	onSearchDevolucao = () => {
@@ -178,7 +180,7 @@ class Vistoria extends Component {
 						title="Frota"
 						placeholder="Selecione a frota"
 						height={32}
-						size={125}
+						size={172}
 						value={this.state.descFrota}
 						onChange={option => this.onChangeDropdown(option, "frota")}
 					/>
@@ -187,7 +189,7 @@ class Vistoria extends Component {
 						title="Cliente"
 						placeholder="Selecione o cliente"
 						height={32}
-						size={125}
+						size={172}
 						value={this.state.descCliente}
 						onChange={option => this.onChangeDropdown(option, "cliente")}
 					/>
