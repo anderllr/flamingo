@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { verticalScale } from "react-native-size-matters";
 import { graphql, compose } from "react-apollo";
 
@@ -30,7 +30,8 @@ class Vistoria extends Component {
 			idFrota: "",
 			descFrota: "",
 			frotaId: null,
-			clienteId: null
+			clienteId: null,
+			refetchSaida: false
 		};
 	}
 
@@ -50,25 +51,36 @@ class Vistoria extends Component {
 	onHandlePress = item => {
 		//TODO Finish handle to other pages
 		this.props.navigation.navigate("Saida", {
-			frota: item
+			frota: item,
+			onSearchSaida: this.onSearchSaida.bind(this)
 		});
 	};
 
 	onHandleDev = ({ id, clienteId, frotaId }) => {
 		//TODO Finish handle to other pages
-		this.props.navigation.navigate("Devolucao", { id, clienteId, frotaId });
+		this.props.navigation.navigate("Devolucao", {
+			id,
+			clienteId,
+			frotaId,
+			onSearchSaida: this.onSearchSaida.bind(this)
+		});
 	};
 
 	onSearchSaida = () => {
 		const { nrFrota, name } = this.state;
-		this.setState({ nrFrotaSaida: nrFrota, nameSaida: name });
-		//	console.log("This: ", this);
-		//this.listfrotasaida.refetchData();
+		this.setState({
+			nrFrotaSaida: nrFrota,
+			nameSaida: name,
+			refetchSaida: true
+		});
 	};
 
 	onSearchDevolucao = () => {
 		const { idCliente, idFrota } = this.state;
-		this.setState({ frotaId: idFrota, clienteId: idCliente });
+		this.setState({
+			frotaId: idFrota,
+			clienteId: idCliente
+		});
 	};
 
 	onChangeDropdown = (option, type) => {
@@ -143,6 +155,8 @@ class Vistoria extends Component {
 					active={this.state.active}
 					name={this.state.nameSaida}
 					nrFrota={this.state.nrFrotaSaida}
+					refetch={this.state.refetchSaida}
+					updateRefetch={() => this.setState({ refetchSaida: false })}
 				/>
 			</Fragment>
 		);

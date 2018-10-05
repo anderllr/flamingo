@@ -53,7 +53,8 @@ class Saida extends Component {
 	componentWillMount() {
 		const { navigation } = this.props;
 		const frota = navigation.getParam("frota", {});
-		this.setState({ frota });
+		const onSearchSaida = navigation.getParam("onSearchSaida", {});
+		this.setState({ frota, onSearchSaida });
 	}
 
 	handleInputChange = (field, value) => {
@@ -232,6 +233,9 @@ class Saida extends Component {
 				this.setState({ wait: false });
 				//FIM DO UPLOAD
 				if (result === "success") {
+					if (typeof this.state.onSearchSaida === "function") {
+						this.state.onSearchSaida();
+					}
 					this.props.navigation.goBack();
 				} else {
 					this.props.alertWithType("error", "Error", result);

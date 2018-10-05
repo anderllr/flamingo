@@ -42,7 +42,7 @@ const InputWithTitle = props => {
 
 	if (height) {
 		inputContainer.push({ height: verticalScale(height) });
-		inputText.push({ fontSize: moderateScale(height / 2.5) });
+		inputText.push({ fontSize: moderateScale(height / 3) });
 	}
 	if (!visible) return <View />;
 	return (

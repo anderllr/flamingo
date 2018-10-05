@@ -47,6 +47,11 @@ class Devolucao extends Component {
 		};
 	}
 
+	componentWillMount() {
+		const { navigation } = this.props;
+		const onSearchSaida = navigation.getParam("onSearchSaida", {});
+		this.setState({ onSearchSaida });
+	}
 	/*	componentWillReceiveProps(nextProps) {
 		console.log("Props: ", nextProps);
 	}
@@ -209,6 +214,9 @@ class Devolucao extends Component {
 				this.setState({ wait: false });
 				//FIM DO UPLOAD
 				if (result === "success") {
+					if (typeof this.state.onSearchSaida === "function") {
+						this.state.onSearchSaida();
+					}
 					this.props.navigation.goBack();
 				} else {
 					this.props.alertWithType("error", "Error", result);

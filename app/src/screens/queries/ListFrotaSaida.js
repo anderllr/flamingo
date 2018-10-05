@@ -11,11 +11,25 @@ class ListFrotaSaida extends Component {
 	static propTypes = {
 		nrFrota: PropTypes.number,
 		name: PropTypes.string,
-		onPress: PropTypes.func
+		onPress: PropTypes.func,
+		updateRefetch: PropTypes.func,
+		refetch: PropTypes.bool
 	};
+
+	constructor(props) {
+		super(props);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		//	console.log("Recebeu informação: ", this.props.refetch);
+		if (nextProps.refetch) {
+			this.refetchData();
+		}
+	}
 
 	refetchData = () => {
 		this.props.data.refetch();
+		this.props.updateRefetch();
 	};
 
 	render() {

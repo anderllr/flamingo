@@ -51,7 +51,6 @@ class SaidaFotos extends Component {
 			label,
 			...rest
 		}));
-		console.log("Itens: ", itens);
 		const saveItens = navigation.getParam("saveItens", {});
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		const roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
