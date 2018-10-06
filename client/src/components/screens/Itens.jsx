@@ -330,7 +330,7 @@ class Itens extends Component {
 				<Modal
 					show={this.state.show}
 					handleClose={this.hideModal}
-					style={{ height: "80vh", overflowY: "scroll" }}
+					style={{ height: "80vh", width: "55vw", overflowY: "scroll" }}
 				>
 					<GrupoItem />
 				</Modal>

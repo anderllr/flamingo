@@ -59,6 +59,7 @@ export default {
 		updateUser: authenticated(
 			async (parent, { id, input }, { db: { User } }) => {
 				const user = await User.findById(id);
+
 				user.set(input);
 				await user.save();
 				if (!user) {
@@ -68,8 +69,18 @@ export default {
 			}
 		),
 		updateUserPassword: authenticated(
-			async (parent, { id, input }, { db: { User } }) => {
+			async (parent, { id, lastPassword, input }, { db: { User } }) => {
 				const user = await User.findById(id);
+
+				let errorMsg = "Senha anterior não confere!";
+				if (
+					!user ||
+					!bcrypt.compareSync(lastPassword, user.password) ||
+					!user.app
+				) {
+					throw new Error(errorMsg);
+				}
+
 				user.set(input);
 				await user.save();
 				if (!user) {

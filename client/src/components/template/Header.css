@@ -1,11 +1,17 @@
 header.header {
-    background-color: #ffffff;
-    padding: 0px 15px;
-    overflow: hidden;
-    white-space: nowrap;
-    box-shadow: var(--shadow);
+	background-color: #ffffff;
+	padding: 0px 15px;
+	overflow: hidden;
+	white-space: nowrap;
+	box-shadow: var(--shadow);
 }
 
 header.header h1 {
-    font-size: 1.8em;
+	font-size: 1.8em;
+}
+
+.usericon {
+	position: absolute;
+	right: 30px;
+	top: 30px;
 }
