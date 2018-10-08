@@ -6,5 +6,16 @@ import Clientes from "./Clientes";
 import Itens from "./Itens";
 import GrupoItem from "./GrupoItem";
 import Frota from "./Frota";
+import Caminhao from "./Caminhao";
 
-export { Admin, Home, Login, User, Clientes, Itens, GrupoItem, Frota };
+export {
+	Admin,
+	Home,
+	Login,
+	User,
+	Clientes,
+	Itens,
+	GrupoItem,
+	Frota,
+	Caminhao
+};

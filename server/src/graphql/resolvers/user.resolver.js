@@ -69,7 +69,8 @@ export default {
 			}
 		),
 		updateUserPassword: authenticated(
-			async (parent, { id, lastPassword, input }, { db: { User } }) => {
+			async (parent, { lastPassword, input }, { authUser, db: { User } }) => {
+				const { id } = authUser;
 				const user = await User.findById(id);
 
 				let errorMsg = "Senha anterior não confere!";

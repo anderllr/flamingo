@@ -18,10 +18,10 @@ export const UPDATE_USER = gql`
 
 export const UPDATE_PASSWORD = gql`
 	mutation updateUserPassword(
-		$id: ID!
+		$lastPassword: String!
 		$userPasswordInput: UserUpdatePasswordInput!
 	) {
-		updateUserPassword(id: $id, input: $userPasswordInput)
+		updateUserPassword(lastPassword: $lastPassword, input: $userPasswordInput)
 	}
 `;
 

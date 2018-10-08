@@ -18,7 +18,7 @@ import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import { validateFields, renderAlert } from "../utils/funcs";
 
 const headerProps = {
-	icon: "truck",
+	icon: "empire",
 	title: "Frota",
 	subtitle: "Cadastro de frota: Incluir, Listar, Alterar e Excluir"
 };

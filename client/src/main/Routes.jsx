@@ -9,7 +9,8 @@ import {
 	User,
 	Clientes,
 	Itens,
-	Frota
+	Frota,
+	Caminhao
 } from "../components/screens";
 
 //<Route exact path='/' component={Home} /> --retirei por não ter página inicial no caso
@@ -22,6 +23,7 @@ export default props => (
 		<AdminRoutes path="/admin/clientes" component={Clientes} />
 		<AdminRoutes path="/admin/itens" component={Itens} />
 		<AdminRoutes path="/admin/frota" component={Frota} />
+		<AdminRoutes path="/admin/caminhao" component={Caminhao} />
 		<Redirect from="*" to="/admin" />
 	</Switch>
 );

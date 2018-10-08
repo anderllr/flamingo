@@ -5,6 +5,8 @@ import { grupoItemQueries } from "./types/grupoitem.schema";
 import { itensQueries } from "./types/itens.schema";
 import { uploadQueries } from "./types/upload.schema";
 import { vistoriaQueries } from "./types/vistoria.schema";
+import { caminhaoQueries } from "./types/caminhao.schema";
+import { freteQueries } from "./types/frete.schema";
 
 const Query = `
     type Query {
@@ -14,7 +16,9 @@ const Query = `
         ${grupoItemQueries},
         ${itensQueries},
         ${uploadQueries},
-        ${vistoriaQueries}
+        ${vistoriaQueries},
+        ${caminhaoQueries},
+        ${freteQueries}
     }
 `;
 

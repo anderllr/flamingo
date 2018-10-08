@@ -1,8 +1,11 @@
 import "./Header.css";
 import React, { Component, Fragment } from "react";
+import { graphql, compose } from "react-apollo";
 
 import Modal from "../utils/Modal";
 import { renderAlert } from "../utils/funcs";
+
+import { UPDATE_PASSWORD } from "../resources/mutations/userMutation";
 
 const initialState = {
 	show: false,
@@ -23,6 +26,22 @@ class Header extends Component {
 		super(props);
 	}
 
+	handleErrors(e, title) {
+		//Simple aproach to show error messages -- The better way is create a centralized function using apollo link
+		//See documentation to understand another way: https://www.apollographql.com/docs/react/features/error-handling.html
+		let msg = "Erro ao gravar";
+		if (e.graphQLErrors[0]) {
+			msg = e.graphQLErrors[0].message;
+		}
+		this.setState({
+			alert: {
+				type: "danger",
+				title: `Error on ${title}`,
+				msg: [msg]
+			}
+		});
+	}
+
 	changeField({ target }) {
 		const { name, value } = target;
 		this.setState({ [name]: value, alert: initialState.alert });
@@ -35,34 +54,21 @@ class Header extends Component {
 
 	save = e => {
 		e.preventDefault();
-		const {
-			id,
-			name,
-			userName,
-			email,
-			app,
-			web,
-			password,
-			confirmPassword
-		} = this.state.user;
 
-		let userInput = {
-			name,
-			userName,
-			email,
-			app,
-			web
+		const { password, newPassword, lastPassword } = this.state;
+
+		const userPasswordInput = {
+			password
 		};
 
-		//in this case required fields are the same of userInput object
-		/*		const errors = validateFields(
-			[
-				{ field: "name", name: "Nome" },
-				{ field: "userName", name: "Usuário" },
-				{ field: "email", name: "E-mail" }
-			],
-			this.state.user
-		); 
+		const errors = [];
+		if (newPassword !== password) {
+			errors.push("Senhas não coincidem!");
+		}
+		if (password === "" || newPassword === "" || lastPassword === "") {
+			errors.push("Todos os campos devem ser preenchidos!");
+		}
+
 		if (errors.length > 0) {
 			this.setState({
 				alert: {
@@ -73,12 +79,14 @@ class Header extends Component {
 			});
 			return;
 		}
-*/
+
 		//		console.log("Update user: ", userInput, "Id: ", id);
 		this.props
-			.updateUser({ variables: { id, userInput } })
-			.then(() => {
-				this.props.data.refetch();
+			.updatePassword({
+				variables: { lastPassword, userPasswordInput }
+			})
+			.then(res => {
+				this.hideModal();
 			})
 			.catch(e => {
 				this.handleErrors(e, "Atualização de Usuário!");
@@ -187,6 +195,8 @@ class Header extends Component {
 	}
 
 	render() {
+		const showIconUser = this.props.hideIconUser ? false : true;
+
 		return (
 			<header className="header d-none d-sm-flex flex-column">
 				<Modal
@@ -196,13 +206,15 @@ class Header extends Component {
 				>
 					{this.renderChangePassword()}
 				</Modal>
-				<h1 className="usericon">
-					<i
-						title="Altera senha usuário"
-						className="fa fa-user"
-						onClick={e => this.openModalGroup(e)}
-					/>
-				</h1>
+				{showIconUser && (
+					<h1 className="usericon">
+						<i
+							title="Altera senha usuário"
+							className="fa fa-user"
+							onClick={e => this.openModalGroup(e)}
+						/>
+					</h1>
+				)}
 				<h1 className="mt-3">
 					<i className={`fa fa-${this.props.icon}`} /> {this.props.title}
 				</h1>
@@ -212,4 +224,4 @@ class Header extends Component {
 	}
 }
 
-export default Header;
+export default graphql(UPDATE_PASSWORD, { name: "updatePassword" })(Header);

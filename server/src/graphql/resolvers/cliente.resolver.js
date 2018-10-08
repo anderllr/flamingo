@@ -14,7 +14,6 @@ export default {
 		}),
 		clientesByName: authenticated(
 			async (parent, { name }, { db: { Cliente } }) => {
-				console.log("Name: ", name);
 				const clientes = await Cliente.find({ name: new RegExp(name, "i") });
 				return clientes.map(cliente => {
 					cliente._id = cliente._id.toString();
