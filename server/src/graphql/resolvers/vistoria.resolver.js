@@ -60,7 +60,7 @@ export default {
 						}
 					}
 				]);
-				console.log("Vistoria: ", vistoria);
+
 				return vistoria.map(
 					({
 						_id,

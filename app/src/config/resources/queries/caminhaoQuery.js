@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const GET_CAMINHAO = gql`
+export const GET_CAMINHOES = gql`
 	query {
 		caminhoes {
 			id
@@ -24,18 +24,6 @@ export const GET_CAMINHAO_BY_ID = gql`
 			itens {
 				item
 			}
-		}
-	}
-`;
-
-export const GET_CAMINHAO_LISTA = gql`
-	query {
-		caminhaoLista {
-			id
-			name
-			placa
-			freteId
-			status
 		}
 	}
 `;

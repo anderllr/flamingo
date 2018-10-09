@@ -7,8 +7,9 @@ const ItemFreteSchema = new mongoose.Schema({
 
 const FreteSchema = new mongoose.Schema(
 	{
-		dtFrete: { type: String, required: true },
+		caminhaoId: { type: mongoose.Schema.ObjectId, required: true },
 		qtEntrega: { type: Number, required: true, enum: [1, 2] },
+		dtFrete: { type: String, required: true },
 		clienteId1: { type: mongoose.Schema.ObjectId, required: true },
 		clienteId2: { type: mongoose.Schema.ObjectId, required: false },
 		frotaId: { type: mongoose.Schema.ObjectId, required: false },
@@ -23,7 +24,7 @@ const FreteSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ["ABERTO", "PENDENTE", "ENCERRADO"]
+			enum: ["ABERTO", "ENCERRADO"]
 		},
 		itens: [ItemFreteSchema]
 	},

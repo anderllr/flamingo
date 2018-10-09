@@ -1,21 +1,22 @@
 const freteTypes = `
 
     type Frete {
-        id: ID!
-        dtFrete: String!,
-        qtEntrega: Int!,
-		clienteId1: ID!,
-		clienteId2: ID,
-		frotaId: ID,
-		frotaTerceiro: String,
-		kmInicial: Int!,
-		kmCliente1: Int,
-		kmCliente2: Int,
-		kmFinal: Int,
-		hrMunckInicial: Int,
-		hrMunckFinal: Int,
-		qtPedagio: Int,
-		status: String!,
+		id: ID!
+		caminhaoId: ID!
+        dtFrete: String!
+        qtEntrega: Int!
+		clienteId1: ID!
+		clienteId2: ID
+		frotaId: ID
+		frotaTerceiro: String
+		kmInicial: Int!
+		kmCliente1: Int
+		kmCliente2: Int
+		kmFinal: Int
+		hrMunckInicial: Int
+		hrMunckFinal: Int
+		qtPedagio: Int
+		status: String!
 		itens: [ItemFrete]
     }
 
@@ -25,19 +26,21 @@ const freteTypes = `
     }
 
     input FreteInput {
-        qtEntrega: Int!,
-		clienteId1: ID!,
-		clienteId2: ID,
-		frotaId: ID,
-		frotaTerceiro: String,
-		kmInicial: Int!,
-		kmCliente1: Int,
-		kmCliente2: Int,
-		kmFinal: Int,
-		hrMunckInicial: Int,
-		hrMunckFinal: Int,
-		qtPedagio: Int,
-		status: String!,
+		caminhaoId: ID!
+		qtEntrega: Int!
+		dtFrete: String!
+		clienteId1: ID!
+		clienteId2: ID
+		frotaId: ID
+		frotaTerceiro: String
+		kmInicial: Int!
+		kmCliente1: Int
+		kmCliente2: Int
+		kmFinal: Int
+		hrMunckInicial: Int
+		hrMunckFinal: Int
+		qtPedagio: Int
+		status: String!
 		itens: [ItemFreteInput]
     }
 

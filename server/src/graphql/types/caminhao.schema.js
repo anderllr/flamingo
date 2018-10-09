@@ -12,6 +12,14 @@ const caminhaoTypes = `
         item: String!
     }
 
+    type CaminhaoLista {
+        id: ID!,
+        name: String!
+        placa: String!
+        freteId: ID
+        status: String!
+    }
+
     input CaminhaoInput {
         name: String!
         ano: Int!
@@ -28,6 +36,7 @@ const caminhaoTypes = `
 const caminhaoQueries = `
     caminhoes: [Caminhao]
     caminhaoById(id: ID!): Caminhao
+    caminhaoLista: [CaminhaoLista]
 `;
 
 const caminhaoMutations = `
