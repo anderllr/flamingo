@@ -10,6 +10,20 @@ const styles = EStyleSheet.create({
 		justifyContent: "center",
 		flex: 1
 	},
+	screenContainer: {
+		flex: 1,
+		backgroundColor: "$white",
+		borderRadius: moderateScale(6),
+		padding: moderateScale(10),
+		borderBottomWidth: 0,
+		shadowColor: "$shadow",
+		shadowOffset: { width: 0, height: 2 },
+		margin: moderateScale(3),
+		elevation: moderateScale(1),
+		shadowRadius: moderateScale(5),
+		shadowOpacity: moderateScale(0.5),
+		flexDirection: "column"
+	},
 	fields: {
 		width: "90%",
 		marginTop: verticalScale(20)
@@ -64,6 +78,12 @@ const styles = EStyleSheet.create({
 		fontWeight: "500",
 		fontFamily: "lato-bold",
 		marginBottom: verticalScale(10),
+		color: "$primaryFont"
+	},
+	radioTitle: {
+		fontSize: moderateScale(10),
+		fontWeight: "600",
+		fontFamily: "lato-bold",
 		color: "$primaryFont"
 	},
 	labelText: {
@@ -124,8 +144,8 @@ const styles = EStyleSheet.create({
 	},
 	separatorLine: {
 		width: "100%",
-		margin: moderateScale(4),
-		height: verticalScale(2),
+		marginRight: moderateScale(4),
+		height: verticalScale(1),
 		backgroundColor: "$backgroundColor"
 	},
 	radioText: {

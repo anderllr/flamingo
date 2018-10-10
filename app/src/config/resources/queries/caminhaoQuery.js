@@ -27,3 +27,15 @@ export const GET_CAMINHAO_BY_ID = gql`
 		}
 	}
 `;
+
+export const GET_CAMINHAO_LISTA = gql`
+	query {
+		caminhaoLista {
+			id
+			name
+			placa
+			freteId
+			status
+		}
+	}
+`;

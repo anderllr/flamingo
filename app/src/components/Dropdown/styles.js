@@ -18,7 +18,7 @@ const styles = EStyleSheet.create({
 		borderColor: "$border",
 		borderWidth: moderateScale(1),
 		width: "100%",
-		padding: moderateScale(3)
+		paddingLeft: moderateScale(3)
 	},
 	inputText: {
 		fontSize: moderateScale(8),
@@ -30,8 +30,7 @@ const styles = EStyleSheet.create({
 		width: "100%",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35,
-		fontSize: moderateScale(6),
-		width: "100%"
+		fontSize: moderateScale(6)
 	},
 	titleText: {
 		color: "$titleText",
@@ -39,6 +38,14 @@ const styles = EStyleSheet.create({
 		fontWeight: "300",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35
+	},
+	button: {
+		backgroundColor: "$titleText",
+		height: "100%",
+		aspectRatio: 1,
+		borderRadius: moderateScale(4),
+		alignItems: "center",
+		justifyContent: "center"
 	}
 });
 

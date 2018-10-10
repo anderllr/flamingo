@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, TouchableOpacity } from "react-native";
 import ModalSelector from "react-native-modal-selector";
 import { moderateScale, verticalScale } from "react-native-size-matters";
+import { Icon } from "../Icon";
 
 import styles from "./styles";
 
@@ -18,7 +19,8 @@ class Dropdown extends Component {
 		sizeP: PropTypes.string,
 		style: PropTypes.object,
 		height: PropTypes.number,
-		placeholder: PropTypes.string
+		placeholder: PropTypes.string,
+		onClickButton: PropTypes.func
 	};
 
 	handleOption = option => {
@@ -34,7 +36,8 @@ class Dropdown extends Component {
 			size,
 			sizeP,
 			style = null,
-			height = null
+			height = null,
+			onClickButton = null
 		} = this.props;
 
 		const containerStyle = [styles.sizeContainer];
@@ -66,22 +69,36 @@ class Dropdown extends Component {
 			<View style={containerStyle}>
 				<Text style={styles.titleText}>{this.props.title}</Text>
 				<View style={inputContainer}>
-					<ModalSelector
-						data={this.props.data}
-						initValue={this.props.value}
-						cancelText={"Sair"}
-						onChange={option => this.handleOption(option)}
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center"
+						}}
 					>
-						<View>
-							<TextInput
-								underlineColorAndroid="transparent"
-								style={inputText}
-								editable={this.props.editable}
-								placeholder="Selecione o cliente"
-								{...this.props}
-							/>
-						</View>
-					</ModalSelector>
+						<ModalSelector
+							data={this.props.data}
+							initValue={this.props.value}
+							cancelText={"Sair"}
+							style={{ width: "90%" }}
+							onChange={option => this.handleOption(option)}
+						>
+							<View>
+								<TextInput
+									underlineColorAndroid="transparent"
+									style={inputText}
+									editable={this.props.editable}
+									placeholder="Selecione o cliente"
+									{...this.props}
+								/>
+							</View>
+						</ModalSelector>
+						{onClickButton && (
+							<TouchableOpacity style={styles.button} onPress={onClickButton}>
+								<Icon type="md" name="clear" size={moderateScale(20)} />
+							</TouchableOpacity>
+						)}
+					</View>
 				</View>
 			</View>
 		);

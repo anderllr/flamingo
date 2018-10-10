@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { View } from "react-native";
-import { verticalScale } from "react-native-size-matters";
+import { verticalScale, moderateScale } from "react-native-size-matters";
 import { graphql, compose } from "react-apollo";
 
 import { Dropdown } from "../components/Dropdown";
@@ -9,7 +9,7 @@ import { RoundButton } from "../components/Button";
 import { InputWithTitle } from "../components/InputText";
 import styles from "./styles";
 
-import { ListFrotaSaida, ListFrotaDevolucao } from "./queries";
+import { ListFrotaSaida, ListFrotaDevolucao, ListCaminhao } from "./queries";
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
 import { GET_FROTA } from "../config/resources/queries/frotaQuery";
 
@@ -52,6 +52,15 @@ class Vistoria extends Component {
 		//TODO Finish handle to other pages
 		this.props.navigation.navigate("Saida", {
 			frota: item,
+			onSearchSaida: this.onSearchSaida.bind(this)
+		});
+	};
+
+	onHandleCaminhao = ({ id, freteId }) => {
+		//TODO Finish handle to other pages
+		this.props.navigation.navigate("Frete", {
+			caminhaoId: id,
+			freteId: freteId,
 			onSearchSaida: this.onSearchSaida.bind(this)
 		});
 	};
@@ -112,8 +121,8 @@ class Vistoria extends Component {
 				<View
 					style={{
 						flexDirection: "row",
-						marginBottom: 20,
-						marginTop: 20,
+						marginBottom: verticalScale(2),
+						marginTop: verticalScale(2),
 						justifyContent: "flex-start"
 					}}
 				>
@@ -152,7 +161,6 @@ class Vistoria extends Component {
 				</View>
 				<ListFrotaSaida
 					onHandlePress={this.onHandlePress}
-					active={this.state.active}
 					name={this.state.nameSaida}
 					nrFrota={this.state.nrFrotaSaida}
 					refetch={this.state.refetchSaida}
@@ -184,8 +192,8 @@ class Vistoria extends Component {
 				<View
 					style={{
 						flexDirection: "row",
-						marginBottom: 20,
-						marginTop: 20,
+						marginBottom: verticalScale(2),
+						marginTop: verticalScale(2),
 						justifyContent: "flex-start"
 					}}
 				>
@@ -225,22 +233,33 @@ class Vistoria extends Component {
 				</View>
 				<ListFrotaDevolucao
 					onHandlePress={this.onHandleDev}
-					active={this.state.active}
 					frotaId={this.state.frotaId}
 					clienteId={this.state.clienteId}
+					refetch={this.state.refetchSaida}
+					updateRefetch={() => this.setState({ refetchSaida: false })}
 				/>
 			</Fragment>
 		);
 	}
 
-	//TODO -> Combo Status
+	renderFrete() {
+		return (
+			<ListCaminhao
+				onHandlePress={this.onHandleCaminhao}
+				refetch={this.state.refetchSaida}
+				updateRefetch={() => this.setState({ refetchSaida: false })}
+			/>
+		);
+	}
+
 	renderConsulta() {
 		return (
 			<View>
 				<View
 					style={{
 						flexDirection: "row",
-						marginTop: 20,
+						marginBottom: verticalScale(2),
+						marginTop: verticalScale(2),
 						justifyContent: "flex-start"
 					}}
 				>
@@ -326,6 +345,15 @@ class Vistoria extends Component {
 						active={this.state.active === "devolucao"}
 					/>
 					<RoundButton
+						text="FRETE"
+						widthP="75%"
+						height={50}
+						fontSize={8}
+						icon={{ name: "truck", type: "fa" }}
+						onPress={() => this.setState({ active: "frete" })}
+						active={this.state.active === "frete"}
+					/>
+					<RoundButton
 						text="CONSULTAS"
 						widthP="75%"
 						height={50}
@@ -340,7 +368,9 @@ class Vistoria extends Component {
 						? this.renderSaida()
 						: this.state.active === "devolucao"
 							? this.renderDevolucao()
-							: this.renderConsulta()}
+							: this.state.active === "frete"
+								? this.renderFrete()
+								: this.renderConsulta()}
 				</View>
 			</Container>
 		);

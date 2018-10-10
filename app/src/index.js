@@ -37,6 +37,8 @@ EStyleSheet.build({
 	$shadow: "#d2d2d2"
 });
 
+const DEV_MODE = true; //this const must be changed to publish
+
 const URL = PORT > 0 ? `${BASE_URL}:${PORT}` : BASE_URL;
 
 const uploadLink = createUploadLink({ uri: `${URL}/flamingoql` });
@@ -45,9 +47,10 @@ const cache = new InMemoryCache();
 
 const middlewareAuth = setContext(async (req, { headers }) => {
 	//TODO Change temporaly token that puted to
-	const token = await getToken();
-	//	const token =
-	//		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1Mzc5OTYwNDF9.uq1SkMv0XmATShHqiHcfWoxARiOQGj51qORu0eUp7OQ";
+	const token = DEV_MODE
+		? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1Mzc5OTYwNDF9.uq1SkMv0XmATShHqiHcfWoxARiOQGj51qORu0eUp7OQ"
+		: await getToken();
+
 	return {
 		...headers,
 		headers: {
@@ -66,7 +69,7 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			authenticated: false, //TODO change here to production
+			authenticated: DEV_MODE,
 			fontLoaded: false
 		};
 	}

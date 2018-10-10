@@ -9,27 +9,10 @@ import {
 	Vistoria,
 	SaidaFotos,
 	Devolucao,
-	DevolucaoFotos
+	DevolucaoFotos,
+	Frete
 } from "../screens";
 import { CameraScreen } from "../components/CameraScreen";
-
-const LoginStack = createStackNavigator(
-	{
-		Login: {
-			screen: Login,
-			navigationOptions: {
-				headerTitle: "Login",
-				headerTintColor: "white",
-				headerStyle: {
-					backgroundColor: "#00665a"
-				}
-			}
-		}
-	},
-	{
-		headerMode: "screen"
-	}
-);
 
 const headerStyle =
 	Platform.OS === "ios"
@@ -48,6 +31,23 @@ const headerTitleStyle =
 				fontWeight: "100",
 				marginBottom: verticalScale(5)
 		  };
+
+const LoginStack = createStackNavigator(
+	{
+		Login: {
+			screen: Login,
+			navigationOptions: {
+				headerTitle: "Login",
+				headerTintColor: "white",
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
+			}
+		}
+	},
+	{
+		headerMode: "screen"
+	}
+);
 
 const HomeStack = createStackNavigator(
 	{
@@ -73,6 +73,15 @@ const HomeStack = createStackNavigator(
 			screen: DevolucaoFotos,
 			navigationOptions: {
 				headerTitle: "Fotos da devolução",
+				headerTintColor: "white",
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
+			}
+		},
+		Frete: {
+			screen: Frete,
+			navigationOptions: {
+				headerTitle: "Lançar Frete",
 				headerTintColor: "white",
 				headerStyle: headerStyle,
 				headerTitleStyle: headerTitleStyle
