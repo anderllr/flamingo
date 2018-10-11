@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === "production") {
 	app.use(express.static("../client/build"));
 
 	// Return the main index.html, so react-router render the route in the client
-	app.get("/", (req, res) => {
+	app.get(["/flamingo", "/flamingo/*"], (req, res) => {
 		res.sendFile(path.resolve("../client/build", "index.html"));
 	});
 }
