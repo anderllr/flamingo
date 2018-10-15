@@ -37,7 +37,7 @@ mongoose.connect(
 );
 
 const PORT = process.env.port || 3002;
-const HOST = process.env.host || "127.0.0.1";
+//const HOST = process.env.host || "192.168.1.109";
 
 const app = express();
 
@@ -84,4 +84,4 @@ app.use(
 
 app.use(express.static("./imgs"));
 
-app.listen(PORT, HOST, () => console.log(`Server connected at port: ${PORT}`));
+app.listen(PORT, () => console.log(`Server connected at port: ${PORT}`));

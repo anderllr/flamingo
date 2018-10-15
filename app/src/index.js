@@ -48,7 +48,7 @@ const cache = new InMemoryCache();
 const middlewareAuth = setContext(async (req, { headers }) => {
 	//TODO Change temporaly token that puted to
 	const token = DEV_MODE
-		? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1Mzc5OTYwNDF9.uq1SkMv0XmATShHqiHcfWoxARiOQGj51qORu0eUp7OQ"
+		? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YjdiMTBmMzhhNjJiZTBmMTdhN2E5NDEiLCJpYXQiOjE1MzYyNTU5NzN9.a6yXwGbs-HAemjAQX7KPsVk1ifEZNrwaX7ZG8OjD2ps"
 		: await getToken();
 
 	return {

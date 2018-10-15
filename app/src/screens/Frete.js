@@ -1,33 +1,153 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { verticalScale } from "react-native-size-matters";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { graphql, compose } from "react-apollo";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import { BlurView } from "expo";
+import moment from "moment";
 
 import { Container } from "../components/Container";
 import { InputWithTitle } from "../components/InputText";
 import { RoundButton } from "../components/Button";
 import { Dropdown } from "../components/Dropdown";
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
+import { GET_FROTA } from "../config/resources/queries/frotaQuery";
+import { GET_FRETE_BY_ID } from "../config/resources/queries/freteQuery";
+import {
+	CREATE_FRETE,
+	UPDATE_FRETE
+} from "../config/resources/mutations/freteMutation";
 import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
 import { connectAlert } from "../components/Alert";
 import styles from "./styles";
 
-const initialState = {
-	qtEntrega: 1,
-	indiceEntrega: 0,
-	idCliente1: "",
-	descCliente1: "",
-	idCliente2: "",
-	descCliente2: ""
-};
-
 class Frete extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { ...initialState };
+		this.state = {
+			qtEntrega: 1,
+			dtFrete: "",
+			freteId: "",
+			indiceEntrega: 0,
+			clienteId1: "",
+			descCliente1: "",
+			clienteId2: "",
+			descCliente2: "",
+			frotaId: "",
+			descFrota: "",
+			frotaTerceiro: "",
+			kmInicial: 0,
+			kmCliente1: 0,
+			kmCliente2: 0,
+			kmFinal: 0,
+			hrMunckInicial: 0,
+			hrMunckFinal: 0,
+			qtPedagio: 0,
+			vlDespesas: 0,
+			caminhaoId: "",
+			isDateTimePickerVisible: false,
+			fieldDateTime: "",
+			pickerMode: "date",
+			onSearchSaida: null,
+			wait: false
+		};
 	}
+
+	componentWillMount() {
+		const { navigation } = this.props;
+		const caminhaoId = navigation.getParam("caminhaoId", {});
+		const freteId = navigation.getParam("freteId", {});
+		const onSearchSaida = navigation.getParam("onSearchSaida", {});
+		this.setState({ freteId, caminhaoId, onSearchSaida });
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const clientes = [];
+		const frota = [];
+
+		if (!nextProps.getClientes.loading && nextProps.getClientes.clientes) {
+			nextProps.getClientes.clientes.map(({ id, name }) => {
+				clientes.push({ key: id, label: name });
+			});
+		}
+
+		if (!nextProps.getFrota.loading && nextProps.getFrota.frota) {
+			nextProps.getFrota.frota.map(({ id, name, nrFrota }) => {
+				frota.push({ key: id, label: `${nrFrota}-${name}` });
+			});
+		}
+
+		this.setState({ clientes, frota });
+
+		if (!nextProps.getFrete) return;
+		if (!nextProps.getFrete.loading && nextProps.getFrete.freteById) {
+			const {
+				qtEntrega,
+				dtFrete,
+				clienteId1,
+				clienteId2,
+				frotaId,
+				frotaTerceiro,
+				kmInicial,
+				kmCliente1,
+				kmCliente2,
+				kmFinal,
+				hrMunckInicial,
+				hrMunckFinal,
+				qtPedagio
+			} = nextProps.getFrete.freteById;
+
+			let descCliente1 = "";
+			let descCliente2 = "";
+			let descFrota = "";
+
+			if (clienteId1 !== "") {
+				descCliente1 =
+					clientes.filter(key === clienteId1)[0] &&
+					clientes.filter(key === clienteId1)[0].label;
+			}
+
+			if (clienteId2 !== "") {
+				descCliente2 =
+					clientes.filter(key === clienteId2)[0] &&
+					clientes.filter(key === clienteId2)[0].label;
+			}
+
+			if (frotaId !== "") {
+				descFrota =
+					frota.filter(key === frotaId)[0] &&
+					frota.filter(key === frotaId)[0].label;
+			}
+
+			this.setState({
+				qtEntrega,
+				dtFrete,
+				clienteId1,
+				clienteId2,
+				frotaId,
+				frotaTerceiro,
+				kmInicial,
+				kmCliente1,
+				kmCliente2,
+				kmFinal,
+				hrMunckInicial,
+				hrMunckFinal,
+				qtPedagio
+			});
+		}
+	}
+
+	//******  EDITS */
+	handleInputChange = (field, value, numeric = false) => {
+		if (value === "" && numeric) value = 0;
+		const newState = {
+			...this.state,
+			[field]: value
+		};
+		this.setState(newState);
+	};
 
 	//********************** RADIO */
 	onRadioPress(index, value) {
@@ -37,29 +157,216 @@ class Frete extends Component {
 	/******** DROPDOWN *************/
 	onChangeDropdown = (option, type) => {
 		if (type === "cliente1") {
-			this.setState({ idCliente1: option.key, descCliente1: option.label });
+			this.setState({ clienteId1: option.key, descCliente1: option.label });
 		} else if (type === "cliente2") {
-			this.setState({ idCliente2: option.key, descCliente2: option.label });
+			this.setState({ clienteId2: option.key, descCliente2: option.label });
+		} else if (type === "frota") {
+			this.setState({ frotaId: option.key, descFrota: option.label });
 		}
 	};
 
 	onClearDropdown = type => {
 		if (type === "cliente1") {
-			this.setState({ idCliente1: "", descCliente1: "" });
+			this.setState({ clienteId1: "", descCliente1: "" });
 		} else if (type === "cliente2") {
-			this.setState({ idCliente2: "", descCliente2: "" });
+			this.setState({ clienteId2: "", descCliente2: "" });
+		} else if (type === "frota") {
+			this.setState({ frotaId: "", descFrota: "" });
 		}
 	};
 
-	render() {
-		const clientes = [];
+	//******************************************************************/
+	//                  DATE PICKER FUNCTIONS                         //
 
-		if (!this.props.getClientes.loading && this.props.getClientes.clientes) {
-			this.props.getClientes.clientes.map(({ id, name }) => {
-				clientes.push({ key: id, label: name });
-			});
+	showDateTimePicker = fieldDateTime => {
+		this.setState({
+			pickerMode: "date",
+			isDateTimePickerVisible: true,
+			fieldDateTime
+		});
+	};
+
+	hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+	handleDatePicked = date => {
+		const field = this.state.fieldDateTime;
+
+		const newState = {
+			...this.state,
+			isDateTimePickerVisible: false,
+			[field]: moment(date).format("DD/MM/YYYY")
+		};
+		this.setState(newState);
+	};
+
+	/***************************  BUTTONS  *********/
+	onHandleSave = async () => {
+		const id = this.state.freteId ? this.state.freteId : "";
+		//** Inicia as validações */
+		let msg = "";
+		if (this.state.clienteId1 === "") msg += "Cliente 1 |";
+		if (this.state.clienteId2 === "" && this.state.qtEntrega === 2)
+			msg += "Cliente 2 |";
+		if (this.state.frotaId === "" && this.state.frotaTerceiro === "")
+			msg += "Frota OU Frota Terceiro |";
+		if (this.state.kmInicial === "") msg += "Km Inicial";
+
+		if (id !== "") {
+			//Adiciona as validações
+			if (this.state.kmCliente === "") msg += "Km Cliente";
+			if (this.state.kmFinal === "") msg += "Km Final";
+		}
+		if (msg !== "") {
+			msg = "Você precisa preencher o(s) campo(s): " + msg;
+			this.props.alertWithType("warn", "Aviso", msg);
+			return;
 		}
 
+		const freteInput = {
+			caminhaoId: this.state.caminhaoId,
+			qtEntrega: this.state.qtEntrega,
+			dtFrete: this.state.dtFrete,
+			clienteId1: this.state.clienteId1,
+			clienteId2: this.state.clienteId2 !== "" ? this.state.clienteId2 : null,
+			frotaId: this.state.frotaId !== "" ? this.state.frotaId : null,
+			frotaTerceiro: this.state.frotaTerceiro,
+			kmInicial: this.state.kmInicial,
+			kmCliente1: this.state.kmCliente1 !== "" ? this.state.kmCliente1 : null,
+			kmCliente2: this.state.kmCliente2 !== "" ? this.state.kmCliente2 : null,
+			kmFinal: this.state.kmFinal !== "" ? this.state.kmFinal : null,
+			hrMunckInicial:
+				this.state.hrMunckInicial !== "" ? this.state.hrMunckInicial : null,
+			hrMunckFinal:
+				this.state.hrMunckFinal !== "" ? this.state.hrMunckFinal : null,
+			qtPedagio: this.state.qtPedagio !== "" ? this.state.qtPedagio : null,
+			status: id ? "ENCERRADO" : "ABERTO"
+		};
+		if (id === "") {
+			this.props
+				.createFrete({ variables: { freteInput } })
+				.then(async () => {
+					//UPLOAD NAS IMAGENS
+					this.setState({ wait: true });
+					const result = "success"; //forçando o sucesso
+					/*				const images = [];
+				this.state.grupos.map(({ itens }) =>
+					itens.map(({ fileName }) => images.push(fileName))
+				);
+
+				const result = await new Promise(async (resolve, reject) => {
+					let error = "";
+					await images.map(async fileName => {
+						const result = await this.uploadFile(fileName);
+						if (result !== "success") {
+							error += `${result} |`;
+						}
+					});
+					if (error === "") {
+						resolve("success");
+					} else reject(error);
+				});
+
+				this.setState({ wait: false });
+				//FIM DO UPLOAD
+				*/
+					if (result === "success") {
+						if (typeof this.state.onSearchSaida === "function") {
+							this.state.onSearchSaida();
+						}
+						this.props.navigation.goBack();
+					} else {
+						this.props.alertWithType("error", "Error", result);
+					}
+				})
+				.catch(e => {
+					let message = "";
+					if (e.graphQLErrors) {
+						message = e.graphQLErrors[0]
+							? e.graphQLErrors[0].message
+							: e.graphQLErrors;
+					}
+					this.props.alertWithType("error", "Error", message);
+				});
+		} else {
+			this.props
+				.updateFrete({ variables: { freteInput } })
+				.then(async () => {
+					//UPLOAD NAS IMAGENS
+					this.setState({ wait: true });
+					const result = "success"; //forçando o sucesso
+					/*				const images = [];
+				this.state.grupos.map(({ itens }) =>
+					itens.map(({ fileName }) => images.push(fileName))
+				);
+
+				const result = await new Promise(async (resolve, reject) => {
+					let error = "";
+					await images.map(async fileName => {
+						const result = await this.uploadFile(fileName);
+						if (result !== "success") {
+							error += `${result} |`;
+						}
+					});
+					if (error === "") {
+						resolve("success");
+					} else reject(error);
+				});
+
+				this.setState({ wait: false }); */
+					//FIM DO UPLOAD
+					if (result === "success") {
+						if (typeof this.state.onSearchSaida === "function") {
+							this.state.onSearchSaida();
+						}
+						this.props.navigation.goBack();
+					} else {
+						this.props.alertWithType("error", "Error", result);
+					}
+				})
+				.catch(e => {
+					let message = "";
+					if (e.graphQLErrors) {
+						message = e.graphQLErrors[0]
+							? e.graphQLErrors[0].message
+							: e.graphQLErrors;
+					}
+					this.props.alertWithType("error", "Error", message);
+				});
+		}
+	};
+
+	onHandleFotos = async () => {
+		console.log("Clicou nas Fotos...");
+	};
+
+	//***************************************************************/
+	//    FIM DO SALVAMENTO
+	//***************************************************************/
+
+	renderActivity() {
+		return (
+			<BlurView
+				tint="light"
+				intensity={70}
+				style={{
+					flex: 1,
+					position: "absolute",
+					justifyContent: "center",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					alignItems: "center"
+				}}
+			>
+				<ActivityIndicator
+					size="large"
+					color={EStyleSheet.value("$primaryGreen")}
+				/>
+			</BlurView>
+		);
+	}
+	render() {
 		return (
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.screenContainer}>
@@ -89,6 +396,19 @@ class Frete extends Component {
 								<Text style={styles.radioText}>2 Entregas</Text>
 							</RadioButton>
 						</RadioGroup>
+						<TouchableOpacity
+							onPress={() => this.showDateTimePicker("dtFrete")}
+							style={{ marginLeft: 30 }}
+						>
+							<InputWithTitle
+								title="Data Frete"
+								size={78}
+								height={32}
+								editable={false}
+								changeColor={false}
+								value={this.state.dtFrete}
+							/>
+						</TouchableOpacity>
 					</View>
 					<View style={styles.separatorLine} />
 					<View
@@ -96,32 +416,210 @@ class Frete extends Component {
 							flexDirection: "row",
 							marginBottom: verticalScale(2),
 							marginTop: verticalScale(8),
-							justifyContent: "flex-start"
+							justifyContent: "space-between"
 						}}
 					>
 						<Dropdown
-							data={clientes}
+							data={this.state.clientes}
 							title={this.state.qtEntrega === 1 ? "Cliente 1" : "Cliente"}
 							placeholder="Selecione o cliente"
 							height={32}
-							sizeP={"50%"}
+							sizeP={"48%"}
 							value={this.state.descCliente1}
 							onClickButton={() => this.onClearDropdown("cliente1")}
 							onChange={option => this.onChangeDropdown(option, "cliente1")}
 						/>
-
+						{this.state.qtEntrega === 2 && (
+							<Dropdown
+								data={this.state.clientes}
+								title="Cliente 2"
+								placeholder="Selecione o cliente"
+								height={32}
+								sizeP={"48%"}
+								value={this.state.descCliente2}
+								onClickButton={() => this.onClearDropdown("cliente2")}
+								onChange={option => this.onChangeDropdown(option, "cliente2")}
+							/>
+						)}
+					</View>
+					<View
+						style={{
+							flexDirection: "row",
+							marginBottom: verticalScale(2),
+							justifyContent: "space-between"
+						}}
+					>
 						<Dropdown
-							data={clientes}
-							title="Cliente 2"
-							placeholder="Selecione o cliente"
+							data={this.state.frota}
+							title="Frota"
+							placeholder="Selecione a frota"
 							height={32}
-							sizeP={"50%"}
-							value={this.state.descCliente2}
-							onClickButton={() => this.onClearDropdown("cliente2")}
-							onChange={option => this.onChangeDropdown(option, "cliente2")}
+							sizeP={"48%"}
+							value={this.state.descFrota}
+							onClickButton={() => this.onClearDropdown("frota")}
+							onChange={option => this.onChangeDropdown(option, "frota")}
+						/>
+
+						<InputWithTitle
+							title="Frota Terceiro"
+							height={32}
+							sizeP={"48%"}
+							onChangeText={value =>
+								this.handleInputChange("frotaTerceiro", value)
+							}
+							value={this.state.frotaTerceiro}
+						/>
+					</View>
+					<View
+						style={{
+							flexDirection: "row",
+							marginBottom: verticalScale(2),
+							justifyContent: "space-between"
+						}}
+					>
+						<InputWithTitle
+							title="Km Inicial"
+							height={32}
+							keyboardType="numeric"
+							sizeP={"15%"}
+							onChangeText={value =>
+								this.handleInputChange("kmInicial", value, true)
+							}
+							value={
+								this.state.kmInicial > 0 ? this.state.kmInicial.toString() : ""
+							}
+						/>
+						<InputWithTitle
+							title="Km Cliente 1"
+							height={32}
+							keyboardType="numeric"
+							sizeP={"15%"}
+							onChangeText={value =>
+								this.handleInputChange("kmCliente1", value, true)
+							}
+							value={
+								this.state.kmCliente1 > 0
+									? this.state.kmCliente1.toString()
+									: ""
+							}
+						/>
+						<InputWithTitle
+							title="Km Cliente 2"
+							height={32}
+							keyboardType="numeric"
+							sizeP={"15%"}
+							onChangeText={value =>
+								this.handleInputChange("kmCliente2", value, true)
+							}
+							value={
+								this.state.kmCliente2 > 0
+									? this.state.kmCliente2.toString()
+									: ""
+							}
+						/>
+
+						<InputWithTitle
+							title="Km Final"
+							height={32}
+							sizeP={"15%"}
+							keyboardType="numeric"
+							onChangeText={value =>
+								this.handleInputChange("kmFinal", value, true)
+							}
+							value={
+								this.state.kmFinal > 0 ? this.state.kmFinal.toString() : ""
+							}
+						/>
+
+						<InputWithTitle
+							title="Munck Inicial"
+							height={32}
+							sizeP={"15%"}
+							keyboardType="numeric"
+							onChangeText={value =>
+								this.handleInputChange("hrMunckInicial", value, true)
+							}
+							value={
+								this.state.hrMunckInicial > 0
+									? this.state.hrMunckInicial.toString()
+									: ""
+							}
+						/>
+						<InputWithTitle
+							title="Munck Final"
+							height={32}
+							sizeP={"15%"}
+							keyboardType="numeric"
+							onChangeText={value =>
+								this.handleInputChange("hrMunckFinal", value, true)
+							}
+							value={
+								this.state.hrMunckFinal > 0
+									? this.state.hrMunckFinal.toString()
+									: ""
+							}
+						/>
+					</View>
+					<View
+						style={{
+							flexDirection: "row",
+							marginBottom: verticalScale(2),
+							justifyContent: "flex-start"
+						}}
+					>
+						<InputWithTitle
+							title="Pedágio (Qtde)"
+							height={32}
+							sizeP={"25%"}
+							keyboardType="numeric"
+							onChangeText={value =>
+								this.handleInputChange("qtPedagio", value, true)
+							}
+							value={
+								this.state.qtPedagio > 0 ? this.state.qtPedagio.toString() : ""
+							}
+						/>
+						<InputWithTitle
+							title="Outras Despesas"
+							height={32}
+							sizeP={"25%"}
+							keyboardType="numeric"
+							onChangeText={value =>
+								this.handleInputChange("vlDespesas", value, true)
+							}
+							value={
+								this.state.vlDespesas > 0
+									? this.state.vlDespesas.toString()
+									: ""
+							}
+						/>
+					</View>
+					<View style={styles.separatorLine} />
+					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
+						<RoundButton
+							text="FOTOS"
+							width={60}
+							height={30}
+							fontSize={8}
+							active={false}
+							onPress={this.onHandleFotos}
+						/>
+						<RoundButton
+							text="SALVAR"
+							width={60}
+							height={30}
+							fontSize={8}
+							onPress={this.onHandleSave}
 						/>
 					</View>
 				</View>
+				<DateTimePicker
+					isVisible={this.state.isDateTimePickerVisible}
+					onConfirm={this.handleDatePicked}
+					onCancel={this.hideDateTimePicker}
+					mode={this.state.pickerMode}
+				/>
+				{this.state.wait && this.renderActivity()}
 			</Container>
 		);
 	}
@@ -129,5 +627,18 @@ class Frete extends Component {
 
 export default compose(
 	graphql(GET_CLIENTES, { name: "getClientes" }),
-	graphql(UPLOAD_FILE, { name: "uploadFile" })
+	graphql(GET_FROTA, { name: "getFrota" }),
+	graphql(CREATE_FRETE, { name: "createFrete" }),
+	graphql(UPDATE_FRETE, { name: "updateFrete" }),
+	graphql(UPLOAD_FILE, { name: "uploadFile" }),
+	graphql(GET_FRETE_BY_ID, {
+		name: "getFrete",
+		options: props => ({
+			variables: {
+				id: !props.navigation.state.params
+					? null
+					: props.navigation.state.params.freteId
+			}
+		})
+	})
 )(connectAlert(Frete));
