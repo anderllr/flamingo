@@ -132,7 +132,7 @@ const styles = EStyleSheet.create({
 	},
 	groupText: {
 		color: "$inputText",
-		fontSize: moderateScale(5),
+		fontSize: moderateScale(7),
 		fontWeight: "300",
 		fontFamily: "lato-bold",
 		bottom: verticalScale(1),

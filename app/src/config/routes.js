@@ -10,7 +10,8 @@ import {
 	SaidaFotos,
 	Devolucao,
 	DevolucaoFotos,
-	Frete
+	Frete,
+	FreteFotos
 } from "../screens";
 import { CameraScreen } from "../components/CameraScreen";
 
@@ -82,6 +83,15 @@ const HomeStack = createStackNavigator(
 			screen: Frete,
 			navigationOptions: {
 				headerTitle: "Lançar Frete",
+				headerTintColor: "white",
+				headerStyle: headerStyle,
+				headerTitleStyle: headerTitleStyle
+			}
+		},
+		FreteFotos: {
+			screen: FreteFotos,
+			navigationOptions: {
+				headerTitle: "Fotos do frete",
 				headerTintColor: "white",
 				headerStyle: headerStyle,
 				headerTitleStyle: headerTitleStyle

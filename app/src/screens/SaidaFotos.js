@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { View, Text, FlatList, TouchableHighlight } from "react-native";
-import { Permissions, FileSystem } from "expo";
+import { Permissions } from "expo";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { Query } from "react-apollo";
@@ -10,7 +10,6 @@ import { connectAlert } from "../components/Alert";
 import { GET_FROTA_ITENS_BY_GRUPO } from "../config/resources/queries/frotaQuery";
 
 import { Container } from "../components/Container";
-import { Icon } from "../components/Icon";
 import { RoundButton } from "../components/Button";
 import { Dropdown } from "../components/Dropdown";
 import { InputWithTitle } from "../components/InputText";

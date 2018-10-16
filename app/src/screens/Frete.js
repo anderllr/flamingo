@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { verticalScale } from "react-native-size-matters";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 import { graphql, compose } from "react-apollo";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import { BlurView } from "expo";
+import { BlurView, FileSystem } from "expo";
 import moment from "moment";
+import { ReactNativeFile } from "apollo-upload-client";
 
 import { Container } from "../components/Container";
 import { InputWithTitle } from "../components/InputText";
@@ -15,6 +16,7 @@ import { Dropdown } from "../components/Dropdown";
 import { GET_CLIENTES } from "../config/resources/queries/clientesQuery";
 import { GET_FROTA } from "../config/resources/queries/frotaQuery";
 import { GET_FRETE_BY_ID } from "../config/resources/queries/freteQuery";
+import { GET_CAMINHAO_BY_ID } from "../config/resources/queries/caminhaoQuery";
 import {
 	CREATE_FRETE,
 	UPDATE_FRETE
@@ -47,11 +49,15 @@ class Frete extends Component {
 			qtPedagio: 0,
 			vlDespesas: 0,
 			caminhaoId: "",
+			itens: [],
 			isDateTimePickerVisible: false,
 			fieldDateTime: "",
 			pickerMode: "date",
 			onSearchSaida: null,
-			wait: false
+			wait: false,
+			clientes: [],
+			frota: [],
+			clicouFoto: false
 		};
 	}
 
@@ -60,82 +66,113 @@ class Frete extends Component {
 		const caminhaoId = navigation.getParam("caminhaoId", {});
 		const freteId = navigation.getParam("freteId", {});
 		const onSearchSaida = navigation.getParam("onSearchSaida", {});
-		this.setState({ freteId, caminhaoId, onSearchSaida });
+		this.setState({ freteId, caminhaoId, onSearchSaida, clicouFoto: false });
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const clientes = [];
-		const frota = [];
+		const clientes = [...this.state.clientes];
+		const frota = [...this.state.frota];
 
-		if (!nextProps.getClientes.loading && nextProps.getClientes.clientes) {
-			nextProps.getClientes.clientes.map(({ id, name }) => {
-				clientes.push({ key: id, label: name });
-			});
+		if (clientes.length === 0) {
+			if (!nextProps.getClientes.loading && nextProps.getClientes.clientes) {
+				nextProps.getClientes.clientes.map(({ id, name }) => {
+					clientes.push({ key: id, label: name });
+				});
+
+				this.setState({ clientes });
+			}
 		}
 
-		if (!nextProps.getFrota.loading && nextProps.getFrota.frota) {
-			nextProps.getFrota.frota.map(({ id, name, nrFrota }) => {
-				frota.push({ key: id, label: `${nrFrota}-${name}` });
-			});
+		if (frota.length === 0) {
+			if (!nextProps.getFrota.loading && nextProps.getFrota.frota) {
+				nextProps.getFrota.frota.map(({ id, name, nrFrota }) => {
+					frota.push({ key: id, label: `${nrFrota}-${name}` });
+				});
+			}
+
+			this.setState({ frota });
 		}
 
-		this.setState({ clientes, frota });
+		if (!this.state.clicouFoto && clientes.length > 0 && frota.length > 0) {
+			//verifica pelos itens para não ficar recarregando os dados da tela no goback
+			if (!nextProps.getFrete.loading && nextProps.getFrete.freteById) {
+				const {
+					qtEntrega,
+					dtFrete,
+					clienteId1,
+					clienteId2,
+					frotaId,
+					frotaTerceiro,
+					kmInicial,
+					kmCliente1,
+					kmCliente2,
+					kmFinal,
+					hrMunckInicial,
+					hrMunckFinal,
+					qtPedagio,
+					itens
+				} = nextProps.getFrete.freteById;
 
-		if (!nextProps.getFrete) return;
-		if (!nextProps.getFrete.loading && nextProps.getFrete.freteById) {
-			const {
-				qtEntrega,
-				dtFrete,
-				clienteId1,
-				clienteId2,
-				frotaId,
-				frotaTerceiro,
-				kmInicial,
-				kmCliente1,
-				kmCliente2,
-				kmFinal,
-				hrMunckInicial,
-				hrMunckFinal,
-				qtPedagio
-			} = nextProps.getFrete.freteById;
+				let descCliente1 = "";
+				let descCliente2 = "";
+				let descFrota = "";
 
-			let descCliente1 = "";
-			let descCliente2 = "";
-			let descFrota = "";
+				if (clienteId1 && clienteId1 !== "") {
+					const cliente = clientes.filter(cli => cli.key === clienteId1);
+					if (cliente) {
+						if (cliente[0]) descCliente1 = cliente[0].label || "";
+					}
+				}
 
-			if (clienteId1 !== "") {
-				descCliente1 =
-					clientes.filter(key === clienteId1)[0] &&
-					clientes.filter(key === clienteId1)[0].label;
+				if (clienteId2 && clienteId2 !== "") {
+					const cliente = clientes.filter(cli => cli.key === clienteId2);
+					if (cliente) {
+						if (cliente[0]) descCliente2 = cliente[0].label || "";
+					}
+				}
+
+				if (frotaId && frotaId !== "") {
+					const fr = frota.filter(f => f.key === frotaId);
+					if (fr) {
+						if (fr[0]) descFrota = fr[0].label || "";
+					}
+				}
+
+				//mapeia os itens para não virem com código interno do mongo
+				const it = itens.map(({ item, imagem }) => ({ item, imagem }));
+
+				this.setState({
+					qtEntrega: qtEntrega || 1,
+					dtFrete,
+					clienteId1,
+					descCliente1,
+					clienteId2,
+					descCliente2,
+					frotaId,
+					descFrota,
+					frotaTerceiro,
+					kmInicial,
+					kmCliente1,
+					kmCliente2,
+					kmFinal,
+					hrMunckInicial,
+					hrMunckFinal,
+					qtPedagio,
+					itens: it
+				});
+			} // fim da condição se tem frete selecionado se não tem vou buscar no caminhão os itens de fotos
+			else if (
+				!nextProps.getCaminhao.loading &&
+				nextProps.getCaminhao.caminhaoById
+			) {
+				const itens = nextProps.getCaminhao.caminhaoById.itens.map(
+					({ item }) => ({
+						item,
+						imagem: ""
+					})
+				);
+				this.setState({ itens });
 			}
-
-			if (clienteId2 !== "") {
-				descCliente2 =
-					clientes.filter(key === clienteId2)[0] &&
-					clientes.filter(key === clienteId2)[0].label;
-			}
-
-			if (frotaId !== "") {
-				descFrota =
-					frota.filter(key === frotaId)[0] &&
-					frota.filter(key === frotaId)[0].label;
-			}
-
-			this.setState({
-				qtEntrega,
-				dtFrete,
-				clienteId1,
-				clienteId2,
-				frotaId,
-				frotaTerceiro,
-				kmInicial,
-				kmCliente1,
-				kmCliente2,
-				kmFinal,
-				hrMunckInicial,
-				hrMunckFinal,
-				qtPedagio
-			});
 		}
 	}
 
@@ -201,6 +238,7 @@ class Frete extends Component {
 
 	/***************************  BUTTONS  *********/
 	onHandleSave = async () => {
+		console.log("State: ", this.state);
 		const id = this.state.freteId ? this.state.freteId : "";
 		//** Inicia as validações */
 		let msg = "";
@@ -239,7 +277,8 @@ class Frete extends Component {
 			hrMunckFinal:
 				this.state.hrMunckFinal !== "" ? this.state.hrMunckFinal : null,
 			qtPedagio: this.state.qtPedagio !== "" ? this.state.qtPedagio : null,
-			status: id ? "ENCERRADO" : "ABERTO"
+			status: id ? "ENCERRADO" : "ABERTO",
+			itens: this.state.itens
 		};
 		if (id === "") {
 			this.props
@@ -247,77 +286,30 @@ class Frete extends Component {
 				.then(async () => {
 					//UPLOAD NAS IMAGENS
 					this.setState({ wait: true });
-					const result = "success"; //forçando o sucesso
-					/*				const images = [];
-				this.state.grupos.map(({ itens }) =>
-					itens.map(({ fileName }) => images.push(fileName))
-				);
+					const images = this.state.itens
+						.filter(item => item.imagem !== "")
+						.map(({ imagem }) => imagem);
 
-				const result = await new Promise(async (resolve, reject) => {
-					let error = "";
-					await images.map(async fileName => {
-						const result = await this.uploadFile(fileName);
-						if (result !== "success") {
-							error += `${result} |`;
-						}
+					const result = await new Promise(async (resolve, reject) => {
+						let error = "";
+						await images.map(async fileName => {
+							const result = await this.uploadFile(fileName);
+							if (result !== "success") {
+								error += `${result} |`;
+							}
+						});
+						if (error === "") {
+							resolve("success");
+						} else reject(error);
 					});
-					if (error === "") {
-						resolve("success");
-					} else reject(error);
-				});
 
-				this.setState({ wait: false });
-				//FIM DO UPLOAD
-				*/
-					if (result === "success") {
-						if (typeof this.state.onSearchSaida === "function") {
-							this.state.onSearchSaida();
-						}
-						this.props.navigation.goBack();
-					} else {
-						this.props.alertWithType("error", "Error", result);
-					}
-				})
-				.catch(e => {
-					let message = "";
-					if (e.graphQLErrors) {
-						message = e.graphQLErrors[0]
-							? e.graphQLErrors[0].message
-							: e.graphQLErrors;
-					}
-					this.props.alertWithType("error", "Error", message);
-				});
-		} else {
-			this.props
-				.updateFrete({ variables: { freteInput } })
-				.then(async () => {
-					//UPLOAD NAS IMAGENS
-					this.setState({ wait: true });
-					const result = "success"; //forçando o sucesso
-					/*				const images = [];
-				this.state.grupos.map(({ itens }) =>
-					itens.map(({ fileName }) => images.push(fileName))
-				);
-
-				const result = await new Promise(async (resolve, reject) => {
-					let error = "";
-					await images.map(async fileName => {
-						const result = await this.uploadFile(fileName);
-						if (result !== "success") {
-							error += `${result} |`;
-						}
-					});
-					if (error === "") {
-						resolve("success");
-					} else reject(error);
-				});
-
-				this.setState({ wait: false }); */
+					this.setState({ wait: false });
 					//FIM DO UPLOAD
 					if (result === "success") {
 						if (typeof this.state.onSearchSaida === "function") {
 							this.state.onSearchSaida();
 						}
+						this.setState({ clicouFoto: false });
 						this.props.navigation.goBack();
 					} else {
 						this.props.alertWithType("error", "Error", result);
@@ -326,17 +318,104 @@ class Frete extends Component {
 				.catch(e => {
 					let message = "";
 					if (e.graphQLErrors) {
-						message = e.graphQLErrors[0]
+						message = e.graphQLErrors[0].message
 							? e.graphQLErrors[0].message
-							: e.graphQLErrors;
+							: e.graphQLErrors.toString();
+					}
+					this.props.alertWithType("error", "Error", message);
+				});
+		} else {
+			this.props
+				.updateFrete({ variables: { id, freteInput } })
+				.then(async () => {
+					//UPLOAD NAS IMAGENS
+					this.setState({ wait: true });
+
+					const images = this.state.itens
+						.filter(item => item.imagem !== "")
+						.map(({ imagem }) => imagem);
+
+					const result = await new Promise(async (resolve, reject) => {
+						let error = "";
+						await images.map(async fileName => {
+							const result = await this.uploadFile(fileName);
+							if (result !== "success") {
+								error += `${result} |`;
+							}
+						});
+						if (error === "") {
+							resolve("success");
+						} else reject(error);
+					});
+
+					this.setState({ wait: false });
+					//FIM DO UPLOAD
+					if (result === "success") {
+						if (typeof this.state.onSearchSaida === "function") {
+							this.state.onSearchSaida();
+						}
+						this.setState({ clicouFoto: false });
+						this.props.navigation.goBack();
+					} else {
+						this.props.alertWithType("error", "Error", result);
+					}
+				})
+				.catch(e => {
+					console.log("E: ", e);
+					let message = "";
+					if (e.graphQLErrors) {
+						message = e.graphQLErrors[0].message
+							? e.graphQLErrors[0].message
+							: e.graphQLErrors.toString();
 					}
 					this.props.alertWithType("error", "Error", message);
 				});
 		}
 	};
 
+	uploadFile = fileName => {
+		return new Promise(async (resolve, reject) => {
+			const path = `${FileSystem.documentDirectory}flamingo/${fileName}.jpeg`;
+			const fileLocal = await FileSystem.getInfoAsync(path);
+			if (fileLocal.exists) {
+				const file = new ReactNativeFile({
+					uri: fileLocal.uri,
+					type: "image/jpeg",
+					name: `${fileName}.jpeg`
+				});
+
+				//verifica que foi carregado um arquivo então salva
+				this.props
+					.uploadFile({
+						variables: {
+							file,
+							fileName: `${fileName}.jpeg`,
+							screen: "",
+							id: ""
+						}
+					})
+					.then(() => resolve("success"))
+					.catch(e => reject(e));
+			} else {
+				reject("Arquivo inválido");
+			}
+		});
+	};
+
+	//************************************************************** */
+	// FUNÇÃO QUE É EXECUTADA APÓS O LANÇAMENTO DAS FOTOS
+
+	saveItens = async itens => {
+		console.log("itens: ", itens);
+		this.setState({ itens });
+	};
+
 	onHandleFotos = async () => {
-		console.log("Clicou nas Fotos...");
+		this.setState({ clicouFoto: true });
+		this.props.navigation.navigate("FreteFotos", {
+			itens: this.state.itens,
+			saveItens: this.saveItens.bind(this)
+		});
 	};
 
 	//***************************************************************/
@@ -597,6 +676,13 @@ class Frete extends Component {
 					<View style={styles.separatorLine} />
 					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
 						<RoundButton
+							text="STATE"
+							width={60}
+							height={30}
+							fontSize={8}
+							onPress={() => console.log("State Itens: ", this.state.itens)}
+						/>
+						<RoundButton
 							text="FOTOS"
 							width={60}
 							height={30}
@@ -638,6 +724,16 @@ export default compose(
 				id: !props.navigation.state.params
 					? null
 					: props.navigation.state.params.freteId
+			}
+		})
+	}),
+	graphql(GET_CAMINHAO_BY_ID, {
+		name: "getCaminhao",
+		options: props => ({
+			variables: {
+				id: !props.navigation.state.params
+					? null
+					: props.navigation.state.params.caminhaoId
 			}
 		})
 	})
