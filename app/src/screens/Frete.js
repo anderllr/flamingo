@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+	View,
+	Text,
+	TouchableOpacity,
+	ActivityIndicator,
+	Platform,
+	KeyboardAvoidingView
+} from "react-native";
 import { verticalScale } from "react-native-size-matters";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
@@ -25,12 +32,14 @@ import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
 import { connectAlert } from "../components/Alert";
 import styles from "./styles";
 
+const keyboardVerticalOffset = Platform.OS === "ios" ? 20 : 0;
+
 class Frete extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			qtEntrega: 1,
-			dtFrete: "",
+			dtFrete: moment(new Date()).format("DD/MM/YYYY"),
 			freteId: "",
 			indiceEntrega: 0,
 			clienteId1: "",
@@ -67,15 +76,27 @@ class Frete extends Component {
 		const freteId = navigation.getParam("freteId", {});
 		const onSearchSaida = navigation.getParam("onSearchSaida", {});
 		this.setState({ freteId, caminhaoId, onSearchSaida, clicouFoto: false });
+
+		/*		this.props.navigation.addListener("didBlur", payload => {
+			console.log("didBlur", payload);
+		}); */
+	}
+
+	componentDidMount() {
+		this.carregaEdits(this.props);
 	}
 
 	componentWillReceiveProps(nextProps) {
+		this.carregaEdits(nextProps);
+	}
+
+	carregaEdits(myProps) {
 		const clientes = [...this.state.clientes];
 		const frota = [...this.state.frota];
 
 		if (clientes.length === 0) {
-			if (!nextProps.getClientes.loading && nextProps.getClientes.clientes) {
-				nextProps.getClientes.clientes.map(({ id, name }) => {
+			if (!myProps.getClientes.loading && myProps.getClientes.clientes) {
+				myProps.getClientes.clientes.map(({ id, name }) => {
 					clientes.push({ key: id, label: name });
 				});
 
@@ -84,8 +105,8 @@ class Frete extends Component {
 		}
 
 		if (frota.length === 0) {
-			if (!nextProps.getFrota.loading && nextProps.getFrota.frota) {
-				nextProps.getFrota.frota.map(({ id, name, nrFrota }) => {
+			if (!myProps.getFrota.loading && myProps.getFrota.frota) {
+				myProps.getFrota.frota.map(({ id, name, nrFrota }) => {
 					frota.push({ key: id, label: `${nrFrota}-${name}` });
 				});
 			}
@@ -95,7 +116,7 @@ class Frete extends Component {
 
 		if (!this.state.clicouFoto && clientes.length > 0 && frota.length > 0) {
 			//verifica pelos itens para não ficar recarregando os dados da tela no goback
-			if (!nextProps.getFrete.loading && nextProps.getFrete.freteById) {
+			if (!myProps.getFrete.loading && myProps.getFrete.freteById) {
 				const {
 					qtEntrega,
 					dtFrete,
@@ -111,7 +132,7 @@ class Frete extends Component {
 					hrMunckFinal,
 					qtPedagio,
 					itens
-				} = nextProps.getFrete.freteById;
+				} = myProps.getFrete.freteById;
 
 				let descCliente1 = "";
 				let descCliente2 = "";
@@ -162,10 +183,10 @@ class Frete extends Component {
 				});
 			} // fim da condição se tem frete selecionado se não tem vou buscar no caminhão os itens de fotos
 			else if (
-				!nextProps.getCaminhao.loading &&
-				nextProps.getCaminhao.caminhaoById
+				!myProps.getCaminhao.loading &&
+				myProps.getCaminhao.caminhaoById
 			) {
-				const itens = nextProps.getCaminhao.caminhaoById.itens.map(
+				const itens = myProps.getCaminhao.caminhaoById.itens.map(
 					({ item }) => ({
 						item,
 						imagem: ""
@@ -238,7 +259,6 @@ class Frete extends Component {
 
 	/***************************  BUTTONS  *********/
 	onHandleSave = async () => {
-		console.log("State: ", this.state);
 		const id = this.state.freteId ? this.state.freteId : "";
 		//** Inicia as validações */
 		let msg = "";
@@ -247,11 +267,11 @@ class Frete extends Component {
 			msg += "Cliente 2 |";
 		if (this.state.frotaId === "" && this.state.frotaTerceiro === "")
 			msg += "Frota OU Frota Terceiro |";
-		if (this.state.kmInicial === "") msg += "Km Inicial";
+		if (this.state.kmInicial === "") msg += "Km Inicial Flamingo";
 
 		if (id !== "") {
 			//Adiciona as validações
-			if (this.state.kmCliente === "") msg += "Km Cliente";
+			if (this.state.kmCliente === "") msg += "Km Destino";
 			if (this.state.kmFinal === "") msg += "Km Final";
 		}
 		if (msg !== "") {
@@ -277,7 +297,7 @@ class Frete extends Component {
 			hrMunckFinal:
 				this.state.hrMunckFinal !== "" ? this.state.hrMunckFinal : null,
 			qtPedagio: this.state.qtPedagio !== "" ? this.state.qtPedagio : null,
-			status: id ? "ENCERRADO" : "ABERTO",
+			status: this.state.kmFinal > 0 ? "ENCERRADO" : "ABERTO",
 			itens: this.state.itens
 		};
 		if (id === "") {
@@ -361,7 +381,6 @@ class Frete extends Component {
 					}
 				})
 				.catch(e => {
-					console.log("E: ", e);
 					let message = "";
 					if (e.graphQLErrors) {
 						message = e.graphQLErrors[0].message
@@ -406,7 +425,6 @@ class Frete extends Component {
 	// FUNÇÃO QUE É EXECUTADA APÓS O LANÇAMENTO DAS FOTOS
 
 	saveItens = async itens => {
-		console.log("itens: ", itens);
 		this.setState({ itens });
 	};
 
@@ -449,242 +467,254 @@ class Frete extends Component {
 		return (
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.screenContainer}>
-					<View
-						style={{
-							flexDirection: "row",
-							marginBottom: verticalScale(2),
-							justifyContent: "flex-start",
-							alignItems: "center"
-						}}
+					<KeyboardAvoidingView
+						behavior="position"
+						keyboardVerticalOffset={keyboardVerticalOffset}
 					>
-						<Text style={styles.radioTitle}>Entregas:</Text>
-						<RadioGroup
-							onSelect={(index, value) => this.onRadioPress(index, value)}
-							selectedIndex={this.state.indiceEntrega}
+						<View
 							style={{
 								flexDirection: "row",
-								justifyContent: "space-around",
-								padding: 0
+								marginBottom: verticalScale(2),
+								justifyContent: "flex-start",
+								alignItems: "center"
 							}}
 						>
-							<RadioButton value={1}>
-								<Text style={styles.radioText}>1 Entrega</Text>
-							</RadioButton>
+							<Text style={styles.radioTitle}>Entregas:</Text>
+							<RadioGroup
+								onSelect={(index, value) => this.onRadioPress(index, value)}
+								selectedIndex={this.state.indiceEntrega}
+								style={{
+									flexDirection: "row",
+									justifyContent: "space-around",
+									padding: 0
+								}}
+							>
+								<RadioButton value={1}>
+									<Text style={styles.radioText}>1 Entrega</Text>
+								</RadioButton>
 
-							<RadioButton value={2}>
-								<Text style={styles.radioText}>2 Entregas</Text>
-							</RadioButton>
-						</RadioGroup>
-						<TouchableOpacity
-							onPress={() => this.showDateTimePicker("dtFrete")}
-							style={{ marginLeft: 30 }}
+								<RadioButton value={2}>
+									<Text style={styles.radioText}>2 Entregas</Text>
+								</RadioButton>
+							</RadioGroup>
+							<TouchableOpacity
+								onPress={() => this.showDateTimePicker("dtFrete")}
+								style={{ marginLeft: 30 }}
+							>
+								<InputWithTitle
+									title="Data Frete"
+									size={78}
+									height={32}
+									editable={false}
+									changeColor={false}
+									value={this.state.dtFrete}
+								/>
+							</TouchableOpacity>
+						</View>
+						<View style={styles.separatorLine} />
+						<View
+							style={{
+								flexDirection: "row",
+								marginBottom: verticalScale(2),
+								marginTop: verticalScale(8),
+								justifyContent: "space-between"
+							}}
 						>
-							<InputWithTitle
-								title="Data Frete"
-								size={78}
-								height={32}
-								editable={false}
-								changeColor={false}
-								value={this.state.dtFrete}
-							/>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.separatorLine} />
-					<View
-						style={{
-							flexDirection: "row",
-							marginBottom: verticalScale(2),
-							marginTop: verticalScale(8),
-							justifyContent: "space-between"
-						}}
-					>
-						<Dropdown
-							data={this.state.clientes}
-							title={this.state.qtEntrega === 1 ? "Cliente 1" : "Cliente"}
-							placeholder="Selecione o cliente"
-							height={32}
-							sizeP={"48%"}
-							value={this.state.descCliente1}
-							onClickButton={() => this.onClearDropdown("cliente1")}
-							onChange={option => this.onChangeDropdown(option, "cliente1")}
-						/>
-						{this.state.qtEntrega === 2 && (
 							<Dropdown
 								data={this.state.clientes}
-								title="Cliente 2"
+								title={this.state.qtEntrega === 1 ? "Cliente 1" : "Cliente"}
 								placeholder="Selecione o cliente"
 								height={32}
 								sizeP={"48%"}
-								value={this.state.descCliente2}
-								onClickButton={() => this.onClearDropdown("cliente2")}
-								onChange={option => this.onChangeDropdown(option, "cliente2")}
+								value={this.state.descCliente1}
+								onClickButton={() => this.onClearDropdown("cliente1")}
+								onChange={option => this.onChangeDropdown(option, "cliente1")}
 							/>
-						)}
-					</View>
-					<View
-						style={{
-							flexDirection: "row",
-							marginBottom: verticalScale(2),
-							justifyContent: "space-between"
-						}}
-					>
-						<Dropdown
-							data={this.state.frota}
-							title="Frota"
-							placeholder="Selecione a frota"
-							height={32}
-							sizeP={"48%"}
-							value={this.state.descFrota}
-							onClickButton={() => this.onClearDropdown("frota")}
-							onChange={option => this.onChangeDropdown(option, "frota")}
-						/>
+							{this.state.qtEntrega === 2 && (
+								<Dropdown
+									data={this.state.clientes}
+									title="Cliente 2"
+									placeholder="Selecione o cliente"
+									height={32}
+									sizeP={"48%"}
+									value={this.state.descCliente2}
+									onClickButton={() => this.onClearDropdown("cliente2")}
+									onChange={option => this.onChangeDropdown(option, "cliente2")}
+								/>
+							)}
+						</View>
 
-						<InputWithTitle
-							title="Frota Terceiro"
-							height={32}
-							sizeP={"48%"}
-							onChangeText={value =>
-								this.handleInputChange("frotaTerceiro", value)
-							}
-							value={this.state.frotaTerceiro}
-						/>
-					</View>
-					<View
-						style={{
-							flexDirection: "row",
-							marginBottom: verticalScale(2),
-							justifyContent: "space-between"
-						}}
-					>
-						<InputWithTitle
-							title="Km Inicial"
-							height={32}
-							keyboardType="numeric"
-							sizeP={"15%"}
-							onChangeText={value =>
-								this.handleInputChange("kmInicial", value, true)
-							}
-							value={
-								this.state.kmInicial > 0 ? this.state.kmInicial.toString() : ""
-							}
-						/>
-						<InputWithTitle
-							title="Km Cliente 1"
-							height={32}
-							keyboardType="numeric"
-							sizeP={"15%"}
-							onChangeText={value =>
-								this.handleInputChange("kmCliente1", value, true)
-							}
-							value={
-								this.state.kmCliente1 > 0
-									? this.state.kmCliente1.toString()
-									: ""
-							}
-						/>
-						<InputWithTitle
-							title="Km Cliente 2"
-							height={32}
-							keyboardType="numeric"
-							sizeP={"15%"}
-							onChangeText={value =>
-								this.handleInputChange("kmCliente2", value, true)
-							}
-							value={
-								this.state.kmCliente2 > 0
-									? this.state.kmCliente2.toString()
-									: ""
-							}
-						/>
+						<View
+							style={{
+								flexDirection: "row",
+								marginBottom: verticalScale(2),
+								justifyContent: "space-between"
+							}}
+						>
+							<Dropdown
+								data={this.state.frota}
+								title="Frota"
+								placeholder="Selecione a frota"
+								height={32}
+								sizeP={"48%"}
+								value={this.state.descFrota}
+								onClickButton={() => this.onClearDropdown("frota")}
+								onChange={option => this.onChangeDropdown(option, "frota")}
+							/>
 
-						<InputWithTitle
-							title="Km Final"
-							height={32}
-							sizeP={"15%"}
-							keyboardType="numeric"
-							onChangeText={value =>
-								this.handleInputChange("kmFinal", value, true)
-							}
-							value={
-								this.state.kmFinal > 0 ? this.state.kmFinal.toString() : ""
-							}
-						/>
+							<InputWithTitle
+								title="Frota Terceiro"
+								height={32}
+								sizeP={"48%"}
+								onChangeText={value =>
+									this.handleInputChange("frotaTerceiro", value)
+								}
+								value={this.state.frotaTerceiro}
+							/>
+						</View>
+						<View
+							style={{
+								flexDirection: "row",
+								marginBottom: verticalScale(2),
+								justifyContent: "space-between"
+							}}
+						>
+							<InputWithTitle
+								title="Km Inicial Flamingo"
+								height={32}
+								keyboardType="numeric"
+								sizeP={"15%"}
+								onChangeText={value =>
+									this.handleInputChange("kmInicial", value, true)
+								}
+								value={
+									this.state.kmInicial > 0
+										? this.state.kmInicial.toString()
+										: ""
+								}
+							/>
+							<InputWithTitle
+								title="Km Destino 1"
+								height={32}
+								keyboardType="numeric"
+								sizeP={"15%"}
+								onChangeText={value =>
+									this.handleInputChange("kmCliente1", value, true)
+								}
+								value={
+									this.state.kmCliente1 > 0
+										? this.state.kmCliente1.toString()
+										: ""
+								}
+							/>
+							<InputWithTitle
+								title="Km Destino 2"
+								height={32}
+								keyboardType="numeric"
+								sizeP={"15%"}
+								onChangeText={value =>
+									this.handleInputChange("kmCliente2", value, true)
+								}
+								value={
+									this.state.kmCliente2 > 0
+										? this.state.kmCliente2.toString()
+										: ""
+								}
+							/>
 
-						<InputWithTitle
-							title="Munck Inicial"
-							height={32}
-							sizeP={"15%"}
-							keyboardType="numeric"
-							onChangeText={value =>
-								this.handleInputChange("hrMunckInicial", value, true)
-							}
-							value={
-								this.state.hrMunckInicial > 0
-									? this.state.hrMunckInicial.toString()
-									: ""
-							}
-						/>
-						<InputWithTitle
-							title="Munck Final"
-							height={32}
-							sizeP={"15%"}
-							keyboardType="numeric"
-							onChangeText={value =>
-								this.handleInputChange("hrMunckFinal", value, true)
-							}
-							value={
-								this.state.hrMunckFinal > 0
-									? this.state.hrMunckFinal.toString()
-									: ""
-							}
-						/>
-					</View>
-					<View
-						style={{
-							flexDirection: "row",
-							marginBottom: verticalScale(2),
-							justifyContent: "flex-start"
-						}}
-					>
-						<InputWithTitle
-							title="Pedágio (Qtde)"
-							height={32}
-							sizeP={"25%"}
-							keyboardType="numeric"
-							onChangeText={value =>
-								this.handleInputChange("qtPedagio", value, true)
-							}
-							value={
-								this.state.qtPedagio > 0 ? this.state.qtPedagio.toString() : ""
-							}
-						/>
-						<InputWithTitle
-							title="Outras Despesas"
-							height={32}
-							sizeP={"25%"}
-							keyboardType="numeric"
-							onChangeText={value =>
-								this.handleInputChange("vlDespesas", value, true)
-							}
-							value={
-								this.state.vlDespesas > 0
-									? this.state.vlDespesas.toString()
-									: ""
-							}
-						/>
-					</View>
+							<InputWithTitle
+								title="Km Final"
+								height={32}
+								sizeP={"15%"}
+								keyboardType="numeric"
+								onChangeText={value =>
+									this.handleInputChange("kmFinal", value, true)
+								}
+								value={
+									this.state.kmFinal > 0 ? this.state.kmFinal.toString() : ""
+								}
+							/>
+
+							<InputWithTitle
+								title="Munck Inicial"
+								height={32}
+								sizeP={"15%"}
+								keyboardType="numeric"
+								onChangeText={value =>
+									this.handleInputChange("hrMunckInicial", value, true)
+								}
+								value={
+									this.state.hrMunckInicial > 0
+										? this.state.hrMunckInicial.toString()
+										: ""
+								}
+							/>
+							<InputWithTitle
+								title="Munck Final"
+								height={32}
+								sizeP={"15%"}
+								keyboardType="numeric"
+								onChangeText={value =>
+									this.handleInputChange("hrMunckFinal", value, true)
+								}
+								value={
+									this.state.hrMunckFinal > 0
+										? this.state.hrMunckFinal.toString()
+										: ""
+								}
+							/>
+						</View>
+						<View
+							style={{
+								flexDirection: "row",
+								marginBottom: verticalScale(2),
+								justifyContent: "flex-start"
+							}}
+						>
+							<InputWithTitle
+								title="Pedágio (Qtde)"
+								height={32}
+								sizeP={"25%"}
+								keyboardType="numeric"
+								onChangeText={value =>
+									this.handleInputChange("qtPedagio", value, true)
+								}
+								value={
+									this.state.qtPedagio > 0
+										? this.state.qtPedagio.toString()
+										: ""
+								}
+							/>
+							<InputWithTitle
+								title="Outras Despesas"
+								height={32}
+								sizeP={"25%"}
+								keyboardType="numeric"
+								onChangeText={value =>
+									this.handleInputChange("vlDespesas", value, true)
+								}
+								value={
+									this.state.vlDespesas > 0
+										? this.state.vlDespesas.toString()
+										: ""
+								}
+							/>
+						</View>
+					</KeyboardAvoidingView>
 					<View style={styles.separatorLine} />
 					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
-						<RoundButton
-							text="STATE"
-							width={60}
-							height={30}
-							fontSize={8}
-							onPress={() => console.log("State Itens: ", this.state.itens)}
-						/>
+						{this.props.devMode && (
+							<RoundButton
+								text="STATE"
+								size={60}
+								height={30}
+								fontSize={8}
+								onPress={() => console.log("State Itens: ", this.state.itens)}
+							/>
+						)}
 						<RoundButton
 							text="FOTOS"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							active={false}
@@ -692,7 +722,7 @@ class Frete extends Component {
 						/>
 						<RoundButton
 							text="SALVAR"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							onPress={this.onHandleSave}
@@ -705,6 +735,7 @@ class Frete extends Component {
 					onCancel={this.hideDateTimePicker}
 					mode={this.state.pickerMode}
 				/>
+
 				{this.state.wait && this.renderActivity()}
 			</Container>
 		);

@@ -1,15 +1,17 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { StyleSheet, Dimensions } from "react-native";
-import { verticalScale, moderateScale } from "react-native-size-matters";
+import { moderateScale } from "react-native-size-matters";
 
-const INPUT_HEIGHT = verticalScale(42);
+import { factorHeigth } from "../../utils/consts";
+
+const INPUT_HEIGHT = moderateScale(42) * factorHeigth;
 const BORDER_RADIUS = moderateScale(10);
 
 const styles = EStyleSheet.create({
 	sizeContainer: {
 		width: "100%",
 		marginRight: moderateScale(4),
-		marginBottom: verticalScale(4)
+		marginBottom: moderateScale(4) * factorHeigth
 	},
 	container: {
 		backgroundColor: "$white",
@@ -54,7 +56,7 @@ const styles = EStyleSheet.create({
 		borderRadius: moderateScale(4),
 		justifyContent: "center",
 		alignItems: "flex-start",
-		marginTop: verticalScale(4),
+		marginTop: moderateScale(4) * factorHeigth,
 		borderColor: "$border",
 		borderWidth: moderateScale(1),
 		width: "100%",

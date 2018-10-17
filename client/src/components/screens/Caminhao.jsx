@@ -68,7 +68,7 @@ class Caminhao extends Component {
 			name,
 			ano,
 			placa,
-			itens
+			itens: itens.sort((a, b) => a.item > b.item)
 		};
 
 		//in this case required fields are the same of userInput object

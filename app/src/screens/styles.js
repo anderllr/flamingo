@@ -1,6 +1,8 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { verticalScale, moderateScale } from "react-native-size-matters";
 
+import { factorHeigth } from "../utils/consts";
+
 const BORDER_RADIUS = moderateScale(5);
 
 const styles = EStyleSheet.create({
@@ -18,7 +20,7 @@ const styles = EStyleSheet.create({
 		borderBottomWidth: 0,
 		shadowColor: "$shadow",
 		shadowOffset: { width: 0, height: 2 },
-		margin: moderateScale(3),
+		margin: moderateScale(3) * factorHeigth,
 		elevation: moderateScale(1),
 		shadowRadius: moderateScale(5),
 		shadowOpacity: moderateScale(0.5),
@@ -26,7 +28,7 @@ const styles = EStyleSheet.create({
 	},
 	fields: {
 		width: "90%",
-		marginTop: verticalScale(20)
+		marginTop: verticalScale(20) * factorHeigth
 	},
 	loginButton: {
 		width: "90%"
@@ -58,18 +60,18 @@ const styles = EStyleSheet.create({
 		justifyContent: "flex-start",
 		backgroundColor: "$white",
 		padding: moderateScale(10),
-		marginTop: verticalScale(10),
+		marginTop: verticalScale(10) * factorHeigth,
 		marginLeft: moderateScale(10),
-		marginBottom: moderateScale(3),
+		marginBottom: moderateScale(3) * factorHeigth,
 		borderRadius: BORDER_RADIUS
 	},
 	backgroundInner: {
 		flex: 5,
 		backgroundColor: "$white",
 		padding: moderateScale(10),
-		marginTop: verticalScale(10),
+		marginTop: verticalScale(10) * factorHeigth,
 		marginLeft: moderateScale(10),
-		marginBottom: moderateScale(3),
+		marginBottom: moderateScale(3) * factorHeigth,
 		marginRight: moderateScale(10),
 		borderRadius: BORDER_RADIUS
 	},
@@ -77,11 +79,11 @@ const styles = EStyleSheet.create({
 		fontSize: moderateScale(9),
 		fontWeight: "500",
 		fontFamily: "lato-bold",
-		marginBottom: verticalScale(10),
+		marginBottom: verticalScale(5) * factorHeigth,
 		color: "$primaryFont"
 	},
 	radioTitle: {
-		fontSize: moderateScale(10),
+		fontSize: moderateScale(10) * factorHeigth,
 		fontWeight: "600",
 		fontFamily: "lato-bold",
 		color: "$primaryFont"
@@ -105,7 +107,7 @@ const styles = EStyleSheet.create({
 		flexGrow: 1,
 		flexBasis: 0,
 		aspectRatio: 1,
-		margin: moderateScale(4),
+		margin: moderateScale(4) * factorHeigth,
 		padding: moderateScale(5),
 		alignItems: "center"
 	},
@@ -116,7 +118,7 @@ const styles = EStyleSheet.create({
 		flexGrow: 1,
 		flexBasis: 0,
 		aspectRatio: 1.2,
-		margin: moderateScale(5),
+		margin: moderateScale(5) * factorHeigth,
 		padding: moderateScale(5)
 	},
 	groupItens: {
@@ -150,7 +152,7 @@ const styles = EStyleSheet.create({
 	},
 	radioText: {
 		color: "$titleText",
-		fontSize: moderateScale(9),
+		fontSize: moderateScale(9) * factorHeigth,
 		fontWeight: "200",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35

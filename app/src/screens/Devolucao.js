@@ -466,7 +466,7 @@ class Devolucao extends Component {
 					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
 						<RoundButton
 							text="ASSINAR"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							active={false}
@@ -474,7 +474,7 @@ class Devolucao extends Component {
 						/>
 						<RoundButton
 							text="SALVAR"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							onPress={this.onHandleSave}

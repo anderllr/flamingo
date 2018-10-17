@@ -184,7 +184,7 @@ class FreteFotos extends Component {
 			>
 				<RoundButton
 					text="NOVA FOTO"
-					width={90}
+					size={90}
 					height={30}
 					fontSize={8}
 					icon={{ name: "camera", type: "ion" }}
@@ -193,7 +193,7 @@ class FreteFotos extends Component {
 
 				<RoundButton
 					text="VOLTAR"
-					width={90}
+					size={90}
 					height={30}
 					fontSize={8}
 					onPress={this.onClosePreview}
@@ -248,7 +248,7 @@ class FreteFotos extends Component {
 				<View style={{ alignItems: "flex-end" }}>
 					<RoundButton
 						text="SALVAR"
-						width={60}
+						size={60}
 						height={30}
 						fontSize={8}
 						onPress={this.onHandleSave}

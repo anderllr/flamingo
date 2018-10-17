@@ -26,6 +26,7 @@ import { InputWithTitle } from "../components/InputText";
 import ListFrotaGrupos from "./queries/ListFrotaGrupos";
 import styles from "./styles";
 import { connectAlert } from "../components/Alert";
+import { screenHeigth, screenWidth, isIPhoneX } from "../utils/consts";
 
 class Saida extends Component {
 	constructor(props) {
@@ -318,7 +319,9 @@ class Saida extends Component {
 
 		return (
 			<View>
-				<Text style={styles.titleText}>Dados da Locação</Text>
+				<Text
+					style={styles.titleText}
+				>{`Dados da Locação - W(${screenWidth}) - H(${screenHeigth}) `}</Text>
 				<Dropdown
 					data={clientes}
 					title="Cliente"
@@ -436,7 +439,9 @@ class Saida extends Component {
 			<Container backgroundColor={EStyleSheet.value("$backgroundColor")}>
 				<View style={styles.asideInner}>{this.renderDados()}</View>
 				<View style={styles.backgroundInner}>
-					<Text style={styles.titleText}>Locação - Grupos da Frota</Text>
+					<Text
+						style={styles.titleText}
+					>{`Locação - Grupos da Frota / X(${isIPhoneX})`}</Text>
 					<ListFrotaGrupos
 						id={this.state.frota.id}
 						columns={4}
@@ -447,7 +452,7 @@ class Saida extends Component {
 					<View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
 						<RoundButton
 							text="ASSINAR"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							active={false}
@@ -455,7 +460,7 @@ class Saida extends Component {
 						/>
 						<RoundButton
 							text="SALVAR"
-							width={60}
+							size={60}
 							height={30}
 							fontSize={8}
 							onPress={this.onHandleSave}

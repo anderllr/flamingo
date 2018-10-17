@@ -14,7 +14,8 @@ class Logo extends Component {
 			containerImageWidth: new Animated.Value(styles.$largeContainerSize),
 			imageWidth: new Animated.Value(styles.$largeImageSize),
 			fontApp: new Animated.Value(styles.$largeFontSizeA),
-			fontTitle: new Animated.Value(styles.$largeFontSizeT)
+			fontTitle: new Animated.Value(styles.$largeFontSizeT),
+			hideLogo: false
 		};
 	}
 
@@ -36,45 +37,11 @@ class Logo extends Component {
 	}
 
 	keyboardWillShow = () => {
-		Animated.parallel([
-			Animated.timing(this.state.containerImageWidth, {
-				toValue: styles.$smallContainerSize,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.imageWidth, {
-				toValue: styles.$smallImageSize,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.fontApp, {
-				toValue: styles.$smallFontSizeA,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.fontTitle, {
-				toValue: styles.$smallFontSizeT,
-				duration: ANIMATION_DURATION
-			})
-		]).start();
+		this.setState({ hideLogo: true });
 	};
 
 	keyboardWillHide = () => {
-		Animated.parallel([
-			Animated.timing(this.state.containerImageWidth, {
-				toValue: styles.$largeContainerSize,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.imageWidth, {
-				toValue: styles.$largeImageSize,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.fontApp, {
-				toValue: styles.$largeFontSizeA,
-				duration: ANIMATION_DURATION
-			}),
-			Animated.timing(this.state.fontTitle, {
-				toValue: styles.$largeFontSizeT,
-				duration: ANIMATION_DURATION
-			})
-		]).start();
+		this.setState({ hideLogo: false });
 	};
 
 	render() {
@@ -97,6 +64,8 @@ class Logo extends Component {
 				height: this.state.containerImageWidth
 			}
 		];
+
+		if (this.state.hideLogo) return <View />;
 
 		return (
 			<View>

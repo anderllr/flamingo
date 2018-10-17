@@ -8,7 +8,7 @@ import {
 	Platform
 } from "react-native";
 import { withNavigationFocus } from "react-navigation";
-import isIPhoneX from "react-native-is-iphonex";
+import { isIPhoneX } from "../../utils/consts";
 
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 

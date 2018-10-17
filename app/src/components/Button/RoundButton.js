@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { TouchableHighlight, View, Text } from "react-native";
-import { scale, verticalScale } from "react-native-size-matters";
+import { moderateScale } from "react-native-size-matters";
+import { factorHeigth } from "../../utils/consts";
 
 import { Icon } from "../Icon";
 import styles from "./styles";
@@ -28,23 +29,16 @@ const RoundButton = props => {
 	let colorIcon = "#fff";
 
 	if (icon) {
-		sizeIcon = height ? scale(height / 3) : scale(10);
+		sizeIcon =
+			(height ? moderateScale(height / 3) : moderateScale(10)) * factorHeigth;
 		//Put margin on text
-		textStyle.push({ marginLeft: scale(5) });
+		textStyle.push({ marginLeft: moderateScale(5) });
 
 		wrapper.push({ justifyContent: "flex-start" });
 	}
 
 	if (height) {
-		containerStyle.push({ height: verticalScale(height) });
-	}
-
-	if (width) {
-		containerStyle.push({ width: scale(width) });
-	}
-
-	if (widthP) {
-		containerStyle.push({ width: `${widthP}` });
+		containerStyle.push({ height: moderateScale(height) * factorHeigth });
 	}
 
 	if (color) {
@@ -52,7 +46,7 @@ const RoundButton = props => {
 	}
 
 	if (fontSize) {
-		textStyle.push({ fontSize: scale(fontSize) });
+		textStyle.push({ fontSize: moderateScale(fontSize) * factorHeigth });
 	}
 
 	if (!active) {
@@ -62,7 +56,7 @@ const RoundButton = props => {
 	}
 
 	if (size) {
-		containerStyle.push({ width: scale(props.size) });
+		containerStyle.push({ width: moderateScale(props.size) });
 	}
 
 	if (sizeP) {
@@ -71,7 +65,6 @@ const RoundButton = props => {
 
 	if (style) {
 		containerStyle.push(style);
-		console.log("entrou no style: ", containerStyle);
 	}
 
 	return (

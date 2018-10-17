@@ -61,7 +61,8 @@ class Vistoria extends Component {
 		this.props.navigation.navigate("Frete", {
 			caminhaoId: id,
 			freteId: freteId,
-			onSearchSaida: this.onSearchSaida.bind(this)
+			onSearchSaida: this.onSearchSaida.bind(this),
+			now: Date.now()
 		});
 	};
 
@@ -150,7 +151,7 @@ class Vistoria extends Component {
 					>
 						<RoundButton
 							text="BUSCAR"
-							width={70}
+							size={70}
 							height={32}
 							fontSize={8}
 							icon={{ name: "search", type: "ion" }}
@@ -222,7 +223,7 @@ class Vistoria extends Component {
 					>
 						<RoundButton
 							text="BUSCAR"
-							width={70}
+							size={70}
 							height={32}
 							fontSize={8}
 							icon={{ name: "search", type: "ion" }}
@@ -311,7 +312,7 @@ class Vistoria extends Component {
 					/>
 					<RoundButton
 						text="BUSCAR"
-						width={60}
+						size={60}
 						height={30}
 						fontSize={8}
 						icon={{ name: "search", type: "ion" }}
@@ -328,7 +329,7 @@ class Vistoria extends Component {
 				<View style={styles.asideMain}>
 					<RoundButton
 						text="SAÍDA"
-						widthP="75%"
+						sizeP="75%"
 						height={50}
 						fontSize={8}
 						icon={{ name: "exit", type: "ion" }}
@@ -337,7 +338,7 @@ class Vistoria extends Component {
 					/>
 					<RoundButton
 						text="DEVOLUÇÃO"
-						widthP="75%"
+						sizeP="75%"
 						height={50}
 						fontSize={8}
 						icon={{ name: "return-left", type: "ion" }}
@@ -346,7 +347,7 @@ class Vistoria extends Component {
 					/>
 					<RoundButton
 						text="FRETE"
-						widthP="75%"
+						sizeP="75%"
 						height={50}
 						fontSize={8}
 						icon={{ name: "truck", type: "fa" }}
@@ -355,7 +356,7 @@ class Vistoria extends Component {
 					/>
 					<RoundButton
 						text="CONSULTAS"
-						widthP="75%"
+						sizeP="75%"
 						height={50}
 						fontSize={8}
 						icon={{ name: "search", type: "ion" }}

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { KeyboardAvoidingView } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { ApolloConsumer } from "react-apollo";
+import { moderateScale } from "react-native-size-matters";
 
 import styles from "./styles";
 import { Container } from "../components/Container";
@@ -11,6 +12,8 @@ import { AUTH_LOGIN } from "../config/resources/queries/userQuery";
 import { connect } from "react-redux";
 import { changeToken } from "../config/actions/login";
 import { connectAlert } from "../components/Alert";
+
+const keyboardVerticalOffset = Platform.OS === "ios" ? 20 : 0;
 
 class Login extends Component {
 	constructor(props) {
@@ -39,12 +42,17 @@ class Login extends Component {
 			<ApolloConsumer>
 				{client => (
 					<Container backgroundColor={"#fff"}>
-						<KeyboardAvoidingView style={styles.container}>
+						<KeyboardAvoidingView
+							style={styles.container}
+							behavior="padding"
+							keyboardVerticalOffset={keyboardVerticalOffset}
+						>
 							<Logo />
 							<InputWithTitle
 								title="Operador"
 								editable={true}
-								size={200}
+								sizeP="30%"
+								heigth={40}
 								onChangeText={value =>
 									this.handleInputChange("userName", value)
 								}
@@ -54,7 +62,8 @@ class Login extends Component {
 								title="Senha"
 								editable={true}
 								secureTextEntry
-								size={200}
+								sizeP="30%"
+								heigth={40}
 								onChangeText={value =>
 									this.handleInputChange("password", value)
 								}
@@ -62,8 +71,10 @@ class Login extends Component {
 							/>
 							<RoundButton
 								text="ACESSAR"
-								size={200}
 								color="#c39f6b"
+								sizeP="30%"
+								heigth={35}
+								style={{ marginLeft: moderateScale(4) }}
 								onPress={() =>
 									client
 										.query({

@@ -1,20 +1,21 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { verticalScale, moderateScale } from "react-native-size-matters";
+import { factorHeigth } from "../../utils/consts";
 
-const INPUT_HEIGHT = verticalScale(42);
+const INPUT_HEIGHT = verticalScale(42) * factorHeigth;
 
 const styles = EStyleSheet.create({
 	sizeContainer: {
 		width: "100%",
 		marginRight: moderateScale(4),
-		marginBottom: verticalScale(4)
+		marginBottom: verticalScale(4) * factorHeigth
 	},
 	inputContainer: {
 		backgroundColor: "$white",
 		height: INPUT_HEIGHT,
 		borderRadius: moderateScale(4),
 		justifyContent: "center",
-		marginTop: verticalScale(4),
+		marginTop: verticalScale(4) * factorHeigth,
 		borderColor: "$border",
 		borderWidth: moderateScale(1),
 		width: "100%",

@@ -1,11 +1,13 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 import { moderateScale, verticalScale } from "react-native-size-matters";
 
+import { factorHeigth } from "../../utils/consts";
+
 export default EStyleSheet.create({
-	$thumbSize: moderateScale(8),
+	$thumbSize: moderateScale(8) * factorHeigth,
 	$thumbRadius: moderateScale(8) / 2,
 	$imageWidth: moderateScale(110),
-	$imageHeight: verticalScale(65),
+	$imageHeight: verticalScale(65) * factorHeigth,
 	$markerWidth: moderateScale(35),
 	container: {
 		justifyContent: "flex-end",
@@ -17,7 +19,7 @@ export default EStyleSheet.create({
 	marker: {
 		flexDirection: "row",
 		alignItems: "center",
-		marginBottom: verticalScale(9)
+		marginBottom: verticalScale(9) * factorHeigth
 	},
 	markerLine: {
 		height: verticalScale(2),

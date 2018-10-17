@@ -1,9 +1,9 @@
 import EStyleSheet from "react-native-extended-stylesheet";
-import { Dimensions } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import { screenWidth, factorHeigth } from "../../utils/consts";
 
-const buttonWidth = Dimensions.get("window").width / 2;
-const squareButtonDimension = Dimensions.get("window").width / 4;
+const buttonWidth = screenWidth / 2;
+const squareButtonDimension = screenWidth / 4;
 const iconDimension = squareButtonDimension * 0.6;
 const fontIcon = squareButtonDimension * 0.13;
 const BORDER_RADIUS = scale(2);
@@ -15,8 +15,8 @@ const styles = EStyleSheet.create({
 		backgroundColor: "$internalButton",
 		width: "100%",
 		borderRadius: BORDER_RADIUS,
-		margin: verticalScale(9),
-		height: verticalScale(32),
+		margin: verticalScale(9) * factorHeigth,
+		height: verticalScale(32) * factorHeigth,
 		width: buttonWidth
 	},
 	containerSquare: {
@@ -24,9 +24,9 @@ const styles = EStyleSheet.create({
 		justifyContent: "center",
 		backgroundColor: "$primaryGreen",
 		width: squareButtonDimension,
-		height: squareButtonDimension,
+		height: squareButtonDimension * factorHeigth,
 		borderRadius: BORDER_RADIUS,
-		margin: 10
+		margin: 10 * factorHeigth
 	},
 	wrapper: {
 		flex: 1,
@@ -38,15 +38,15 @@ const styles = EStyleSheet.create({
 	},
 	text: {
 		color: "$white",
-		fontSize: scale(10),
+		fontSize: moderateScale(10) * factorHeigth,
 		fontWeight: "500",
 		fontFamily: "lato-bold",
 		letterSpacing: 0.35
 	},
 	icon: {
 		backgroundColor: "transparent",
-		width: iconDimension,
-		height: iconDimension,
+		width: iconDimension * factorHeigth,
+		height: iconDimension * factorHeigth,
 		alignItems: "center",
 		justifyContent: "center"
 	},

@@ -96,7 +96,11 @@ export default class App extends Component {
 	renderScreen() {
 		const Screen = createRootNavigator(this.state.authenticated);
 
-		return <Screen screenProps={{ changeLogin: this.handleChange }} />;
+		return (
+			<Screen
+				screenProps={{ devMode: DEV_MODE, changeLogin: this.handleChange }}
+			/>
+		);
 	}
 
 	render() {

@@ -6,6 +6,7 @@ import ModalSelector from "react-native-modal-selector";
 import { moderateScale, verticalScale } from "react-native-size-matters";
 import { Icon } from "../Icon";
 
+import { factorHeigth, factorWidth } from "../../utils/consts";
 import styles from "./styles";
 
 class Dropdown extends Component {
@@ -45,7 +46,7 @@ class Dropdown extends Component {
 		const inputText = [styles.inputText];
 
 		if (size) {
-			containerStyle.push({ width: moderateScale(size) });
+			containerStyle.push({ width: moderateScale(size) * factorWidth });
 		}
 
 		if (sizeP) {
@@ -61,8 +62,8 @@ class Dropdown extends Component {
 		}
 
 		if (height) {
-			inputContainer.push({ height: verticalScale(height) });
-			inputText.push({ fontSize: moderateScale(height / 3) });
+			inputContainer.push({ height: moderateScale(height) * factorHeigth });
+			inputText.push({ fontSize: moderateScale(height / 3) * factorHeigth });
 		}
 
 		return (
