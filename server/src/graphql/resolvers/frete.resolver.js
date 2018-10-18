@@ -33,6 +33,15 @@ export default {
 			}
 
 			return freteRemoved;
+		}),
+		deleteFreteAll: authenticated(async (parent, args, { db: { Frete } }) => {
+			const freteRemoved = await Frete.deleteMany({});
+
+			if (!freteRemoved) {
+				throw new Error("Erro ao remover o frete");
+			}
+
+			return freteRemoved;
 		})
 	}
 };

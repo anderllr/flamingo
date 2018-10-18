@@ -9,8 +9,10 @@ const isIPhoneX =
 const idealHeigth = isIPhoneX ? 450 : 400;
 const idealWidth = 640;
 
-const factorHeigth = screenHeigth / idealHeigth;
-const factorWidth = screenWidth / idealWidth;
+const factorHeigth =
+	!isIPhoneX && idealHeigth < screenHeigth ? 1 : screenHeigth / idealHeigth;
+const factorWidth =
+	!isIPhoneX && idealWidth < screenWidth ? 1 : screenWidth / idealWidth;
 
 const BASE_URL = "http://142.93.90.171";
 const PORT = 0;

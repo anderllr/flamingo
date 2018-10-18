@@ -83,7 +83,9 @@ class Frete extends Component {
 	}
 
 	componentDidMount() {
-		this.carregaEdits(this.props);
+		//		this.props.getFrete.refetch();
+		//		console.log("getFrete: ", this.props.getFrete);
+		//		this.carregaEdits(this.props);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -99,7 +101,6 @@ class Frete extends Component {
 				myProps.getClientes.clientes.map(({ id, name }) => {
 					clientes.push({ key: id, label: name });
 				});
-
 				this.setState({ clientes });
 			}
 		}
@@ -274,6 +275,37 @@ class Frete extends Component {
 			if (this.state.kmCliente === "") msg += "Km Destino";
 			if (this.state.kmFinal === "") msg += "Km Final";
 		}
+
+		if (
+			this.state.kmCliente1 > 0 &&
+			this.state.kmCliente1 < this.state.kmInicial
+		) {
+			msg += "O Km no Destino 1 não pode ser menor que o Inicial";
+		}
+
+		if (
+			this.state.kmCliente2 > 0 &&
+			this.state.kmCliente2 < this.state.kmCliente1
+		) {
+			msg += "O Km no Destino 2 não pode ser menor que no Destino 1";
+		}
+
+		if (
+			this.state.kmFinal > 0 &&
+			(this.state.kmFinal < this.state.kmInicial ||
+				this.state.kmFinal < this.state.kmCliente1 ||
+				this.state.kmFinal < this.state.kmCliente2)
+		) {
+			msg += "O Km final não pode ser menor que o km ";
+		}
+
+		if (
+			this.state.hrMunckFinal > 0 &&
+			this.state.hrMunckFinal < this.state.hrMunckInicial
+		) {
+			msg += "O Km no Destino 1 não pode ser menor que o Inicial";
+		}
+
 		if (msg !== "") {
 			msg = "Você precisa preencher o(s) campo(s): " + msg;
 			this.props.alertWithType("warn", "Aviso", msg);
@@ -289,17 +321,18 @@ class Frete extends Component {
 			frotaId: this.state.frotaId !== "" ? this.state.frotaId : null,
 			frotaTerceiro: this.state.frotaTerceiro,
 			kmInicial: this.state.kmInicial,
-			kmCliente1: this.state.kmCliente1 !== "" ? this.state.kmCliente1 : null,
-			kmCliente2: this.state.kmCliente2 !== "" ? this.state.kmCliente2 : null,
-			kmFinal: this.state.kmFinal !== "" ? this.state.kmFinal : null,
+			kmCliente1: this.state.kmCliente1 > 0 ? this.state.kmCliente1 : null,
+			kmCliente2: this.state.kmCliente2 > 0 ? this.state.kmCliente2 : null,
+			kmFinal: this.state.kmFinal > 0 ? this.state.kmFinal : null,
 			hrMunckInicial:
-				this.state.hrMunckInicial !== "" ? this.state.hrMunckInicial : null,
+				this.state.hrMunckInicial > 0 ? this.state.hrMunckInicial : null,
 			hrMunckFinal:
-				this.state.hrMunckFinal !== "" ? this.state.hrMunckFinal : null,
-			qtPedagio: this.state.qtPedagio !== "" ? this.state.qtPedagio : null,
+				this.state.hrMunckFinal > 0 ? this.state.hrMunckFinal : null,
+			qtPedagio: this.state.qtPedagio > 0 ? this.state.qtPedagio : null,
 			status: this.state.kmFinal > 0 ? "ENCERRADO" : "ABERTO",
 			itens: this.state.itens
 		};
+
 		if (id === "") {
 			this.props
 				.createFrete({ variables: { freteInput } })
@@ -326,6 +359,7 @@ class Frete extends Component {
 					this.setState({ wait: false });
 					//FIM DO UPLOAD
 					if (result === "success") {
+						this.props.getFrete.refetch();
 						if (typeof this.state.onSearchSaida === "function") {
 							this.state.onSearchSaida();
 						}
@@ -755,7 +789,8 @@ export default compose(
 				id: !props.navigation.state.params
 					? null
 					: props.navigation.state.params.freteId
-			}
+			},
+			fetchPolicy: "cache-and-network" //"network-only"
 		})
 	}),
 	graphql(GET_CAMINHAO_BY_ID, {

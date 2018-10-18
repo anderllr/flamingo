@@ -59,7 +59,8 @@ const freteQueries = `
 const freteMutations = `
     createFrete(input: FreteInput!): Frete
     updateFrete(id: ID!, input: FreteInput!): Frete
-    deleteFrete(id: ID!): Boolean
+	deleteFrete(id: ID!): Boolean
+	deleteFreteAll: Boolean
 `;
 
 export { freteTypes, freteQueries, freteMutations };
