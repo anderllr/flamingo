@@ -16,7 +16,6 @@ export default {
 		}),
 		vistoriaDevolucao: authenticated(
 			async (parent, { frotaId, clienteId }, { db: { Vistoria } }) => {
-				//Cria os filtros
 				const match = {
 					status: "SAIDA"
 				};

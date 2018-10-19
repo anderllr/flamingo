@@ -23,7 +23,17 @@ const freteTypes = `
     type ItemFrete {
         item: String!
         imagem: String
-    }
+	}
+	
+	type FreteConsulta {
+		id: ID
+		dtFrete: String
+		descCliente1: String
+		descCliente2: String
+		descFrota: String
+		frotaTerceiro: String
+		status: String
+	}
 
     input FreteInput {
 		caminhaoId: ID!
@@ -53,7 +63,8 @@ const freteTypes = `
 
 const freteQueries = `
     frete: [Frete]
-    freteById(id: ID!): Frete
+	freteById(id: ID!): Frete
+	freteConsulta(dtFreteIni: String, dtFreteFim: String, clienteId: ID, frotaId: ID): [FreteConsulta]
 `;
 
 const freteMutations = `

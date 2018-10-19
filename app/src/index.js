@@ -37,7 +37,7 @@ EStyleSheet.build({
 	$shadow: "#d2d2d2"
 });
 
-const DEV_MODE = false; //this const must be changed to publish
+const DEV_MODE = true; //this const must be changed to publish
 
 const URL = PORT > 0 ? `${BASE_URL}:${PORT}` : BASE_URL;
 

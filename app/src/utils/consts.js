@@ -14,10 +14,10 @@ const factorHeigth =
 const factorWidth =
 	!isIPhoneX && idealWidth < screenWidth ? 1 : screenWidth / idealWidth;
 
-const BASE_URL = "http://142.93.90.171";
-const PORT = 0;
-//const BASE_URL = "http://192.168.1.109";
-//const PORT = 3002;
+//const BASE_URL = "http://142.93.90.171";
+//const PORT = 0;
+const BASE_URL = "http://192.168.1.109";
+const PORT = 3002;
 
 export {
 	factorHeigth,

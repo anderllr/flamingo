@@ -23,6 +23,9 @@ export default props => (
 			<Link to="/admin/caminhao">
 				<i className="fa fa-truck icon" /> Caminhão
 			</Link>
+			<Link to="/admin/consultafrete">
+				<i className="fa fa-truck icon" /> Consulta Frete
+			</Link>
 		</nav>
 		<div className="text-center logout">
 			<button
