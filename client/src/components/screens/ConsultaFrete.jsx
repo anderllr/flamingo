@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
+import DatePicker from "react-datepicker";
+import { Typeahead } from "react-bootstrap-typeahead";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 import Main from "../template/Main";
 import { GET_FRETE_CONSULTA } from "../resources/queries/freteQuery";
-import { GET_CLIENTES } from "../resources/queries/clientesQuery";
-import { GET_FROTA } from "../resources/queries/frotaQuery";
+import { GET_CLIENTES_CONS } from "../resources/queries/clientesQuery";
+import { GET_FROTA_CONS } from "../resources/queries/frotaQuery";
+import FreteDetalhe from "./FreteDetalhe";
+import Modal from "../utils/Modal";
 
 const headerProps = {
 	icon: "truck",
@@ -13,11 +19,15 @@ const headerProps = {
 };
 
 const initialState = {
+	show: false,
 	variables: {},
-	dtFreteIni: "",
-	dtFreteFim: "",
+	dtFreteIni: null,
+	dtFreteFim: null,
 	clienteId: "",
 	frotaId: "",
+	cliente: [],
+	frota: [],
+	freteId: "",
 	alert: {
 		type: "",
 		title: "",
@@ -52,9 +62,10 @@ class ConsultaFrete extends Component {
 		this.setState({ ...initialState });
 	};
 
-	select(frete) {
-		//TODO navigate to details about frete
-	}
+	select = (e, frete) => {
+		e.preventDefault();
+		this.setState({ freteId: frete.id, show: true });
+	};
 
 	changeField(e) {
 		this.setState({
@@ -62,6 +73,51 @@ class ConsultaFrete extends Component {
 			alert: initialState.alert
 		});
 	}
+
+	changeFieldDate(date, field) {
+		//		console.log("Date: ", date.format("DD/MM/YYYY"));
+		this.setState({
+			[field]: date
+		});
+	}
+
+	onChangeComplete = (selected, field) => {
+		const value = selected.length > 0 ? selected[0].id : "";
+		this.setState({ [field]: selected, [`${field}Id`]: value });
+	};
+
+	onSearch = e => {
+		e.preventDefault();
+		const variables = {};
+		if (this.state.dtFreteIni) {
+			variables.dtFreteIni = this.state.dtFreteIni.format("DD/MM/YYYY");
+		}
+
+		if (this.state.dtFreteFim) {
+			variables.dtFreteFim = this.state.dtFreteFim.format("DD/MM/YYYY");
+		}
+
+		if (this.state.clienteId !== "") {
+			variables.clienteId = this.state.clienteId;
+		}
+
+		if (this.state.frotaId !== "") {
+			variables.frotaId = this.state.frotaId;
+		}
+
+		this.setState({ variables });
+	};
+
+	// MODAL FUNCTIONS  //
+	openModalGroup = e => {
+		e.preventDefault();
+		this.setState({ show: true });
+	};
+
+	hideModal = e => {
+		e.preventDefault();
+		this.setState({ show: false });
+	};
 
 	renderFieldFrota(frete) {
 		if (frete.descFrota !== "-" && frete.frotaTerceiro !== "") {
@@ -129,10 +185,10 @@ class ConsultaFrete extends Component {
 									style={{ width: `${this.state.gridColumns[5]}` }}
 								>
 									<button
-										className="btn btn-warning"
-										onClick={() => this.select(frete)}
+										className="btn btn-info"
+										onClick={e => this.select(e, frete)}
 									>
-										<i className="fa fa-pencil" />
+										<i className="fa fa-info-circle" />
 									</button>
 								</div>
 							</li>
@@ -150,40 +206,43 @@ class ConsultaFrete extends Component {
 					<div className="col-12 col-md-3">
 						<div className="form-group">
 							<label>Data Inicial</label>
-							<input
-								type="date"
+							<DatePicker
+								dateFormat="DD/MM/YYYY"
 								className="form-control"
-								data-format="dd/MM/yyyy"
-								name="dtFreteIni"
-								value={this.state.dtFreteIni}
-								onChange={e => this.changeField(e)}
-								placeholder="Data Inicial"
+								selected={this.state.dtFreteIni}
+								onChange={date => this.changeFieldDate(date, "dtFreteIni")}
 							/>
 						</div>
 					</div>
 					<div className="col-12 col-md-3">
 						<div className="form-group">
 							<label>Data Final</label>
-							<input
-								type="date"
+							<DatePicker
+								dateFormat="DD/MM/YYYY"
 								className="form-control"
-								name="dtFreteFim"
-								value={this.state.dtFreteIni}
-								onChange={e => this.changeField(e)}
-								placeholder="Data Final"
+								selected={this.state.dtFreteFim}
+								onChange={date => this.changeFieldDate(date, "dtFreteFim")}
 							/>
 						</div>
 					</div>
 					<div className="col-12 col-md-6">
 						<div className="form-group">
 							<label>Cliente</label>
-							<input
-								type="text"
-								className="form-control"
-								name="clienteId"
-								value={this.state.clienteId}
-								onChange={e => this.changeField(e)}
-								placeholder="Cliente"
+							<Typeahead
+								labelKey="name"
+								multiple={false}
+								options={
+									this.props.getClientes.clientes
+										? this.props.getClientes.clientes
+										: []
+								}
+								isLoading={this.props.getClientes.loading}
+								key="id"
+								onChange={selected =>
+									this.onChangeComplete(selected, "cliente")
+								}
+								selected={this.state.cliente}
+								placeholder="Escolha um cliente..."
 							/>
 						</div>
 					</div>
@@ -192,13 +251,17 @@ class ConsultaFrete extends Component {
 					<div className="col-12 col-md-6">
 						<div className="form-group">
 							<label>Frota</label>
-							<input
-								className="form-control"
-								name="frotaId"
-								type="text"
-								value={this.state.frotaId}
-								onChange={e => this.changeField(e)}
-								placeholder="Frota"
+							<Typeahead
+								labelKey={option => `${option.nrFrota}-${option.name}`}
+								multiple={false}
+								options={
+									this.props.getFrota.frota ? this.props.getFrota.frota : []
+								}
+								isLoading={this.props.getFrota.loading}
+								key="id"
+								onChange={selected => this.onChangeComplete(selected, "frota")}
+								selected={this.state.frota}
+								placeholder="Escolha uma frota..."
 							/>
 						</div>
 					</div>
@@ -209,7 +272,7 @@ class ConsultaFrete extends Component {
 						<button
 							type="submit"
 							className="btn btn-primary"
-							onClick={e => this.search(e)}
+							onClick={e => this.onSearch(e)}
 						>
 							Pesquisar
 						</button>
@@ -224,6 +287,13 @@ class ConsultaFrete extends Component {
 	render() {
 		return (
 			<Main {...headerProps}>
+				<Modal
+					show={this.state.show}
+					handleClose={e => this.hideModal(e)}
+					style={{ height: "80vh", width: "75vw", overflowY: "scroll" }}
+				>
+					<FreteDetalhe freteId={this.state.freteId} />
+				</Modal>
 				<form>{this.renderForm()}</form>
 
 				<ul className="list-group col-lg-12 listgrid">
@@ -258,6 +328,6 @@ class ConsultaFrete extends Component {
 }
 
 export default compose(
-	graphql(GET_CLIENTES, { name: "getClientes" }),
-	graphql(GET_FROTA, { name: "getFrota" })
+	graphql(GET_CLIENTES_CONS, { name: "getClientes" }),
+	graphql(GET_FROTA_CONS, { name: "getFrota" })
 )(ConsultaFrete);

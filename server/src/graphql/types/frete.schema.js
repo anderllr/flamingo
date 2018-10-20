@@ -16,6 +16,7 @@ const freteTypes = `
 		hrMunckInicial: Int
 		hrMunckFinal: Int
 		qtPedagio: Int
+		vlDespesas: Float
 		status: String!
 		itens: [ItemFrete]
     }
@@ -35,6 +36,32 @@ const freteTypes = `
 		status: String
 	}
 
+	type FreteDetalhe {
+		id: ID
+		dtFrete : String
+        caminhaoId: ID
+        descCaminhao: String,
+        placa: String
+        qtEntrega: Int
+        descCliente1: String
+        descCliente2: String
+        nrFrota: String
+        descFrota: String
+        frotaTerceiro: String
+        status : String
+        frotaId: ID
+        clienteId1: ID
+        kmInicial: Int
+        kmCliente1: Int
+        kmCliente2: Int
+    	kmFinal: Int
+        hrMunckInicial: Int
+        hrMunckFinal: Int
+        qtPedagio: Int
+        vlDespesas: Float
+        itens: [ItemFrete]
+	}	
+
     input FreteInput {
 		caminhaoId: ID!
 		qtEntrega: Int!
@@ -50,6 +77,7 @@ const freteTypes = `
 		hrMunckInicial: Int
 		hrMunckFinal: Int
 		qtPedagio: Int
+		vlDespesas: Float
 		status: String!
 		itens: [ItemFreteInput]
     }
@@ -58,13 +86,13 @@ const freteTypes = `
         item: String!
         imagem: String
     }
-
 `;
 
 const freteQueries = `
     frete: [Frete]
 	freteById(id: ID!): Frete
 	freteConsulta(dtFreteIni: String, dtFreteFim: String, clienteId: ID, frotaId: ID): [FreteConsulta]
+	freteDetalhe(id: ID!): FreteDetalhe
 `;
 
 const freteMutations = `

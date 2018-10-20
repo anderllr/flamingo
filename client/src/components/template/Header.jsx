@@ -195,6 +195,7 @@ class Header extends Component {
 	}
 
 	render() {
+		//Tem que ser assim para o icone aparecer em todas as telas...
 		const showIconUser = this.props.hideIconUser ? false : true;
 
 		return (

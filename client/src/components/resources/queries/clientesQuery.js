@@ -18,6 +18,15 @@ export const GET_CLIENTES = gql`
 	}
 `;
 
+export const GET_CLIENTES_CONS = gql`
+	query {
+		clientes {
+			id
+			name
+		}
+	}
+`;
+
 export const GET_CLIENTE_BY_ID = gql`
 	query cliente($id: ID!) {
 		query {

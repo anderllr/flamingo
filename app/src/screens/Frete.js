@@ -329,6 +329,7 @@ class Frete extends Component {
 			hrMunckFinal:
 				this.state.hrMunckFinal > 0 ? this.state.hrMunckFinal : null,
 			qtPedagio: this.state.qtPedagio > 0 ? this.state.qtPedagio : null,
+			vlDespesas: this.state.vlDespesas > 0 ? this.state.vlDespesas : null,
 			status: this.state.kmFinal > 0 ? "ENCERRADO" : "ABERTO",
 			itens: this.state.itens
 		};

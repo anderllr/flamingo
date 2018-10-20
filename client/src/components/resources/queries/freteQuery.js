@@ -23,3 +23,36 @@ export const GET_FRETE_CONSULTA = gql`
 		}
 	}
 `;
+
+export const GET_FRETE_DETALHE = gql`
+	query freteDetalhe($id: ID!) {
+		freteDetalhe(id: $id) {
+			id
+			dtFrete
+			caminhaoId
+			descCaminhao
+			placa
+			qtEntrega
+			descCliente1
+			descCliente2
+			nrFrota
+			descFrota
+			frotaTerceiro
+			status
+			frotaId
+			clienteId1
+			kmInicial
+			kmCliente1
+			kmCliente2
+			kmFinal
+			hrMunckInicial
+			hrMunckFinal
+			qtPedagio
+			vlDespesas
+			itens {
+				item
+				imagem
+			}
+		}
+	}
+`;

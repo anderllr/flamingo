@@ -411,7 +411,8 @@ class Frota extends Component {
 		const titleProps = {
 			icon: "object-group",
 			title: "Grupos de Itens",
-			subtitle: "Desmarque os grupos e itens não utilizados para essa Frota"
+			subtitle: "Desmarque os grupos e itens não utilizados para essa Frota",
+			hideIconUser: true
 		};
 
 		if (this.props.getGrupos.loading) {

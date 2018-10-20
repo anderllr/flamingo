@@ -21,6 +21,7 @@ const FreteSchema = new mongoose.Schema(
 		hrMunckInicial: { type: Number, required: false },
 		hrMunckFinal: { type: Number, required: false },
 		qtPedagio: { type: Number, required: false },
+		vlDespesas: { type: Number, required: false },
 		status: {
 			type: String,
 			required: true,

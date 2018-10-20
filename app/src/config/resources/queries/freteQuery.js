@@ -18,6 +18,7 @@ export const GET_FRETE = gql`
 			hrMunckInicial
 			hrMunckFinal
 			qtPedagio
+			vlDespesas
 			status
 			itens {
 				item
@@ -45,6 +46,7 @@ export const GET_FRETE_BY_ID = gql`
 			hrMunckInicial
 			hrMunckFinal
 			qtPedagio
+			vlDespesas
 			status
 			itens {
 				item
