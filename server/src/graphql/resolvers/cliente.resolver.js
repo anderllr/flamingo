@@ -3,7 +3,7 @@ import { authenticated } from "./auth.resolver";
 export default {
 	Query: {
 		clientes: authenticated(async (parent, args, { db: { Cliente } }) => {
-			const clientes = await Cliente.find(args);
+			const clientes = await Cliente.find(args).sort("name");
 			return clientes.map(cliente => {
 				return cliente;
 			});

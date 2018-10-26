@@ -3,6 +3,8 @@ import { graphql, compose } from "react-apollo";
 import axios from "axios";
 import { Typeahead } from "react-bootstrap-typeahead";
 import InputMask from "react-input-mask";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import { GET_CLIENTES } from "../resources/queries/clientesQuery";
@@ -170,6 +172,22 @@ class Clientes extends Component {
 			});
 	}
 
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
+
 	changeField(e) {
 		const cliente = { ...this.state.cliente };
 
@@ -274,7 +292,7 @@ class Clientes extends Component {
 							</button>
 							<button
 								className="btn btn-danger ml-2"
-								onClick={() => this.delete(cliente)}
+								onClick={() => this.deleteAlert(cliente)}
 							>
 								<i className="fa fa-trash" />
 							</button>

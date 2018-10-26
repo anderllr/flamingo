@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
 import DatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -9,6 +11,7 @@ import Main from "../template/Main";
 import { GET_FRETE_CONSULTA } from "../resources/queries/freteQuery";
 import { GET_CLIENTES_CONS } from "../resources/queries/clientesQuery";
 import { GET_FROTA_CONS } from "../resources/queries/frotaQuery";
+import { DELETE_FRETE } from "../resources/mutations/freteMutation";
 import FreteDetalhe from "./FreteDetalhe";
 import Modal from "../utils/Modal";
 
@@ -60,6 +63,35 @@ class ConsultaFrete extends Component {
 	clear = e => {
 		e.preventDefault();
 		this.setState({ ...initialState });
+	};
+
+	delete(frete, refetch) {
+		const { id } = frete;
+
+		this.props
+			.deleteFrete({ variables: { id } })
+			.then(() => {
+				refetch();
+			})
+			.catch(e => {
+				this.handleErrors(e, "Excluir Frete!");
+			});
+	}
+
+	deleteAlert = (obj, refetch) => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj, refetch)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
 	};
 
 	select = (e, frete) => {
@@ -152,10 +184,6 @@ class ConsultaFrete extends Component {
 						return <div>Error</div>;
 					}
 
-					if (this.state.isRefetch) {
-						refetch();
-					}
-
 					return data.freteConsulta.map(frete => {
 						return (
 							<li
@@ -176,14 +204,14 @@ class ConsultaFrete extends Component {
 								</div>
 								<div
 									className="text-center"
-									style={{ width: `${this.state.gridColumns[4]}` }}
-								>
-									{frete.status}
-								</div>
-								<div
-									className="text-center"
 									style={{ width: `${this.state.gridColumns[5]}` }}
 								>
+									<button
+										className="btn btn-danger ml-2"
+										onClick={() => this.deleteAlert(frete, refetch)}
+									>
+										<i className="fa fa-trash" />
+									</button>
 									<button
 										className="btn btn-info"
 										onClick={e => this.select(e, frete)}
@@ -290,7 +318,11 @@ class ConsultaFrete extends Component {
 				<Modal
 					show={this.state.show}
 					handleClose={e => this.hideModal(e)}
-					style={{ height: "80vh", width: "75vw", overflowY: "scroll" }}
+					style={{
+						height: "80vh",
+						width: "75vw",
+						overflowY: "scroll"
+					}}
 				>
 					<FreteDetalhe freteId={this.state.freteId} />
 				</Modal>
@@ -317,7 +349,7 @@ class ConsultaFrete extends Component {
 							className="text-center"
 							style={{ width: `${this.state.gridColumns[4]}` }}
 						>
-							<strong>Status</strong>
+							<strong>Ações</strong>
 						</div>
 					</li>
 					{this.renderConsulta()}
@@ -329,5 +361,6 @@ class ConsultaFrete extends Component {
 
 export default compose(
 	graphql(GET_CLIENTES_CONS, { name: "getClientes" }),
-	graphql(GET_FROTA_CONS, { name: "getFrota" })
+	graphql(GET_FROTA_CONS, { name: "getFrota" }),
+	graphql(DELETE_FRETE, { name: "deleteFrete" })
 )(ConsultaFrete);

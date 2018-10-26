@@ -45,6 +45,7 @@ const processUpload = async upload => {
 		filename
 	});
 	//	const sdb = storeDB({ id, filename, mimetype, encoding, path });
+
 	if (path) return { filename, path };
 	return null;
 };
@@ -79,7 +80,10 @@ export default {
 		},
 		multipleUpload: async (obj, { files }) => {
 			const { resolve, reject } = await promisesAll.all(
-				files.map(processUpload)
+				files.map(async file => {
+					const { createReadStream, filename } = await file;
+					return await processUpload({ createReadStream, filename });
+				})
 			);
 
 			if (reject.length)

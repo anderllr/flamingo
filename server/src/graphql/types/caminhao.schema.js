@@ -5,6 +5,8 @@ const caminhaoTypes = `
         name: String!
         ano: Int!
         placa: String!
+        vlKm: Float
+        vlHoraMunck: Float
         itens: [ItemCaminhao]
     }
 
@@ -24,6 +26,8 @@ const caminhaoTypes = `
         name: String!
         ano: Int!
         placa: String!
+        vlKm: Float
+        vlHoraMunck: Float        
         itens: [ItemCaminhaoInput]
     }
 

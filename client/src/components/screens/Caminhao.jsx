@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
+import SimpleCurrencyInput from "react-simple-currency";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import { GET_CAMINHAO } from "../resources/queries/caminhaoQuery";
@@ -26,6 +29,8 @@ const initialState = {
 		name: "",
 		ano: "",
 		placa: "",
+		vlKm: 0,
+		vlHoraMunck: 0,
 		itens: []
 	},
 	alert: {
@@ -62,12 +67,22 @@ class Caminhao extends Component {
 
 	save = e => {
 		e.preventDefault();
-		const { id, name, ano, placa, itens } = this.state.caminhao;
+		const {
+			id,
+			name,
+			ano,
+			placa,
+			vlKm,
+			vlHoraMunck,
+			itens
+		} = this.state.caminhao;
 
 		let caminhaoInput = {
 			name,
 			ano,
 			placa,
+			vlKm: vlKm > 0 ? vlKm / 100 : 0,
+			vlHoraMunck: vlHoraMunck > 0 ? vlHoraMunck / 100 : 0,
 			itens: itens.sort((a, b) => a.item > b.item)
 		};
 
@@ -76,7 +91,9 @@ class Caminhao extends Component {
 			[
 				{ field: "name", name: "Nome" },
 				{ field: "ano", name: "Ano" },
-				{ field: "placa", name: "Placa" }
+				{ field: "placa", name: "Placa" },
+				{ field: "vlKm", name: "Valor Km" },
+				{ field: "vlHoraMunck", name: "Valor Munck" }
 			],
 			this.state.caminhao
 		);
@@ -118,12 +135,14 @@ class Caminhao extends Component {
 		const itens = c.itens.map(i => {
 			return { item: i.item };
 		});
-		const { id, name, ano, placa } = c;
+		const { id, name, ano, placa, vlKm, vlHoraMunck } = c;
 		const caminhao = {
 			id,
 			name,
 			ano,
 			placa,
+			vlKm: vlKm ? vlKm * 100 : 0,
+			vlHoraMunck: vlHoraMunck ? vlHoraMunck * 100 : 0,
 			itens
 		};
 
@@ -143,9 +162,32 @@ class Caminhao extends Component {
 			});
 	}
 
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
+
 	changeField(e) {
 		const caminhao = { ...this.state.caminhao };
 		caminhao[e.target.name] = e.target.value;
+
+		this.setState({ caminhao, alert: initialState.alert });
+	}
+
+	onChangeMoney(value, name) {
+		const caminhao = { ...this.state.caminhao };
+		caminhao[name] = value;
 
 		this.setState({ caminhao, alert: initialState.alert });
 	}
@@ -155,7 +197,7 @@ class Caminhao extends Component {
 		e.preventDefault();
 		if (this.state.item !== "") {
 			const { caminhao } = this.state;
-			const itens = [...caminhao.itens.filter(i => i.item != this.state.item)];
+			const itens = [...caminhao.itens.filter(i => i.item !== this.state.item)];
 
 			itens.push({ item: this.state.item });
 			caminhao.itens = itens;
@@ -219,7 +261,7 @@ class Caminhao extends Component {
 							</button>
 							<button
 								className="btn btn-danger ml-2"
-								onClick={() => this.delete(caminhao)}
+								onClick={() => this.deleteAlert(caminhao)}
 							>
 								<i className="fa fa-trash" />
 							</button>
@@ -233,7 +275,7 @@ class Caminhao extends Component {
 		return (
 			<div className="form">
 				<div className="row">
-					<div className="col-12 col-md-5">
+					<div className="col-12 col-md-4">
 						<div className="form-group">
 							<label>Nome</label>
 							<input
@@ -272,6 +314,40 @@ class Caminhao extends Component {
 							/>
 						</div>
 					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group has-danger">
+							<label>Valor Km</label>
+							<SimpleCurrencyInput
+								id="vlKm" //optional
+								className="form-control"
+								value={this.state.caminhao.vlKm}
+								precision={2}
+								separator=","
+								delimiter="."
+								unit="R$"
+								onInputChange={value => this.onChangeMoney(value, "vlKm")}
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group has-danger">
+							<label>Valor Munck/Hora</label>
+							<SimpleCurrencyInput
+								id="vlHoraMunck" //optional
+								className="form-control"
+								value={this.state.caminhao.vlHoraMunck}
+								precision={2}
+								separator=","
+								delimiter="."
+								unit="R$"
+								onInputChange={value =>
+									this.onChangeMoney(value, "vlHoraMunck")
+								}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
 					<div className="col-12 col-md-3">
 						<div>
 							<label>{}</label>

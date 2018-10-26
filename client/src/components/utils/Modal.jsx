@@ -6,7 +6,7 @@ const Modal = ({ handleClose, show, children, style }) => {
 			<section className="modal-main">
 				<div style={style}>{children}</div>
 
-				<div className="modal-footer">
+				<div className="modal-footer d-print-none">
 					<button className="btn btn-danger ml-2" onClick={handleClose}>
 						<i className="fa fa-window-close" /> Fechar
 					</button>

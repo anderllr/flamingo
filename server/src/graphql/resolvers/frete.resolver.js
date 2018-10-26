@@ -1,6 +1,63 @@
 import mongoose from "mongoose";
 import { authenticated } from "./auth.resolver";
 
+const inputFrete = async (input, Caminhao) => {
+	//retornará o input ajustado com os valores do frete atualizados
+	//Pega as variáveis do input
+	const {
+		caminhaoId,
+		kmInicial,
+		kmCliente1,
+		kmCliente2,
+		kmFinal,
+		hrMunckInicial,
+		hrMunckFinal
+	} = input;
+
+	//Busca o caminhão para pegar o valor do frete e da hora munck
+	const caminhao = await Caminhao.findById(caminhaoId);
+	const { vlKm, vlHoraMunck } = caminhao;
+
+	let vlFreteTotal = 0;
+	//Agora verifica se tem valor de km para que possa ser calculado
+	if (vlKm > 0) {
+		input.vlKm = vlKm;
+		if (kmCliente1 > 0) {
+			const qtKmCliente1 = kmCliente1 - kmInicial;
+			const vlFreteCliente1 = qtKmCliente1 * vlKm;
+
+			vlFreteTotal += vlFreteCliente1;
+
+			input.qtKmCliente1 = qtKmCliente1;
+			input.vlFreteCliente1 = vlFreteCliente1;
+		}
+
+		if (kmCliente2 > 0 && kmFinal > 0) {
+			const qtKmCliente2 = kmFinal - kmCliente2;
+			const vlFreteCliente2 = qtKmCliente2 * vlKm;
+
+			vlFreteTotal += vlFreteCliente2;
+
+			input.qtKmCliente2 = qtKmCliente2;
+			input.vlFreteCliente2 = vlFreteCliente2;
+		}
+	}
+
+	if (vlFreteTotal > 0) input.vlFreteTotal = vlFreteTotal;
+
+	if (vlHoraMunck > 0 && hrMunckInicial > 0 && hrMunckFinal > 0) {
+		input.vlHoraMunck = vlHoraMunck;
+
+		const qtHoraMunck = hrMunckFinal - hrMunckInicial;
+		const vlMunckTotal = qtHoraMunck * vlHoraMunck;
+
+		input.qtHoraMunck = qtHoraMunck;
+		input.vlMunckTotal = vlMunckTotal;
+	}
+
+	return input;
+};
+
 export default {
 	Query: {
 		frete: authenticated(async (parent, args, { db: { Frete } }) => {
@@ -192,7 +249,16 @@ export default {
 						hrMunckInicial: 1,
 						hrMunckFinal: 1,
 						qtPedagio: 1,
-						vlDespesas: 1,
+						vlDespesas: { $ifNull: ["$vlDespesas", 0] },
+						vlKm: { $ifNull: ["$vlKm", 0] },
+						vlHoraMunck: { $ifNull: ["$vlHoraMunck", 0] },
+						qtKmCliente1: { $ifNull: ["$qtKmCliente1", 0] },
+						vlFreteCliente1: { $ifNull: ["$vlFreteCliente1", 0] },
+						qtKmCliente2: { $ifNull: ["$qtKmCliente2", 0] },
+						vlFreteCliente2: { $ifNull: ["$vlFreteCliente2", 0] },
+						vlFreteTotal: { $ifNull: ["$vlFreteTotal", 0] },
+						qtHoraMunck: { $ifNull: ["$qtHoraMunck", 0] },
+						vlMunckTotal: { $ifNull: ["$vlMunckTotal", 0] },
 						itens: 1
 					}
 				}
@@ -222,6 +288,15 @@ export default {
 					hrMunckFinal,
 					qtPedagio,
 					vlDespesas,
+					vlKm,
+					vlHoraMunck,
+					qtKmCliente1,
+					vlFreteCliente1,
+					qtKmCliente2,
+					vlFreteCliente2,
+					vlFreteTotal,
+					qtHoraMunck,
+					vlMunckTotal,
 					itens
 				}) => ({
 					id: _id,
@@ -246,20 +321,33 @@ export default {
 					hrMunckFinal,
 					qtPedagio,
 					vlDespesas,
+					vlKm,
+					vlHoraMunck,
+					qtKmCliente1,
+					vlFreteCliente1,
+					qtKmCliente2,
+					vlFreteCliente2,
+					vlFreteTotal,
+					qtHoraMunck,
+					vlMunckTotal,
 					itens
 				})
 			)[0];
 		})
 	},
 	Mutation: {
-		createFrete: authenticated(async (parent, { input }, { db: { Frete } }) => {
-			const frete = await new Frete(input).save();
-			return frete;
-		}),
+		createFrete: authenticated(
+			async (parent, { input }, { db: { Frete, Caminhao } }) => {
+				const inputNew = await inputFrete(input, Caminhao);
+				const frete = await new Frete(inputNew).save();
+				return frete;
+			}
+		),
 		updateFrete: authenticated(
-			async (parent, { id, input }, { db: { Frete } }) => {
+			async (parent, { id, input }, { db: { Frete, Caminhao } }) => {
 				const frete = await Frete.findById(id);
-				await frete.set(input).save();
+				const inputNew = await inputFrete(input, Caminhao);
+				await frete.set(inputNew).save();
 				return frete;
 			}
 		),

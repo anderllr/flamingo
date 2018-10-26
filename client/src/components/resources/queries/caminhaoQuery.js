@@ -7,6 +7,8 @@ export const GET_CAMINHAO = gql`
 			name
 			ano
 			placa
+			vlKm
+			vlHoraMunck
 			itens {
 				item
 			}

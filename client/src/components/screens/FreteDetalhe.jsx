@@ -10,7 +10,6 @@ const FreteDetalhe = props => {
 	if (props.getFrete.loading) return <div>Loading...</div>;
 
 	const renderForm = () => {
-		console.log("Props: ", props);
 		return (
 			<div className="form">
 				<div className="row">
@@ -41,7 +40,7 @@ const FreteDetalhe = props => {
 							<label>Status</label>
 							<input
 								type="text"
-								className="form-control form-control-danger"
+								className="form-control font-weight-bold"
 								value={props.getFrete.freteDetalhe.status}
 								readOnly
 							/>
@@ -182,7 +181,169 @@ const FreteDetalhe = props => {
 							<input
 								type="text"
 								className="form-control form-control-danger"
-								value={props.getFrete.freteDetalhe.vlDespesas}
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlDespesas)}
+								readOnly
+							/>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div className="row">
+					<div className="col-12 col-md-3">
+						<div className="form-group">
+							<label>Valor Km</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlKm)}
+								readOnly
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Km Dest.1</label>
+							<input
+								type="text"
+								className="form-control"
+								value={props.getFrete.freteDetalhe.qtKmCliente1}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Vl.Dest.1</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlFreteCliente1)}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Km Dest.2</label>
+							<input
+								type="text"
+								className="form-control form-control-danger"
+								value={props.getFrete.freteDetalhe.qtKmCliente2}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Vl. Dest.2</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlFreteCliente2)}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-3">
+						<div className="form-group">
+							<label>
+								<strong>Frete Total</strong>
+							</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlFreteTotal)}
+								readOnly
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Valor Munck</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlHoraMunck)}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Horas Munck</label>
+							<input
+								type="text"
+								className="form-control form-control-danger"
+								value={props.getFrete.freteDetalhe.qtHoraMunck}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-3">
+						<div className="form-group">
+							<label>
+								<strong>Total Munck</strong>
+							</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlMunckTotal)}
+								readOnly
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-3">
+						<div className="form-group">
+							<label>
+								<strong>TOTAL GERAL</strong>
+							</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(
+									props.getFrete.freteDetalhe.vlFreteTotal +
+										props.getFrete.freteDetalhe.vlMunckTotal
+								)}
 								readOnly
 							/>
 						</div>
@@ -212,7 +373,8 @@ export default graphql(GET_FRETE_DETALHE, {
 	name: "getFrete",
 	options: props => ({
 		variables: {
-			id: !props.freteId ? null : props.freteId
+			id:
+				!props.freteId || props.freteId === "" ? "000000000000" : props.freteId
 		},
 		fetchPolicy: "cache-and-network" //"network-only"
 	})

@@ -13,3 +13,12 @@ export const UPLOAD_FILE = gql`
 		}
 	}
 `;
+
+export const MULTIPLE_UPLOAD = gql`
+	mutation multipleUpload($files: [Upload!]!) {
+		multipleUpload(files: $files) {
+			filename
+			path
+		}
+	}
+`;

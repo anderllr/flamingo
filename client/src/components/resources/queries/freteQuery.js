@@ -49,6 +49,15 @@ export const GET_FRETE_DETALHE = gql`
 			hrMunckFinal
 			qtPedagio
 			vlDespesas
+			vlKm
+			vlHoraMunck
+			qtKmCliente1
+			vlFreteCliente1
+			qtKmCliente2
+			vlFreteCliente2
+			vlFreteTotal
+			qtHoraMunck
+			vlMunckTotal
 			itens {
 				item
 				imagem

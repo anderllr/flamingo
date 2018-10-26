@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
 import { Typeahead } from "react-bootstrap-typeahead";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import {
@@ -143,6 +145,22 @@ class Itens extends Component {
 			});
 	}
 
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
+
 	changeField(e) {
 		const item = { ...this.state.item };
 
@@ -229,7 +247,7 @@ class Itens extends Component {
 									</button>
 									<button
 										className="btn btn-danger ml-2"
-										onClick={() => this.delete(item)}
+										onClick={() => this.deleteAlert(item)}
 									>
 										<i className="fa fa-trash" />
 									</button>

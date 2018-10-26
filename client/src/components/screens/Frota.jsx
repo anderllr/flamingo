@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import CheckboxTree from "react-checkbox-tree";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import { GET_FROTA } from "../resources/queries/frotaQuery";
@@ -87,9 +89,11 @@ class Frota extends Component {
 					checked.push(value);
 					nodesAll.push(value);
 					grupoNode.children.push(itemNode);
+					return itemNode;
 				});
 
 				nodes.push(grupoNode);
+				return grupoNode;
 			});
 
 			this.setState({ nodes, expanded, checked, nodesAll });
@@ -125,6 +129,7 @@ class Frota extends Component {
 				exceptItens = [];
 				grupoant = itemSplit[0];
 			}
+			return grupoant;
 		});
 		//O último depois que saiu do loop
 		if (itemSplit[0]) {
@@ -198,7 +203,9 @@ class Frota extends Component {
 		frota.exceptGrupos.map(grupo => {
 			grupo.exceptItens.map(item => {
 				exceptions.push(`${grupo.grupoItemId}|${item.itemId}`);
+				return item;
 			});
+			return grupo;
 		});
 
 		let checked = this.state.nodesAll.filter(x => !exceptions.includes(x));
@@ -218,6 +225,22 @@ class Frota extends Component {
 				this.handleErrors(e, "Excluir usuário!");
 			});
 	}
+
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
 
 	changeField(e) {
 		const frota = { ...this.state.frota };
@@ -286,7 +309,7 @@ class Frota extends Component {
 							</button>
 							<button
 								className="btn btn-danger ml-2"
-								onClick={() => this.delete(frota)}
+								onClick={() => this.deleteAlert(frota)}
 							>
 								<i className="fa fa-trash" />
 							</button>

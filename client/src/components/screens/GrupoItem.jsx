@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import { GET_GRUPOS } from "../resources/queries/grupoItensQuery";
@@ -157,6 +159,22 @@ class GrupoItem extends Component {
 			});
 	}
 
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
+
 	changeField(e) {
 		const grupoItem = { ...this.state.grupoItem };
 
@@ -205,7 +223,7 @@ class GrupoItem extends Component {
 							</button>
 							<button
 								className="btn btn-danger ml-2"
-								onClick={() => this.delete(grupoItem)}
+								onClick={() => this.deleteAlert(grupoItem)}
 							>
 								<i className="fa fa-trash" />
 							</button>

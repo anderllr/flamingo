@@ -1,6 +1,6 @@
 import "./Header.css";
 import React, { Component, Fragment } from "react";
-import { graphql, compose } from "react-apollo";
+import { graphql } from "react-apollo";
 
 import Modal from "../utils/Modal";
 import { renderAlert } from "../utils/funcs";
@@ -21,10 +21,6 @@ const initialState = {
 
 class Header extends Component {
 	state = { ...initialState };
-
-	constructor(props) {
-		super(props);
-	}
 
 	handleErrors(e, title) {
 		//Simple aproach to show error messages -- The better way is create a centralized function using apollo link
@@ -111,7 +107,6 @@ class Header extends Component {
 						<div className="form-group has-danger">
 							<label>Senha Anterior</label>
 							<input
-								type="text"
 								className="form-control form-control-danger"
 								name="lastPassword"
 								type="password"
@@ -127,7 +122,6 @@ class Header extends Component {
 						<div className="form-group">
 							<label>Nova Senha</label>
 							<input
-								type="text"
 								className="form-control"
 								name="newPassword"
 								type="password"

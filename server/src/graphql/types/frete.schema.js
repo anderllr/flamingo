@@ -58,7 +58,16 @@ const freteTypes = `
         hrMunckInicial: Int
         hrMunckFinal: Int
         qtPedagio: Int
-        vlDespesas: Float
+		vlDespesas: Float
+		vlKm: Float
+		vlHoraMunck: Float
+		qtKmCliente1: Int
+		vlFreteCliente1: Float
+		qtKmCliente2: Int
+		vlFreteCliente2: Float
+		vlFreteTotal: Float
+		qtHoraMunck: Int
+		vlMunckTotal: Float
         itens: [ItemFrete]
 	}	
 
@@ -79,6 +88,15 @@ const freteTypes = `
 		qtPedagio: Int
 		vlDespesas: Float
 		status: String!
+		vlKm: Float
+		vlHoraMunck: Float
+		qtKmCliente1: Int
+		vlFreteCliente1: Float
+		qtKmCliente2: Int
+		vlFreteCliente2: Float
+		vlFreteTotal: Float
+		qtHoraMunck: Int
+		vlMunckTotal: Float
 		itens: [ItemFreteInput]
     }
 

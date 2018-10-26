@@ -40,3 +40,7 @@ main > div {
 .display-none {
 	display: none;
 }
+
+::-webkit-scrollbar {
+	display: none;
+}

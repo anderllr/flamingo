@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import Main from "../template/Main";
 import { GET_USERS } from "../resources/queries/userQuery";
@@ -175,6 +177,22 @@ class User extends Component {
 			});
 	}
 
+	deleteAlert = obj => {
+		confirmAlert({
+			title: "Confirma exclusão?",
+			message: "Tem certeza que deseja excluir?",
+			buttons: [
+				{
+					label: "Sim",
+					onClick: () => this.delete(obj)
+				},
+				{
+					label: "Não"
+				}
+			]
+		});
+	};
+
 	changeField(e) {
 		const user = { ...this.state.user };
 		if (e.target.type === "checkbox") {
@@ -231,7 +249,7 @@ class User extends Component {
 							</button>
 							<button
 								className="btn btn-danger ml-2"
-								onClick={() => this.delete(user)}
+								onClick={() => this.deleteAlert(user)}
 							>
 								<i className="fa fa-trash" />
 							</button>

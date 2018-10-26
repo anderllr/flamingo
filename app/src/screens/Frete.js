@@ -7,6 +7,7 @@ import {
 	Platform,
 	KeyboardAvoidingView
 } from "react-native";
+
 import { verticalScale } from "react-native-size-matters";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
@@ -28,7 +29,10 @@ import {
 	CREATE_FRETE,
 	UPDATE_FRETE
 } from "../config/resources/mutations/freteMutation";
-import { UPLOAD_FILE } from "../config/resources/mutations/uploadMutation";
+import {
+	UPLOAD_FILE,
+	MULTIPLE_UPLOAD
+} from "../config/resources/mutations/uploadMutation";
 import { connectAlert } from "../components/Alert";
 import styles from "./styles";
 
@@ -346,12 +350,18 @@ class Frete extends Component {
 
 					const result = await new Promise(async (resolve, reject) => {
 						let error = "";
-						await images.map(async fileName => {
+						/*						await images.map(async fileName => {
 							const result = await this.uploadFile(fileName);
 							if (result !== "success") {
 								error += `${result} |`;
 							}
-						});
+						}); */
+						console.log("Images: ", images);
+						const result = await this.multipleUpload(images);
+						if (result !== "success") {
+							error += `${result} |`;
+						}
+
 						if (error === "") {
 							resolve("success");
 						} else reject(error);
@@ -392,12 +402,17 @@ class Frete extends Component {
 
 					const result = await new Promise(async (resolve, reject) => {
 						let error = "";
-						await images.map(async fileName => {
+						/*						await images.map(async fileName => {
 							const result = await this.uploadFile(fileName);
 							if (result !== "success") {
 								error += `${result} |`;
 							}
-						});
+						}); */
+
+						const result = await this.multipleUpload(images);
+						if (result !== "success") {
+							error += `${result} |`;
+						}
 						if (error === "") {
 							resolve("success");
 						} else reject(error);
@@ -425,6 +440,43 @@ class Frete extends Component {
 					this.props.alertWithType("error", "Error", message);
 				});
 		}
+	};
+
+	multipleUpload = fileNames => {
+		return new Promise(async (resolve, reject) => {
+			const files = [];
+
+			await Promise.all(
+				fileNames.map(async fName => {
+					const path = `${FileSystem.documentDirectory}flamingo/${fName}.jpeg`;
+					const fileLocal = await FileSystem.getInfoAsync(path);
+					if (fileLocal.exists) {
+						const file = await new ReactNativeFile({
+							uri: fileLocal.uri,
+							type: "image/jpeg",
+							name: `${fName}.jpeg`
+						});
+
+						files.push(file);
+					}
+				})
+			);
+
+			console.log("Files: ", files);
+			if (files.length > 0) {
+				//verifica que foi carregado um arquivo então salva
+				this.props
+					.multipleUpload({
+						variables: {
+							files
+						}
+					})
+					.then(() => resolve("success"))
+					.catch(e => reject(e));
+			} else {
+				reject("Arquivo inválido");
+			}
+		});
 	};
 
 	uploadFile = fileName => {
@@ -783,6 +835,7 @@ export default compose(
 	graphql(CREATE_FRETE, { name: "createFrete" }),
 	graphql(UPDATE_FRETE, { name: "updateFrete" }),
 	graphql(UPLOAD_FILE, { name: "uploadFile" }),
+	graphql(MULTIPLE_UPLOAD, { name: "multipleUpload" }),
 	graphql(GET_FRETE_BY_ID, {
 		name: "getFrete",
 		options: props => ({
