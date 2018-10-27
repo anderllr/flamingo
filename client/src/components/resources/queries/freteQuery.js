@@ -55,6 +55,8 @@ export const GET_FRETE_DETALHE = gql`
 			vlFreteCliente1
 			qtKmCliente2
 			vlFreteCliente2
+			qtKmRetorno
+			vlFreteRetorno
 			vlFreteTotal
 			qtHoraMunck
 			vlMunckTotal

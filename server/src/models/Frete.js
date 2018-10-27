@@ -31,6 +31,8 @@ const FreteSchema = new mongoose.Schema(
 		vlFreteTotal: { type: Number, required: false },
 		qtHoraMunck: { type: Number, required: false },
 		vlMunckTotal: { type: Number, required: false },
+		qtKmRetorno: { type: Number, required: false },
+		vlFreteRetorno: { type: Number, required: false },
 		status: {
 			type: String,
 			required: true,

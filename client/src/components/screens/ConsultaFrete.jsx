@@ -197,18 +197,20 @@ class ConsultaFrete extends Component {
 									{frete.descCliente1}
 								</div>
 								<div style={{ width: `${this.state.gridColumns[2]}` }}>
-									{frete.descCliente2}
-								</div>
-								<div style={{ width: `${this.state.gridColumns[3]}` }}>
 									{this.renderFieldFrota(frete)}
 								</div>
 								<div
 									className="text-center"
-									style={{ width: `${this.state.gridColumns[5]}` }}
+									style={{
+										width: `${this.state.gridColumns[3]}`
+									}}
 								>
 									<button
 										className="btn btn-danger ml-2"
 										onClick={() => this.deleteAlert(frete, refetch)}
+										style={{
+											marginRight: 12
+										}}
 									>
 										<i className="fa fa-trash" />
 									</button>
@@ -337,17 +339,14 @@ class ConsultaFrete extends Component {
 							<strong>Data</strong>
 						</div>
 						<div style={{ width: `${this.state.gridColumns[1]}` }}>
-							<strong>Destino 1</strong>
+							<strong>Cliente</strong>
 						</div>
 						<div style={{ width: `${this.state.gridColumns[2]}` }}>
-							<strong>Destino 2</strong>
-						</div>
-						<div style={{ width: `${this.state.gridColumns[3]}` }}>
 							<strong>Frota/Frota Terceiro</strong>
 						</div>
 						<div
 							className="text-center"
-							style={{ width: `${this.state.gridColumns[4]}` }}
+							style={{ width: `${this.state.gridColumns[3]}` }}
 						>
 							<strong>Ações</strong>
 						</div>

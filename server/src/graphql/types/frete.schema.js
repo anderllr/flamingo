@@ -65,6 +65,8 @@ const freteTypes = `
 		vlFreteCliente1: Float
 		qtKmCliente2: Int
 		vlFreteCliente2: Float
+		qtKmRetorno: Int
+		vlFreteRetorno: Float
 		vlFreteTotal: Float
 		qtHoraMunck: Int
 		vlMunckTotal: Float
@@ -94,6 +96,8 @@ const freteTypes = `
 		vlFreteCliente1: Float
 		qtKmCliente2: Int
 		vlFreteCliente2: Float
+		qtKmRetorno: Int
+		vlFreteRetorno: Float
 		vlFreteTotal: Float
 		qtHoraMunck: Int
 		vlMunckTotal: Float

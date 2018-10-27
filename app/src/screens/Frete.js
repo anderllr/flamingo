@@ -350,14 +350,12 @@ class Frete extends Component {
 
 					const result = await new Promise(async (resolve, reject) => {
 						let error = "";
-						/*						await images.map(async fileName => {
-							const result = await this.uploadFile(fileName);
-							if (result !== "success") {
-								error += `${result} |`;
-							}
-						}); */
-						console.log("Images: ", images);
-						const result = await this.multipleUpload(images);
+
+						let result =
+							images.length === 0
+								? "success"
+								: await this.multipleUpload(images);
+
 						if (result !== "success") {
 							error += `${result} |`;
 						}
@@ -402,14 +400,10 @@ class Frete extends Component {
 
 					const result = await new Promise(async (resolve, reject) => {
 						let error = "";
-						/*						await images.map(async fileName => {
-							const result = await this.uploadFile(fileName);
-							if (result !== "success") {
-								error += `${result} |`;
-							}
-						}); */
-
-						const result = await this.multipleUpload(images);
+						let result =
+							images.length === 0
+								? "success"
+								: await this.multipleUpload(images);
 						if (result !== "success") {
 							error += `${result} |`;
 						}
@@ -446,6 +440,7 @@ class Frete extends Component {
 		return new Promise(async (resolve, reject) => {
 			const files = [];
 
+			console.log("entrou no multiple upload");
 			await Promise.all(
 				fileNames.map(async fName => {
 					const path = `${FileSystem.documentDirectory}flamingo/${fName}.jpeg`;
@@ -474,7 +469,8 @@ class Frete extends Component {
 					.then(() => resolve("success"))
 					.catch(e => reject(e));
 			} else {
-				reject("Arquivo inválido");
+				//Não tem arquivos então ok
+				resolve("success");
 			}
 		});
 	};
@@ -527,6 +523,28 @@ class Frete extends Component {
 	//    FIM DO SALVAMENTO
 	//***************************************************************/
 
+	/* CAMPOS RETIRADOS DA TELA
+
+								<Text style={styles.radioTitle}>Entregas:</Text>
+							<RadioGroup
+								onSelect={(index, value) => this.onRadioPress(index, value)}
+								selectedIndex={this.state.indiceEntrega}
+								style={{
+									flexDirection: "row",
+									justifyContent: "space-around",
+									padding: 0
+								}}
+							>
+								<RadioButton value={1}>
+									<Text style={styles.radioText}>1 Entrega</Text>
+								</RadioButton>
+
+								<RadioButton value={2}>
+									<Text style={styles.radioText}>2 Entregas</Text>
+								</RadioButton>
+							</RadioGroup>
+
+	*/
 	renderActivity() {
 		return (
 			<BlurView
@@ -566,27 +584,8 @@ class Frete extends Component {
 								alignItems: "center"
 							}}
 						>
-							<Text style={styles.radioTitle}>Entregas:</Text>
-							<RadioGroup
-								onSelect={(index, value) => this.onRadioPress(index, value)}
-								selectedIndex={this.state.indiceEntrega}
-								style={{
-									flexDirection: "row",
-									justifyContent: "space-around",
-									padding: 0
-								}}
-							>
-								<RadioButton value={1}>
-									<Text style={styles.radioText}>1 Entrega</Text>
-								</RadioButton>
-
-								<RadioButton value={2}>
-									<Text style={styles.radioText}>2 Entregas</Text>
-								</RadioButton>
-							</RadioGroup>
 							<TouchableOpacity
 								onPress={() => this.showDateTimePicker("dtFrete")}
-								style={{ marginLeft: 30 }}
 							>
 								<InputWithTitle
 									title="Data Frete"

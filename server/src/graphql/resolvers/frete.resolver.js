@@ -19,6 +19,8 @@ const inputFrete = async (input, Caminhao) => {
 	const { vlKm, vlHoraMunck } = caminhao;
 
 	let vlFreteTotal = 0;
+	let qtKmRetorno = 0;
+	let vlFreteRetorno = 0;
 	//Agora verifica se tem valor de km para que possa ser calculado
 	if (vlKm > 0) {
 		input.vlKm = vlKm;
@@ -36,14 +38,27 @@ const inputFrete = async (input, Caminhao) => {
 			const qtKmCliente2 = kmFinal - kmCliente2;
 			const vlFreteCliente2 = qtKmCliente2 * vlKm;
 
-			vlFreteTotal += vlFreteCliente2;
-
 			input.qtKmCliente2 = qtKmCliente2;
 			input.vlFreteCliente2 = vlFreteCliente2;
+
+			vlFreteTotal += vlFreteCliente2;
+
+			//Acha a kilometragem de retorno
+			qtKmRetorno = kmCliente2 - kmInicial;
+			vlFreteRetorno = qtKmRetorno * vlKm;
+		} else if (kmFinal > 0 && kmCliente1) {
+			//Acha a kilometragem de retorno
+			qtKmRetorno = kmCliente1 - kmInicial;
+			vlFreteRetorno = qtKmRetorno * vlKm;
+		} else if (kmFinal > 0) {
+			qtKmRetorno = kmFinal - kmInicial;
+			vlFreteRetorno = qtKmRetorno * vlKm;
 		}
 	}
 
-	if (vlFreteTotal > 0) input.vlFreteTotal = vlFreteTotal;
+	if (vlFreteTotal > 0) input.vlFreteTotal = vlFreteTotal + vlFreteRetorno;
+	if (qtKmRetorno > 0) input.qtKmRetorno = qtKmRetorno;
+	if (vlFreteRetorno > 0) input.vlFreteRetorno = vlFreteRetorno;
 
 	if (vlHoraMunck > 0 && hrMunckInicial > 0 && hrMunckFinal > 0) {
 		input.vlHoraMunck = vlHoraMunck;
@@ -256,6 +271,8 @@ export default {
 						vlFreteCliente1: { $ifNull: ["$vlFreteCliente1", 0] },
 						qtKmCliente2: { $ifNull: ["$qtKmCliente2", 0] },
 						vlFreteCliente2: { $ifNull: ["$vlFreteCliente2", 0] },
+						qtKmRetorno: { $ifNull: ["$qtKmRetorno", 0] },
+						vlFreteRetorno: { $ifNull: ["$vlFreteRetorno", 0] },
 						vlFreteTotal: { $ifNull: ["$vlFreteTotal", 0] },
 						qtHoraMunck: { $ifNull: ["$qtHoraMunck", 0] },
 						vlMunckTotal: { $ifNull: ["$vlMunckTotal", 0] },
@@ -294,6 +311,8 @@ export default {
 					vlFreteCliente1,
 					qtKmCliente2,
 					vlFreteCliente2,
+					qtKmRetorno,
+					vlFreteRetorno,
 					vlFreteTotal,
 					qtHoraMunck,
 					vlMunckTotal,
@@ -327,6 +346,8 @@ export default {
 					vlFreteCliente1,
 					qtKmCliente2,
 					vlFreteCliente2,
+					qtKmRetorno,
+					vlFreteRetorno,
 					vlFreteTotal,
 					qtHoraMunck,
 					vlMunckTotal,

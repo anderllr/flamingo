@@ -262,20 +262,27 @@ const FreteDetalhe = props => {
 							/>
 						</div>
 					</div>
-					<div className="col-12 col-md-3">
+					<div className="col-12 col-md-2">
 						<div className="form-group">
-							<label>
-								<strong>Frete Total</strong>
-							</label>
+							<label>Km Retorno</label>
+							<input
+								type="text"
+								className="form-control"
+								value={props.getFrete.freteDetalhe.qtKmRetorno}
+								readOnly
+							/>
+						</div>
+					</div>
+					<div className="col-12 col-md-2">
+						<div className="form-group">
+							<label>Vl.Retorno</label>
 							<input
 								type="text"
 								className="form-control font-weight-bold"
 								value={new Intl.NumberFormat("pt-BR", {
-									style: "currency",
-									currency: "BRL",
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2
-								}).format(props.getFrete.freteDetalhe.vlFreteTotal)}
+								}).format(props.getFrete.freteDetalhe.vlFreteRetorno)}
 								readOnly
 							/>
 						</div>
@@ -307,6 +314,26 @@ const FreteDetalhe = props => {
 							/>
 						</div>
 					</div>
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-3">
+						<div className="form-group">
+							<label>
+								<strong>Frete Total</strong>
+							</label>
+							<input
+								type="text"
+								className="form-control font-weight-bold"
+								value={new Intl.NumberFormat("pt-BR", {
+									style: "currency",
+									currency: "BRL",
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}).format(props.getFrete.freteDetalhe.vlFreteTotal)}
+								readOnly
+							/>
+						</div>
+					</div>
 					<div className="col-12 col-md-3">
 						<div className="form-group">
 							<label>
@@ -325,8 +352,6 @@ const FreteDetalhe = props => {
 							/>
 						</div>
 					</div>
-				</div>
-				<div className="row">
 					<div className="col-12 col-md-3">
 						<div className="form-group">
 							<label>
