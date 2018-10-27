@@ -34,21 +34,22 @@ const inputFrete = async (input, Caminhao) => {
 			input.vlFreteCliente1 = vlFreteCliente1;
 		}
 
-		if (kmCliente2 > 0 && kmFinal > 0) {
-			const qtKmCliente2 = kmFinal - kmCliente2;
+		if (kmCliente2 > 0) {
+			const qtKmCliente2 = kmCliente2 - kmCliente1;
 			const vlFreteCliente2 = qtKmCliente2 * vlKm;
 
 			input.qtKmCliente2 = qtKmCliente2;
 			input.vlFreteCliente2 = vlFreteCliente2;
 
 			vlFreteTotal += vlFreteCliente2;
-
+		}
+		if (kmCliente2 > 0 && kmFinal > 0) {
 			//Acha a kilometragem de retorno
-			qtKmRetorno = kmCliente2 - kmInicial;
+			qtKmRetorno = kmFinal - kmCliente2;
 			vlFreteRetorno = qtKmRetorno * vlKm;
-		} else if (kmFinal > 0 && kmCliente1) {
+		} else if (kmFinal > 0 && kmCliente1 > 0) {
 			//Acha a kilometragem de retorno
-			qtKmRetorno = kmCliente1 - kmInicial;
+			qtKmRetorno = kmFinal - kmCliente1;
 			vlFreteRetorno = qtKmRetorno * vlKm;
 		} else if (kmFinal > 0) {
 			qtKmRetorno = kmFinal - kmInicial;

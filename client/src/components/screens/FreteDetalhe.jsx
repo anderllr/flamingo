@@ -131,7 +131,7 @@ const FreteDetalhe = props => {
 					</div>
 					<div className="col-12 col-md-2">
 						<div className="form-group">
-							<label>Km Final</label>
+							<label>Km Retorno</label>
 							<input
 								type="text"
 								className="form-control form-control-danger"
@@ -177,7 +177,7 @@ const FreteDetalhe = props => {
 					</div>
 					<div className="col-12 col-md-4">
 						<div className="form-group">
-							<label>Valor Despesas</label>
+							<label>Vl.Total Pedágio</label>
 							<input
 								type="text"
 								className="form-control form-control-danger"
@@ -367,7 +367,8 @@ const FreteDetalhe = props => {
 									maximumFractionDigits: 2
 								}).format(
 									props.getFrete.freteDetalhe.vlFreteTotal +
-										props.getFrete.freteDetalhe.vlMunckTotal
+										props.getFrete.freteDetalhe.vlMunckTotal +
+										props.getFrete.freteDetalhe.vlDespesas
 								)}
 								readOnly
 							/>

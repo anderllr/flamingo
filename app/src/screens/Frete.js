@@ -440,7 +440,6 @@ class Frete extends Component {
 		return new Promise(async (resolve, reject) => {
 			const files = [];
 
-			console.log("entrou no multiple upload");
 			await Promise.all(
 				fileNames.map(async fName => {
 					const path = `${FileSystem.documentDirectory}flamingo/${fName}.jpeg`;
@@ -457,10 +456,9 @@ class Frete extends Component {
 				})
 			);
 
-			console.log("Files: ", files);
 			if (files.length > 0) {
 				//verifica que foi carregado um arquivo então salva
-				this.props
+				await this.props
 					.multipleUpload({
 						variables: {
 							files
@@ -772,7 +770,7 @@ class Frete extends Component {
 								}
 							/>
 							<InputWithTitle
-								title="Outras Despesas"
+								title="Vl.Total Pedágio"
 								height={32}
 								sizeP={"25%"}
 								keyboardType="numeric"
