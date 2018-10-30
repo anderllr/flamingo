@@ -9,13 +9,13 @@ const freteTypes = `
 		clienteId2: ID
 		frotaId: ID
 		frotaTerceiro: String
-		kmInicial: Int!
-		kmCliente1: Int
-		kmCliente2: Int
-		kmFinal: Int
-		hrMunckInicial: Int
-		hrMunckFinal: Int
-		qtPedagio: Int
+		kmInicial: Float!
+		kmCliente1: Float
+		kmCliente2: Float
+		kmFinal: Float
+		hrMunckInicial: Float
+		hrMunckFinal: Float
+		qtPedagio: Float
 		vlDespesas: Float
 		status: String!
 		itens: [ItemFrete]
@@ -51,55 +51,55 @@ const freteTypes = `
         status : String
         frotaId: ID
         clienteId1: ID
-        kmInicial: Int
-        kmCliente1: Int
-        kmCliente2: Int
-    	kmFinal: Int
-        hrMunckInicial: Int
-        hrMunckFinal: Int
-        qtPedagio: Int
+        kmInicial: Float
+        kmCliente1: Float
+        kmCliente2: Float
+    	kmFinal: Float
+        hrMunckInicial: Float
+        hrMunckFinal: Float
+        qtPedagio: Float
 		vlDespesas: Float
 		vlKm: Float
 		vlHoraMunck: Float
-		qtKmCliente1: Int
+		qtKmCliente1: Float
 		vlFreteCliente1: Float
-		qtKmCliente2: Int
+		qtKmCliente2: Float
 		vlFreteCliente2: Float
-		qtKmRetorno: Int
+		qtKmRetorno: Float
 		vlFreteRetorno: Float
 		vlFreteTotal: Float
-		qtHoraMunck: Int
+		qtHoraMunck: Float
 		vlMunckTotal: Float
         itens: [ItemFrete]
 	}	
 
     input FreteInput {
 		caminhaoId: ID!
-		qtEntrega: Int!
+		qtEntrega: Float!
 		dtFrete: String!
 		clienteId1: ID!
 		clienteId2: ID
 		frotaId: ID
 		frotaTerceiro: String
-		kmInicial: Int!
-		kmCliente1: Int
-		kmCliente2: Int
-		kmFinal: Int
-		hrMunckInicial: Int
-		hrMunckFinal: Int
-		qtPedagio: Int
+		kmInicial: Float!
+		kmCliente1: Float
+		kmCliente2: Float
+		kmFinal: Float
+		hrMunckInicial: Float
+		hrMunckFinal: Float
+		qtPedagio: Float
 		vlDespesas: Float
 		status: String!
 		vlKm: Float
 		vlHoraMunck: Float
-		qtKmCliente1: Int
+		qtKmCliente1: Float
 		vlFreteCliente1: Float
-		qtKmCliente2: Int
+		qtKmCliente2: Float
 		vlFreteCliente2: Float
-		qtKmRetorno: Int
+		qtKmRetorno: Float
 		vlFreteRetorno: Float
 		vlFreteTotal: Float
-		qtHoraMunck: Int
+		qtHoraMunck: Float
 		vlMunckTotal: Float
 		itens: [ItemFreteInput]
     }
@@ -124,4 +124,4 @@ const freteMutations = `
 	deleteFreteAll: Boolean
 `;
 
-export { freteTypes, freteQueries, freteMutations };
+export {freteTypes, freteQueries, freteMutations};
