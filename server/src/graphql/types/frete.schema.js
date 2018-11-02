@@ -16,6 +16,9 @@ const freteTypes = `
 		hrMunckInicial: Float
 		hrMunckFinal: Float
 		qtPedagio: Float
+		vlPedagio1: Float
+		vlPedagio2: Float
+		vlPedagio3: Float
 		vlDespesas: Float
 		status: String!
 		itens: [ItemFrete]
@@ -57,7 +60,10 @@ const freteTypes = `
     	kmFinal: Float
         hrMunckInicial: Float
         hrMunckFinal: Float
-        qtPedagio: Float
+		qtPedagio: Float
+		vlPedagio1: Float
+		vlPedagio2: Float
+		vlPedagio3: Float
 		vlDespesas: Float
 		vlKm: Float
 		vlHoraMunck: Float
@@ -88,6 +94,9 @@ const freteTypes = `
 		hrMunckInicial: Float
 		hrMunckFinal: Float
 		qtPedagio: Float
+		vlPedagio1: Float
+		vlPedagio2: Float
+		vlPedagio3: Float
 		vlDespesas: Float
 		status: String!
 		vlKm: Float

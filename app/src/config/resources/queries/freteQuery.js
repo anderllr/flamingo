@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GET_FRETE = gql`
 	query {
@@ -18,6 +18,9 @@ export const GET_FRETE = gql`
 			hrMunckInicial
 			hrMunckFinal
 			qtPedagio
+			vlPedagio1
+			vlPedagio2
+			vlPedagio3
 			vlDespesas
 			status
 			itens {
@@ -46,6 +49,9 @@ export const GET_FRETE_BY_ID = gql`
 			hrMunckInicial
 			hrMunckFinal
 			qtPedagio
+			vlPedagio1
+			vlPedagio2
+			vlPedagio3
 			vlDespesas
 			status
 			itens {
