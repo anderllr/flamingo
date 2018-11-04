@@ -60,18 +60,16 @@ class Frete extends Component {
       hrMunckInicial: 0,
       hrMunckFinal: 0,
       qtPedagio: 0,
+      vlPedagio1: 0,
       vlPedagio2: 0,
       vlPedagio3: 0,
-      vlPedagio4: 0,
-      vlDespesas: this.state.vlPedagio1 +
-        this.state.vlPedagio2 +
-        this.state.vlPedagio3,
+      vlDespesas: 0,
       caminhaoId: '',
       itens: [],
       isDateTimePickerVisible: false,
       fieldDateTime: '',
       pickerMode: 'date',
-      onSearchSaida: null,
+      onSearchCaminhao: null,
       wait: false,
       clientes: [],
       frota: [],
@@ -83,8 +81,8 @@ class Frete extends Component {
     const {navigation} = this.props;
     const caminhaoId = navigation.getParam ('caminhaoId', {});
     const freteId = navigation.getParam ('freteId', {});
-    const onSearchSaida = navigation.getParam ('onSearchSaida', {});
-    this.setState ({freteId, caminhaoId, onSearchSaida, clicouFoto: false});
+    const onSearchCaminhao = navigation.getParam ('onSearchCaminhao', {});
+    this.setState ({freteId, caminhaoId, onSearchCaminhao, clicouFoto: false});
 
     /*		this.props.navigation.addListener("didBlur", payload => {
 			console.log("didBlur", payload);
@@ -141,6 +139,10 @@ class Frete extends Component {
           hrMunckInicial,
           hrMunckFinal,
           qtPedagio,
+          vlPedagio1,
+          vlPedagio2,
+          vlPedagio3,
+          vlDespesas,
           itens,
         } = myProps.getFrete.freteById;
 
@@ -182,13 +184,17 @@ class Frete extends Component {
           frotaId,
           descFrota,
           frotaTerceiro,
-          kmInicial,
-          kmCliente1,
-          kmCliente2,
-          kmFinal,
+          kmInicial: kmInicial * 10, //por causa de ser uma só casa decimal
+          kmCliente1: kmCliente1 * 10,
+          kmCliente2: kmCliente2 * 10,
+          kmFinal: kmFinal * 10,
           hrMunckInicial,
           hrMunckFinal,
           qtPedagio,
+          vlPedagio1: vlPedagio1 * 100, //duas casas decimais
+          vlPedagio2: vlPedagio2 * 100,
+          vlPedagio3: vlPedagio3 * 100,
+          vlDespesas: vlDespesas * 100,
           itens: it,
         });
       } else if (
@@ -217,9 +223,19 @@ class Frete extends Component {
 
   handleInputNumeric = (field, value) => {
     newValue = onlyNumbers (value);
-    console.log ('New Value: ', newValue);
+    let vlDespesas = this.state.vlDespesas; //Representa o total do pedágio
+    if (field === 'vlPedagio1') {
+      vlDespesas = this.state.vlPedagio2 + this.state.vlPedagio3 + newValue;
+    }
+    if (field === 'vlPedagio2') {
+      vlDespesas = this.state.vlPedagio1 + this.state.vlPedagio3 + newValue;
+    }
+    if (field === 'vlPedagio3') {
+      vlDespesas = this.state.vlPedagio1 + this.state.vlPedagio2 + newValue;
+    }
     const newState = {
       ...this.state,
+      vlDespesas,
       [field]: newValue,
     };
     this.setState (newState);
@@ -337,10 +353,10 @@ class Frete extends Component {
       clienteId2: this.state.clienteId2 !== '' ? this.state.clienteId2 : null,
       frotaId: this.state.frotaId !== '' ? this.state.frotaId : null,
       frotaTerceiro: this.state.frotaTerceiro,
-      kmInicial: this.state.kmInicial,
-      kmCliente1: this.state.kmCliente1 > 0 ? this.state.kmCliente1 : null,
-      kmCliente2: this.state.kmCliente2 > 0 ? this.state.kmCliente2 : null,
-      kmFinal: this.state.kmFinal > 0 ? this.state.kmFinal : null,
+      kmInicial: this.state.kmInicial / 10,
+      kmCliente1: this.state.kmCliente1 / 10,
+      kmCliente2: this.state.kmCliente2 / 10,
+      kmFinal: this.state.kmFinal / 10,
       hrMunckInicial: this.state.hrMunckInicial > 0
         ? this.state.hrMunckInicial
         : null,
@@ -348,7 +364,10 @@ class Frete extends Component {
         ? this.state.hrMunckFinal
         : null,
       qtPedagio: this.state.qtPedagio > 0 ? this.state.qtPedagio : null,
-      vlDespesas: this.state.vlDespesas > 0 ? this.state.vlDespesas : null,
+      vlPedagio1: this.state.vlPedagio1 / 100,
+      vlPedagio2: this.state.vlPedagio2 / 100,
+      vlPedagio3: this.state.vlPedagio3 / 100,
+      vlDespesas: this.state.vlDespesas / 100,
       status: this.state.kmFinal > 0 ? 'ENCERRADO' : 'ABERTO',
       itens: this.state.itens,
     };
@@ -383,8 +402,8 @@ class Frete extends Component {
           //FIM DO UPLOAD
           if (result === 'success') {
             this.props.getFrete.refetch ();
-            if (typeof this.state.onSearchSaida === 'function') {
-              this.state.onSearchSaida ();
+            if (typeof this.state.onSearchCaminhao === 'function') {
+              this.state.onSearchCaminhao ();
             }
             this.setState ({clicouFoto: false});
             this.props.navigation.goBack ();
@@ -428,8 +447,8 @@ class Frete extends Component {
           this.setState ({wait: false});
           //FIM DO UPLOAD
           if (result === 'success') {
-            if (typeof this.state.onSearchSaida === 'function') {
-              this.state.onSearchSaida ();
+            if (typeof this.state.onSearchCaminhao === 'function') {
+              this.state.onSearchCaminhao ();
             }
             this.setState ({clicouFoto: false});
             this.props.navigation.goBack ();
@@ -582,10 +601,12 @@ class Frete extends Component {
   render () {
     return (
       <Container backgroundColor={EStyleSheet.value ('$backgroundColor')}>
+
         <View style={styles.screenContainer}>
           <KeyboardAvoidingView
-            behavior="position"
-            keyboardVerticalOffset={keyboardVerticalOffset}
+            behavior="padding"
+            keyboardVerticalOffset={200}
+            enabled
           >
             <View
               style={{
@@ -783,34 +804,37 @@ class Frete extends Component {
                 value={returnValueMasked (this.state.vlDespesas, 2)}
               />
             </View>
-          </KeyboardAvoidingView>
-          <View style={styles.separatorLine} />
-          <View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
-            {this.props.devMode &&
+
+            <View style={styles.separatorLine} />
+            <View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
+              {this.props.devMode &&
+                <RoundButton
+                  text="STATE"
+                  size={60}
+                  height={30}
+                  fontSize={8}
+                  onPress={() =>
+                    console.log ('State Itens: ', this.state.itens)}
+                />}
               <RoundButton
-                text="STATE"
+                text="FOTOS"
                 size={60}
                 height={30}
                 fontSize={8}
-                onPress={() => console.log ('State Itens: ', this.state.itens)}
-              />}
-            <RoundButton
-              text="FOTOS"
-              size={60}
-              height={30}
-              fontSize={8}
-              active={false}
-              onPress={this.onHandleFotos}
-            />
-            <RoundButton
-              text="SALVAR"
-              size={60}
-              height={30}
-              fontSize={8}
-              onPress={this.onHandleSave}
-            />
-          </View>
+                active={false}
+                onPress={this.onHandleFotos}
+              />
+              <RoundButton
+                text="SALVAR"
+                size={60}
+                height={30}
+                fontSize={8}
+                onPress={this.onHandleSave}
+              />
+            </View>
+          </KeyboardAvoidingView>
         </View>
+
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this.handleDatePicked}
@@ -819,6 +843,7 @@ class Frete extends Component {
         />
 
         {this.state.wait && this.renderActivity ()}
+
       </Container>
     );
   }
