@@ -148,6 +148,7 @@ const vistoriaMutations = `
     createVistoria(input: VistoriaInput!): Vistoria
     updateVistoria(id: ID!, input: VistoriaInput!): Vistoria
     deleteVistoria(id: ID!): Boolean
+    deleteVistoriaAll: Boolean
 `;
 
 export {vistoriaTypes, vistoriaQueries, vistoriaMutations};
