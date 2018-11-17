@@ -35,7 +35,8 @@ const inputFrete = async (input, Caminhao) => {
     }
 
     if (kmCliente2 > 0) {
-      const qtKmCliente2 = kmCliente2 - kmCliente1;
+      const qtKmCliente2 =
+        kmCliente2 - (kmCliente1 > 0 ? kmCliente1 : kmInicial);
       const vlFreteCliente2 = qtKmCliente2 * vlKm;
 
       input.qtKmCliente2 = qtKmCliente2;

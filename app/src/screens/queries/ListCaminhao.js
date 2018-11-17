@@ -17,7 +17,7 @@ class ListFrotaCaminhao extends Component {
   }
 
   componentDidMount () {
-    console.log ('Montou o Caminhão...');
+    // console.log ('Montou o Caminhão...');
     this.refetchData ();
   }
 

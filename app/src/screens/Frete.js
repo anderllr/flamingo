@@ -388,7 +388,7 @@ class Frete extends Component {
             let result = images.length === 0
               ? 'success'
               : await this.multipleUpload (images);
-
+            console.log ('Result: ', result);
             if (result !== 'success') {
               error += `${result} |`;
             }
@@ -603,236 +603,227 @@ class Frete extends Component {
       <Container backgroundColor={EStyleSheet.value ('$backgroundColor')}>
 
         <View style={styles.screenContainer}>
-          <KeyboardAvoidingView
-            behavior="padding"
-            keyboardVerticalOffset={200}
-            enabled
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: verticalScale (2),
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: verticalScale (2),
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}
+            <TouchableOpacity
+              onPress={() => this.showDateTimePicker ('dtFrete')}
             >
-              <TouchableOpacity
-                onPress={() => this.showDateTimePicker ('dtFrete')}
-              >
-                <InputWithTitle
-                  title="Data Frete"
-                  size={78}
-                  height={32}
-                  editable={false}
-                  changeColor={false}
-                  value={this.state.dtFrete}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.separatorLine} />
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: verticalScale (2),
-                marginTop: verticalScale (8),
-                justifyContent: 'space-between',
-              }}
-            >
+              <InputWithTitle
+                title="Data Frete"
+                size={78}
+                height={32}
+                editable={false}
+                changeColor={false}
+                value={this.state.dtFrete}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: verticalScale (2),
+              marginTop: verticalScale (8),
+              justifyContent: 'space-between',
+            }}
+          >
+            <Dropdown
+              data={this.state.clientes}
+              title={this.state.qtEntrega === 1 ? 'Cliente 1' : 'Cliente'}
+              placeholder="Selecione o cliente"
+              height={32}
+              sizeP={'48%'}
+              value={this.state.descCliente1}
+              onClickButton={() => this.onClearDropdown ('cliente1')}
+              onChange={option => this.onChangeDropdown (option, 'cliente1')}
+            />
+            {this.state.qtEntrega === 2 &&
               <Dropdown
                 data={this.state.clientes}
-                title={this.state.qtEntrega === 1 ? 'Cliente 1' : 'Cliente'}
+                title="Cliente 2"
                 placeholder="Selecione o cliente"
                 height={32}
                 sizeP={'48%'}
-                value={this.state.descCliente1}
-                onClickButton={() => this.onClearDropdown ('cliente1')}
-                onChange={option => this.onChangeDropdown (option, 'cliente1')}
-              />
-              {this.state.qtEntrega === 2 &&
-                <Dropdown
-                  data={this.state.clientes}
-                  title="Cliente 2"
-                  placeholder="Selecione o cliente"
-                  height={32}
-                  sizeP={'48%'}
-                  value={this.state.descCliente2}
-                  onClickButton={() => this.onClearDropdown ('cliente2')}
-                  onChange={option =>
-                    this.onChangeDropdown (option, 'cliente2')}
-                />}
-            </View>
+                value={this.state.descCliente2}
+                onClickButton={() => this.onClearDropdown ('cliente2')}
+                onChange={option => this.onChangeDropdown (option, 'cliente2')}
+              />}
+          </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: verticalScale (2),
-                justifyContent: 'space-between',
-              }}
-            >
-              <Dropdown
-                data={this.state.frota}
-                title="Frota"
-                placeholder="Selecione a frota"
-                height={32}
-                sizeP={'48%'}
-                value={this.state.descFrota}
-                onClickButton={() => this.onClearDropdown ('frota')}
-                onChange={option => this.onChangeDropdown (option, 'frota')}
-              />
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: verticalScale (2),
+              justifyContent: 'space-between',
+            }}
+          >
+            <Dropdown
+              data={this.state.frota}
+              title="Frota"
+              placeholder="Selecione a frota"
+              height={32}
+              sizeP={'48%'}
+              value={this.state.descFrota}
+              onClickButton={() => this.onClearDropdown ('frota')}
+              onChange={option => this.onChangeDropdown (option, 'frota')}
+            />
 
-              <InputWithTitle
-                title="Frota Terceiro"
-                height={32}
-                sizeP={'48%'}
-                onChangeText={value =>
-                  this.handleInputChange ('frotaTerceiro', value)}
-                value={this.state.frotaTerceiro}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: verticalScale (2),
-                justifyContent: 'space-between',
-              }}
-            >
-              <InputWithTitle
-                title="Km Inicial Flamingo"
-                height={32}
-                keyboardType="numeric"
-                sizeP={'15%'}
-                onChangeText={value =>
-                  this.handleInputNumeric ('kmInicial', value, true)}
-                value={returnValueMasked (this.state.kmInicial, 1)}
-              />
-              <InputWithTitle
-                title="Km Destino 1"
-                height={32}
-                keyboardType="numeric"
-                sizeP={'15%'}
-                onChangeText={value =>
-                  this.handleInputNumeric ('kmCliente1', value, true)}
-                value={returnValueMasked (this.state.kmCliente1, 1)}
-              />
-              <InputWithTitle
-                title="Km Destino 2"
-                height={32}
-                keyboardType="numeric"
-                sizeP={'15%'}
-                onChangeText={value =>
-                  this.handleInputNumeric ('kmCliente2', value, true)}
-                value={returnValueMasked (this.state.kmCliente2, 1)}
-              />
+            <InputWithTitle
+              title="Frota Terceiro"
+              height={32}
+              sizeP={'48%'}
+              onChangeText={value =>
+                this.handleInputChange ('frotaTerceiro', value)}
+              value={this.state.frotaTerceiro}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: verticalScale (2),
+              justifyContent: 'space-between',
+            }}
+          >
+            <InputWithTitle
+              title="Km Inicial Flamingo"
+              height={32}
+              keyboardType="numeric"
+              sizeP={'15%'}
+              onChangeText={value =>
+                this.handleInputNumeric ('kmInicial', value, true)}
+              value={returnValueMasked (this.state.kmInicial, 1)}
+            />
+            <InputWithTitle
+              title="Km Destino 1"
+              height={32}
+              keyboardType="numeric"
+              sizeP={'15%'}
+              onChangeText={value =>
+                this.handleInputNumeric ('kmCliente1', value, true)}
+              value={returnValueMasked (this.state.kmCliente1, 1)}
+            />
+            <InputWithTitle
+              title="Km Destino 2"
+              height={32}
+              keyboardType="numeric"
+              sizeP={'15%'}
+              onChangeText={value =>
+                this.handleInputNumeric ('kmCliente2', value, true)}
+              value={returnValueMasked (this.state.kmCliente2, 1)}
+            />
 
-              <InputWithTitle
-                title="Km Retorno"
-                height={32}
-                sizeP={'15%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputNumeric ('kmFinal', value, true)}
-                value={returnValueMasked (this.state.kmFinal, 1)}
-              />
+            <InputWithTitle
+              title="Km Retorno"
+              height={32}
+              sizeP={'15%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputNumeric ('kmFinal', value, true)}
+              value={returnValueMasked (this.state.kmFinal, 1)}
+            />
 
-              <InputWithTitle
-                title="Munck Inicial"
-                height={32}
-                sizeP={'15%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputChange ('hrMunckInicial', value, true)}
-                value={
-                  this.state.hrMunckInicial > 0
-                    ? this.state.hrMunckInicial.toString ()
-                    : ''
-                }
-              />
-              <InputWithTitle
-                title="Munck Final"
-                height={32}
-                sizeP={'15%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputChange ('hrMunckFinal', value, true)}
-                value={
-                  this.state.hrMunckFinal > 0
-                    ? this.state.hrMunckFinal.toString ()
-                    : ''
-                }
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: verticalScale (2),
-                justifyContent: 'flex-start',
-              }}
-            >
-              <InputWithTitle
-                title="Vl. Pedágio 1"
-                height={32}
-                sizeP={'20%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputNumeric ('vlPedagio1', value, true)}
-                value={returnValueMasked (this.state.vlPedagio1, 2)}
-              />
-              <InputWithTitle
-                title="Vl. Pedágio 2"
-                height={32}
-                sizeP={'20%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputNumeric ('vlPedagio2', value, true)}
-                value={returnValueMasked (this.state.vlPedagio2, 2)}
-              />
-              <InputWithTitle
-                title="Vl. Pedágio 3"
-                height={32}
-                sizeP={'20%'}
-                keyboardType="numeric"
-                onChangeText={value =>
-                  this.handleInputNumeric ('vlPedagio3', value, true)}
-                value={returnValueMasked (this.state.vlPedagio3, 2)}
-              />
-              <InputWithTitle
-                title="Vl.Total Pedágio"
-                height={32}
-                sizeP={'25%'}
-                editable={false}
-                keyboardType="numeric"
-                value={returnValueMasked (this.state.vlDespesas, 2)}
-              />
-            </View>
-
-            <View style={styles.separatorLine} />
-            <View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
-              {this.props.devMode &&
-                <RoundButton
-                  text="STATE"
-                  size={60}
-                  height={30}
-                  fontSize={8}
-                  onPress={() =>
-                    console.log ('State Itens: ', this.state.itens)}
-                />}
+            <InputWithTitle
+              title="Munck Inicial"
+              height={32}
+              sizeP={'15%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputChange ('hrMunckInicial', value, true)}
+              value={
+                this.state.hrMunckInicial > 0
+                  ? this.state.hrMunckInicial.toString ()
+                  : ''
+              }
+            />
+            <InputWithTitle
+              title="Munck Final"
+              height={32}
+              sizeP={'15%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputChange ('hrMunckFinal', value, true)}
+              value={
+                this.state.hrMunckFinal > 0
+                  ? this.state.hrMunckFinal.toString ()
+                  : ''
+              }
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: verticalScale (2),
+              justifyContent: 'flex-start',
+            }}
+          >
+            <InputWithTitle
+              title="Vl. Pedágio 1"
+              height={32}
+              sizeP={'20%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputNumeric ('vlPedagio1', value, true)}
+              value={returnValueMasked (this.state.vlPedagio1, 2)}
+            />
+            <InputWithTitle
+              title="Vl. Pedágio 2"
+              height={32}
+              sizeP={'20%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputNumeric ('vlPedagio2', value, true)}
+              value={returnValueMasked (this.state.vlPedagio2, 2)}
+            />
+            <InputWithTitle
+              title="Vl. Pedágio 3"
+              height={32}
+              sizeP={'20%'}
+              keyboardType="numeric"
+              onChangeText={value =>
+                this.handleInputNumeric ('vlPedagio3', value, true)}
+              value={returnValueMasked (this.state.vlPedagio3, 2)}
+            />
+            <InputWithTitle
+              title="Vl.Total Pedágio"
+              height={32}
+              sizeP={'25%'}
+              editable={false}
+              keyboardType="numeric"
+              value={returnValueMasked (this.state.vlDespesas, 2)}
+            />
+          </View>
+          <View style={styles.separatorLine} />
+          <View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
+            {this.props.devMode &&
               <RoundButton
-                text="FOTOS"
+                text="STATE"
                 size={60}
                 height={30}
                 fontSize={8}
-                active={false}
-                onPress={this.onHandleFotos}
-              />
-              <RoundButton
-                text="SALVAR"
-                size={60}
-                height={30}
-                fontSize={8}
-                onPress={this.onHandleSave}
-              />
-            </View>
-          </KeyboardAvoidingView>
+                onPress={() => console.log ('State Itens: ', this.state.itens)}
+              />}
+            <RoundButton
+              text="FOTOS"
+              size={60}
+              height={30}
+              fontSize={8}
+              active={false}
+              onPress={this.onHandleFotos}
+            />
+            <RoundButton
+              text="SALVAR"
+              size={60}
+              height={30}
+              fontSize={8}
+              onPress={this.onHandleSave}
+            />
+          </View>
         </View>
 
         <DateTimePicker
