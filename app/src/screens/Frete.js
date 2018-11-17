@@ -1,11 +1,5 @@
 import React, {Component} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import {View, TouchableOpacity, ActivityIndicator} from 'react-native';
 
 import {verticalScale} from 'react-native-size-matters';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -35,8 +29,6 @@ import {
 } from '../config/resources/mutations/uploadMutation';
 import {connectAlert} from '../components/Alert';
 import styles from './styles';
-
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 20 : 0;
 
 class Frete extends Component {
   constructor (props) {

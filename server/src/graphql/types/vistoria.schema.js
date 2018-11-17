@@ -9,11 +9,11 @@ const vistoriaTypes = `
         dtSaida: String!
         dtPrevisao: String!
         hrSaida: String!        
-        horimetroSaida: Int!
+        horimetroSaida: Float!
         combustivelSaida: Int!        
         dtChegada: String
         hrChegada: String
-        horimetroChegada: Int
+        horimetroChegada: Float
         combustivelChegada: Int
         status: String!
         signSaida: [SignSaida]
@@ -82,11 +82,11 @@ const vistoriaTypes = `
         dtSaida: String!
         dtPrevisao: String!
         hrSaida: String!        
-        horimetroSaida: Int!
+        horimetroSaida: Float!
         combustivelSaida: Int!        
         dtChegada: String
         hrChegada: String
-        horimetroChegada: Int
+        horimetroChegada: Float
         combustivelChegada: Int
         status: String!
         signSaida: [SignSaidaInput]
@@ -150,4 +150,4 @@ const vistoriaMutations = `
     deleteVistoria(id: ID!): Boolean
 `;
 
-export { vistoriaTypes, vistoriaQueries, vistoriaMutations };
+export {vistoriaTypes, vistoriaQueries, vistoriaMutations};
