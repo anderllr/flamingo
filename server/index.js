@@ -48,6 +48,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use (express.static ('../client/build'));
   //	console.log("DirName: ", __dirname);
   // Return the main index.html, so react-router render the route in the client
+  /* 
   app.get (
     [
       '/',
@@ -62,7 +63,11 @@ if (process.env.NODE_ENV === 'production') {
     (req, res) => {
       res.sendFile (path.resolve ('../client/build', 'index.html'));
     }
-  );
+	); */
+
+  app.get ('/', (req, res) => {
+    res.sendFile (path.resolve ('../client/build', 'index.html'));
+  });
 }
 
 verifyAdmin ();
