@@ -1,4 +1,7 @@
 import {Dimensions, Platform} from 'react-native';
+import {FileSystem} from 'expo';
+
+const PHOTOS_DIR = FileSystem.documentDirectory + 'flamingo';
 
 const screenHeigth = Dimensions.get ('window').height;
 const screenWidth = Dimensions.get ('window').width;
@@ -29,4 +32,5 @@ export {
   isIPhoneX,
   screenHeigth,
   screenWidth,
+  PHOTOS_DIR,
 };
