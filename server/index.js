@@ -81,10 +81,11 @@ app.use (
 
 app.use (
   '/flamingoql',
-  apolloUploadExpress ({maxFileSize: 10000000, maxFiles: 10}),
+  apolloUploadExpress ({maxFileSize: 100000000, maxFiles: 100}),
   tokenMiddleware,
   dbRequest,
-  bodyParser.json (),
+  bodyParser.json ({limit: '50mb'}),
+  bodyParser.urlencoded ({limit: '50mb', extended: true}),
   graphqlHTTP (req => ({
     schema: schema,
     graphiql: process.env.NODE_ENV !== 'production',
