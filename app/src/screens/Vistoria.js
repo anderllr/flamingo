@@ -354,15 +354,7 @@ class Vistoria extends Component {
             onPress={() => this.setState ({active: 'frete', hideFrete: false})}
             active={this.state.active === 'frete'}
           />
-          <RoundButton
-            text="CONSULTAS"
-            sizeP="75%"
-            height={50}
-            fontSize={8}
-            icon={{name: 'search', type: 'ion'}}
-            onPress={() => this.setState ({active: 'consultas'})}
-            active={this.state.active === 'consultas'}
-          />
+
         </View>
         <View style={styles.backgroundMain}>
           {this.state.active === 'saida'

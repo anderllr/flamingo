@@ -22,7 +22,7 @@ class ListFrotaCaminhao extends Component {
   }
 
   refetchData = async () => {
-    console.log ('Entrou aqui...');
+    //console.log ('Entrou aqui...');
     await this.props.data.refetch ();
     // this.props.updateRefetch ();
   };

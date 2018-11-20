@@ -1,7 +1,12 @@
 //function to create new empty elements in a flat list to make objects with the same size
 export const createRows = (data, columns) => {
   const rows = Math.floor (data.length / columns); // [A]
+
   let lastRowElements = data.length - rows * columns; // [B]
+
+  if (data.length === 0 || data.length === columns || lastRowElements === 0)
+    return data;
+
   while (lastRowElements !== columns) {
     // [C]
     data.push ({

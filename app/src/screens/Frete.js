@@ -380,7 +380,7 @@ class Frete extends Component {
             let result = images.length === 0
               ? 'success'
               : await this.multipleUpload (images);
-            console.log ('Result: ', result);
+
             if (result !== 'success') {
               error += `${result} |`;
             }
@@ -482,6 +482,7 @@ class Frete extends Component {
 
       if (files.length > 0) {
         //verifica que foi carregado um arquivo então salva
+        console.log ('Files App: ', files);
         await this.props
           .multipleUpload ({
             variables: {

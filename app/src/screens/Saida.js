@@ -16,8 +16,10 @@ import moment from 'moment';
 
 import {GET_CLIENTES} from '../config/resources/queries/clientesQuery';
 import {CREATE_VISTORIA} from '../config/resources/mutations/vistoriaMutation';
-import {UPLOAD_FILE} from '../config/resources/mutations/uploadMutation';
-
+import {
+  UPLOAD_FILE,
+  MULTIPLE_UPLOAD,
+} from '../config/resources/mutations/uploadMutation';
 import {onlyNumbers, returnValueMasked} from '../utils/utils';
 import {Container} from '../components/Container';
 import {RoundButton} from '../components/Button';
@@ -225,19 +227,27 @@ class Saida extends Component {
       .then (async () => {
         //UPLOAD NAS IMAGENS
         this.setState ({wait: true});
+
         const images = [];
         this.state.grupos.map (({itens}) =>
-          itens.map (({fileName}) => images.push (fileName))
+          // itens.map (({fileName}) => images.push (fileName))
+          itens
+            .filter (item => item.imagem !== '')
+            .map (({fileName}) => images.push (fileName))
         );
 
+        console.log ('Images: ', images);
         const result = await new Promise (async (resolve, reject) => {
           let error = '';
-          await images.map (async fileName => {
-            const result = await this.uploadFile (fileName);
-            if (result !== 'success') {
-              error += `${result} |`;
-            }
-          });
+
+          let result = images.length === 0
+            ? 'success'
+            : await this.multipleUpload (images);
+
+          if (result !== 'success') {
+            error += `${result} |`;
+          }
+
           if (error === '') {
             resolve ('success');
           } else reject (error);
@@ -256,13 +266,53 @@ class Saida extends Component {
       })
       .catch (e => {
         let message = '';
+        console.log ('E: ', e);
         if (e.graphQLErrors) {
+          console.log ('graphQLErrors: ', e);
           message = e.graphQLErrors[0]
             ? e.graphQLErrors[0].message
             : e.graphQLErrors;
         }
         this.props.alertWithType ('error', 'Error', message);
       });
+  };
+
+  multipleUpload = fileNames => {
+    return new Promise (async (resolve, reject) => {
+      const files = [];
+
+      await Promise.all (
+        fileNames.map (async fName => {
+          const path = `${FileSystem.documentDirectory}flamingo/${fName}.jpeg`;
+          const fileLocal = await FileSystem.getInfoAsync (path);
+          if (fileLocal.exists) {
+            const file = await new ReactNativeFile ({
+              uri: fileLocal.uri,
+              type: 'image/jpeg',
+              name: `${fName}.jpeg`,
+            });
+
+            files.push (file);
+          }
+        })
+      );
+
+      if (files.length > 0) {
+        //verifica que foi carregado um arquivo então salva
+        console.log ('Files App: ', files);
+        await this.props
+          .multipleUpload ({
+            variables: {
+              files,
+            },
+          })
+          .then (() => resolve ('success'))
+          .catch (e => reject (e));
+      } else {
+        //Não tem arquivos então ok
+        resolve ('success');
+      }
+    });
   };
 
   uploadFile = fileName => {
@@ -484,5 +534,6 @@ class Saida extends Component {
 export default compose (
   graphql (GET_CLIENTES, {name: 'getClientes'}),
   graphql (CREATE_VISTORIA, {name: 'createVistoria'}),
-  graphql (UPLOAD_FILE, {name: 'uploadFile'})
+  graphql (UPLOAD_FILE, {name: 'uploadFile'}),
+  graphql (MULTIPLE_UPLOAD, {name: 'multipleUpload'})
 ) (connectAlert (Saida));

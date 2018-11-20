@@ -18,7 +18,10 @@ import {GET_VISTORIA_BY_ID} from '../config/resources/queries/vistoriaQuery';
 import {GET_FROTA_BY_ID} from '../config/resources/queries/frotaQuery';
 import {GET_CLIENTE_BY_ID} from '../config/resources/queries/clientesQuery';
 import {UPDATE_VISTORIA} from '../config/resources/mutations/vistoriaMutation';
-import {UPLOAD_FILE} from '../config/resources/mutations/uploadMutation';
+import {
+  UPLOAD_FILE,
+  MULTIPLE_UPLOAD,
+} from '../config/resources/mutations/uploadMutation';
 
 import {Container} from '../components/Container';
 import {RoundButton} from '../components/Button';
@@ -493,6 +496,7 @@ export default compose (
   }),
   graphql (UPDATE_VISTORIA, {name: 'updateVistoria'}),
   graphql (UPLOAD_FILE, {name: 'uploadFile'}),
+  graphql (MULTIPLE_UPLOAD, {name: 'multipleUpload'}),
   graphql (GET_VISTORIA_BY_ID, {
     options: props => ({
       variables: {
